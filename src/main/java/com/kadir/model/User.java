@@ -20,6 +20,9 @@ public class User extends BaseEntity {
     @Column(name = "role")
     private UserRole role;
 
+    @Column(name = "username")
+    private String username;
+
     @Column(name = "email")
     private String email;
 
