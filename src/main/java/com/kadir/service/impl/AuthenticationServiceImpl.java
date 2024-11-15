@@ -102,4 +102,13 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(user));
         return new AuthResponse(accessToken, savedRefreshToken.getRefreshToken());
     }
+
+    @Override
+    public void logout(String refreshToken) {
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken);
+        if (optionalRefreshToken.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.REFRESH_TOKEN_NOT_FOUND, refreshToken));
+        }
+        refreshTokenRepository.delete(optionalRefreshToken.get());
+    }
 }

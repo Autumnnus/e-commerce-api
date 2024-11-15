@@ -15,7 +15,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Gallerist API")
+                        .title("E-Commerce API")
                         .description("This is a sample Spring Boot RESTful service using springdoc-openapi and OpenAPI 3."))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components().addSecuritySchemes("bearerAuth",

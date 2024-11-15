@@ -18,6 +18,7 @@ public class SecurityConfig {
     public static final String REGISTER = "/register";
     public static final String AUTHENTICATE = "/authenticate";
     public static final String REFRESH_TOKEN = "/refreshToken";
+    public static final String LOGOUT = "/logout";
     public static final String[] SWAGGER_PATHS = {
             "/swagger-ui/**",
             "/v3/api-docs/**",
@@ -37,7 +38,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(AUTHENTICATE, REGISTER, REFRESH_TOKEN)
+                        .requestMatchers(AUTHENTICATE, REGISTER, REFRESH_TOKEN, LOGOUT)
                         .permitAll()
                         .requestMatchers(SWAGGER_PATHS).permitAll()
                         .anyRequest().authenticated())
