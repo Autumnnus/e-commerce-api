@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @MappedSuperclass
@@ -16,9 +18,9 @@ public class BaseEntity {
 
     @Column(name = "created_at")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private String createdAt;
+    private Date createdAt;
 
     @Column(name = "updated_at")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private String updatedAt;
+    private Date updatedAt;
 }
