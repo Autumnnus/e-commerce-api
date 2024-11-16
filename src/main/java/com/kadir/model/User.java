@@ -1,9 +1,7 @@
 package com.kadir.model;
 
 import com.kadir.enums.UserRole;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,10 +16,11 @@ import java.util.List;
 @Table(name = "user")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends BaseEntity implements UserDetails {
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private UserRole role;
 

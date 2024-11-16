@@ -2,10 +2,7 @@ package com.kadir.controller.impl;
 
 import com.kadir.controller.IRestAuthenticationController;
 import com.kadir.controller.RootEntity;
-import com.kadir.dto.AuthRequest;
-import com.kadir.dto.AuthResponse;
-import com.kadir.dto.DtoUser;
-import com.kadir.dto.RefreshTokenRequest;
+import com.kadir.dto.*;
 import com.kadir.service.IAuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,7 @@ public class RestAuthenticationControllerImpl extends RestBaseController impleme
 
     @PostMapping("/register")
     @Override
-    public RootEntity<DtoUser> register(@Validated @RequestBody AuthRequest input) {
+    public RootEntity<DtoUser> register(@Validated @RequestBody AuthRegisterRequest input) {
         return RootEntity.success(authenticationService.register(input));
 
     }

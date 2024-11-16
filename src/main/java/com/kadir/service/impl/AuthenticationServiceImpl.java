@@ -1,9 +1,6 @@
 package com.kadir.service.impl;
 
-import com.kadir.dto.AuthRequest;
-import com.kadir.dto.AuthResponse;
-import com.kadir.dto.DtoUser;
-import com.kadir.dto.RefreshTokenRequest;
+import com.kadir.dto.*;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
@@ -20,7 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,36 +39,53 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    private User createUser(AuthRequest input) {
+    private User createUser(AuthRegisterRequest input) {
         User user = new User();
-        user.setCreatedAt(new Date());
         user.setUsername(input.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(input.getPassword()));
         user.setRole(input.getRole());
         user.setEmail(input.getEmail());
         user.setPhoneNumber(input.getPhoneNumber());
-
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         return user;
     }
 
+    private void validateUser(AuthRegisterRequest input) {
+        if (userRepository.existsByUsername(input.getUsername())) {
+            throw new BaseException(new ErrorMessage(MessageType.USERNAME_ALREADY_EXISTS, input.getUsername()));
+        }
+
+        if (userRepository.existsByEmail(input.getEmail())) {
+            throw new BaseException(new ErrorMessage(MessageType.EMAIL_ALREADY_EXISTS, input.getEmail()));
+        }
+
+        if (userRepository.existsByPhoneNumber(input.getPhoneNumber())) {
+            throw new BaseException(new ErrorMessage(MessageType.PHONE_NUMBER_ALREADY_EXISTS, input.getPhoneNumber()));
+        }
+    }
+
+
     private RefreshToken createRefreshToken(User user) {
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setCreatedAt(new Date());
-        refreshToken.setExpiredDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 4));
+        refreshToken.setExpiredDate(LocalDateTime.now().plusHours(4));
         refreshToken.setRefreshToken(UUID.randomUUID().toString());
         refreshToken.setUser(user);
         return refreshToken;
     }
 
-    public boolean isValidRefreshToken(Date expiredDate) {
-        return new Date().before(expiredDate);
+    public boolean isValidRefreshToken(LocalDateTime expiredDate) {
+        return LocalDateTime.now().isBefore(expiredDate);
     }
 
     @Override
-    public DtoUser register(AuthRequest input) {
+    public DtoUser register(AuthRegisterRequest input) {
+        validateUser(input);
         DtoUser dtoUser = new DtoUser();
         User savedUser = userRepository.save(createUser(input));
         BeanUtils.copyProperties(savedUser, dtoUser);
+        dtoUser.setCreatedDate(savedUser.getCreatedAt());
+        dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
         return dtoUser;
     }
 

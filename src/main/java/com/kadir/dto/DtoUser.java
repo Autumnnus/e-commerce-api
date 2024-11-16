@@ -1,5 +1,6 @@
 package com.kadir.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kadir.enums.UserRole;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -13,6 +14,7 @@ public class DtoUser extends DtoBase {
     private String username;
 
     @NotNull
+    @JsonIgnore
     private String password;
 
     @NotNull

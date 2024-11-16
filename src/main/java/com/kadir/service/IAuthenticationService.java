@@ -1,13 +1,10 @@
 package com.kadir.service;
 
-import com.kadir.dto.AuthRequest;
-import com.kadir.dto.AuthResponse;
-import com.kadir.dto.DtoUser;
-import com.kadir.dto.RefreshTokenRequest;
+import com.kadir.dto.*;
 
 public interface IAuthenticationService {
 
-    DtoUser register(AuthRequest input);
+    DtoUser register(AuthRegisterRequest input);
 
     AuthResponse authenticate(AuthRequest input);
 
