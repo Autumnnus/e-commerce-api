@@ -35,7 +35,7 @@ public class User extends BaseEntity implements UserDetails {
     private String password;
 
     @Column(name = "phone_number")
-    private String phone_number;
+    private String phoneNumber;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

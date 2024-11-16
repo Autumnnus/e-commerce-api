@@ -49,6 +49,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         user.setPassword(bCryptPasswordEncoder.encode(input.getPassword()));
         user.setRole(input.getRole());
         user.setEmail(input.getEmail());
+        user.setPhoneNumber(input.getPhoneNumber());
 
         return user;
     }

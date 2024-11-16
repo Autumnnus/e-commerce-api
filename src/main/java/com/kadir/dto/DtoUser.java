@@ -20,4 +20,6 @@ public class DtoUser extends DtoBase {
 
     @NotNull
     private String email;
+
+    private String phoneNumber;
 }
