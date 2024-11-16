@@ -12,6 +12,4 @@ public interface IAuthenticationService {
     AuthResponse authenticate(AuthRequest input);
 
     AuthResponse refreshToken(RefreshTokenRequest input);
-
-    void logout(String refreshToken);
 }

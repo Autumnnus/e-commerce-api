@@ -3,6 +3,7 @@ package com.kadir.handler;
 import com.kadir.exception.BaseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<ApiError<Map<String, List<String>>>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e, WebRequest request) {
-        
+
         Map<String, List<String>> map = new HashMap<>();
         for (ObjectError objError : e.getBindingResult().getAllErrors()) {
             String fieldName = ((FieldError) objError).getField();
@@ -38,6 +39,13 @@ public class GlobalExceptionHandler {
         }
 
         return ResponseEntity.badRequest().body(createApiError(map, request));
+    }
+
+    @ExceptionHandler(value = {HttpMessageNotReadableException.class})
+    public ResponseEntity<ApiError<?>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, WebRequest request) {
+        String message = e.getMessage();
+
+        return ResponseEntity.badRequest().body(createApiError(message, request));
     }
 
 

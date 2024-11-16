@@ -47,6 +47,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         user.setCreatedAt(new Date());
         user.setUsername(input.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(input.getPassword()));
+        user.setRole(input.getRole());
+        user.setEmail(input.getEmail());
 
         return user;
     }
@@ -103,12 +105,4 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return new AuthResponse(accessToken, savedRefreshToken.getRefreshToken());
     }
 
-    @Override
-    public void logout(String refreshToken) {
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken);
-        if (optionalRefreshToken.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.REFRESH_TOKEN_NOT_FOUND, refreshToken));
-        }
-        refreshTokenRepository.delete(optionalRefreshToken.get());
-    }
 }

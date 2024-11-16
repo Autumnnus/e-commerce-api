@@ -1,7 +1,14 @@
 package com.kadir.config;
 
+import com.kadir.exception.BaseException;
+import com.kadir.exception.ErrorMessage;
+import com.kadir.exception.MessageType;
 import com.kadir.handler.AuthEntryPoint;
 import com.kadir.jwt.JWTAuthenticationFilter;
+import com.kadir.model.RefreshToken;
+import com.kadir.repository.RefreshTokenRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -34,11 +43,14 @@ public class SecurityConfig {
     @Autowired
     private AuthEntryPoint authEntryPoint;
 
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(AUTHENTICATE, REGISTER, REFRESH_TOKEN, LOGOUT)
+                        .requestMatchers(AUTHENTICATE, REGISTER, REFRESH_TOKEN)
                         .permitAll()
                         .requestMatchers(SWAGGER_PATHS).permitAll()
                         .anyRequest().authenticated())
@@ -46,8 +58,43 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl(LOGOUT)
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            try {
+                                handleLogout(request, response);
+                            } catch (BaseException e) {
+                                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                                response.setContentType("application/json");
+                                response.getWriter().write("{ \"error\": \"" + e.getMessage() + "\" }");
+                            }
+                        })
+                        .clearAuthentication(true)
+                        .invalidateHttpSession(true));
 
         return http.build();
     }
+
+    public void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new BaseException(
+                    new ErrorMessage(MessageType.REFRESH_TOKEN_NOT_FOUND, "Token not found"));
+        }
+
+        String jwt = authHeader.substring(7);
+        RefreshToken storedToken = refreshTokenRepository.findByRefreshToken(jwt).orElse(null);
+
+        if (storedToken == null) {
+            throw new BaseException(
+                    new ErrorMessage(MessageType.REFRESH_TOKEN_NOT_FOUND, "Token not found"));
+        }
+
+        refreshTokenRepository.delete(storedToken);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.getWriter().write("{ \"message\": \"Logout successful\" }");
+    }
+
 }

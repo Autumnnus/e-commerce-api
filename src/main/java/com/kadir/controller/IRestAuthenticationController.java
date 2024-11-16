@@ -12,6 +12,4 @@ public interface IRestAuthenticationController {
     RootEntity<AuthResponse> authenticate(AuthRequest input);
 
     RootEntity<AuthResponse> refreshToken(RefreshTokenRequest refreshToken);
-
-    RootEntity<Void> logout(String refreshToken);
 }

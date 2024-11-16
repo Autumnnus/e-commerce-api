@@ -9,6 +9,7 @@ import com.kadir.dto.RefreshTokenRequest;
 import com.kadir.service.IAuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +22,9 @@ public class RestAuthenticationControllerImpl extends RestBaseController impleme
 
     @PostMapping("/register")
     @Override
-    public RootEntity<DtoUser> register(@Valid @RequestBody AuthRequest input) {
+    public RootEntity<DtoUser> register(@Validated @RequestBody AuthRequest input) {
         return RootEntity.success(authenticationService.register(input));
+
     }
 
     @PostMapping("/authenticate")
@@ -31,16 +33,10 @@ public class RestAuthenticationControllerImpl extends RestBaseController impleme
         return RootEntity.success(authenticationService.authenticate(input));
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/refreshToken")
     @Override
     public RootEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshToken) {
         return RootEntity.success(authenticationService.refreshToken(refreshToken));
     }
 
-    @PostMapping("/logout")
-    @Override
-    public RootEntity<Void> logout(@RequestBody String refreshToken) {
-        authenticationService.logout(refreshToken);
-        return RootEntity.success(null);
-    }
 }
