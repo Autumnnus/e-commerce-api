@@ -1,5 +1,6 @@
 package com.kadir.jwt;
 
+import com.kadir.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -20,8 +23,15 @@ public class JWTService {
     public String SECRET_KEY;
 
     public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claimsMap = new HashMap<>();
+        User user = (User) userDetails;
+        claimsMap.put("username", user.getUsername());
+        claimsMap.put("role", user.getRole());
+        claimsMap.put("email", user.getEmail());
+
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
+                .setClaims(claimsMap)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(getKey(), SignatureAlgorithm.HS256)

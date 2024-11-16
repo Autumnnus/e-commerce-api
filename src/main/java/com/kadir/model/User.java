@@ -36,8 +36,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    public String getEmail() {
+        return this.email;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(() -> this.role.name());
     }
 }

@@ -71,6 +71,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         refreshToken.setExpiredDate(LocalDateTime.now().plusHours(4));
         refreshToken.setRefreshToken(UUID.randomUUID().toString());
         refreshToken.setUser(user);
+        refreshToken.setCreatedAt(LocalDateTime.now());
+        refreshToken.setUpdatedAt(LocalDateTime.now());
         return refreshToken;
     }
 
