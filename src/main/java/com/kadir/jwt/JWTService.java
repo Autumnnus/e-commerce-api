@@ -25,9 +25,9 @@ public class JWTService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claimsMap = new HashMap<>();
         User user = (User) userDetails;
-        claimsMap.put("username", user.getUsername());
         claimsMap.put("role", user.getRole());
         claimsMap.put("email", user.getEmail());
+        claimsMap.put("sub", userDetails.getUsername());
 
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
@@ -40,11 +40,13 @@ public class JWTService {
 
     public <T> T exportToken(String token, Function<Claims, T> claimsFunc) {
         Claims claims = getClaims(token);
-        return claimsFunc.apply(claims);
+        T apply = claimsFunc.apply(claims);
+        return apply;
     }
 
     public String getUserNameByToken(String token) {
-        return exportToken(token, Claims::getSubject);
+        String s = exportToken(token, Claims::getSubject);
+        return s;
     }
 
     public boolean isTokenValid(String token) {

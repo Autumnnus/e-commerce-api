@@ -1,8 +1,6 @@
 package com.kadir.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +26,8 @@ public class Product extends BaseEntity {
     @Column(name = "stock_quantity")
     private int stockQuantity;
 
-//    @Column(name = "category_id")
-//    private Category categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
 }
