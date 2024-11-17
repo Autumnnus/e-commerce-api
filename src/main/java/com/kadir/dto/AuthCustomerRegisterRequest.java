@@ -6,14 +6,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DtoCustomer extends DtoBase {
+public class AuthCustomerRegisterRequest extends AuthRegisterRequest {
 
-    @NotNull
-    private DtoUser userId;
 
-    @NotNull
+    @NotNull(message = "First name is required")
     private String firstName;
 
-    @NotNull
+    @NotNull(message = "Last name is required")
     private String lastName;
+
 }

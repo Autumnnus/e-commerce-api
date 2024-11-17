@@ -13,6 +13,8 @@ public enum MessageType {
     REFRESH_TOKEN_NOT_FOUND("1008", "Refresh token not found"),
     REFRESH_TOKEN_IS_EXPIRED("1009", "Refresh token is expired"),
     USERNAME_OR_PASSWORD_INVALID("1007", "Username or password invalid"),
+    FIRST_NAME_AND_LAST_NAME_REQUIRED("1010", "First name and last name required"),
+    COMPANY_NAME_REQUIRED("1011", "Company name required"),
     GENERAL_EXCEPTION("9999", "General exception");
 
 

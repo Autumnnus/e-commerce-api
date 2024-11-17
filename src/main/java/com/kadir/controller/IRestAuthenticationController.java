@@ -4,7 +4,9 @@ import com.kadir.dto.*;
 
 public interface IRestAuthenticationController {
 
-    RootEntity<DtoUser> register(AuthRegisterRequest input);
+    RootEntity<DtoCustomer> registerCustomer(AuthCustomerRegisterRequest input);
+
+    RootEntity<DtoSeller> registerSeller(AuthSellerRegisterRequest input);
 
     RootEntity<AuthResponse> authenticate(AuthRequest input);
 

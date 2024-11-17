@@ -6,7 +6,6 @@ import com.kadir.dto.*;
 import com.kadir.service.IAuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,11 +16,17 @@ public class RestAuthenticationControllerImpl extends RestBaseController impleme
     @Autowired
     private IAuthenticationService authenticationService;
 
-    @PostMapping("/register")
-    @Override
-    public RootEntity<DtoUser> register(@Validated @RequestBody AuthRegisterRequest input) {
-        return RootEntity.success(authenticationService.register(input));
 
+    @PostMapping("/registerCustomer")
+    @Override
+    public RootEntity<DtoCustomer> registerCustomer(@Valid @RequestBody AuthCustomerRegisterRequest input) {
+        return RootEntity.success(authenticationService.registerCustomer(input));
+    }
+
+    @PostMapping("/registerSeller")
+    @Override
+    public RootEntity<DtoSeller> registerSeller(@Valid @RequestBody AuthSellerRegisterRequest input) {
+        return RootEntity.success(authenticationService.registerSeller(input));
     }
 
     @PostMapping("/authenticate")

@@ -18,7 +18,7 @@ import lombok.Setter;
 public class Seller extends BaseEntity {
 
     @Column(name = "user_id")
-    private User userId;
+    private Long userId;
 
     @Column(name = "company_name")
     private String companyName;

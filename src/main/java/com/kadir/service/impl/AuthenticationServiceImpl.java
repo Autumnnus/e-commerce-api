@@ -50,11 +50,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    private User createUser(AuthRegisterRequest input) {
+    private User createUser(AuthRegisterRequest input, UserRole role) {
         User user = new User();
         user.setUsername(input.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(input.getPassword()));
-        user.setRole(input.getRole());
+        user.setRole(role);
         user.setEmail(input.getEmail());
         user.setPhoneNumber(input.getPhoneNumber());
         user.setCreatedAt(LocalDateTime.now());
@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return user;
     }
 
-    private Customer createCustomer(AuthRegisterRequest input, User user) {
+    private Customer createCustomer(AuthCustomerRegisterRequest input, User user) {
         Customer customer = new Customer();
         customer.setFirstName(input.getFirstName());
         customer.setLastName(input.getLastName());
@@ -72,7 +72,16 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return customer;
     }
 
-    private void validateUser(AuthRegisterRequest input) {
+    private Seller createSeller(AuthSellerRegisterRequest input, User user) {
+        Seller seller = new Seller();
+        seller.setUserId(user.getId());
+        seller.setCompanyName(input.getCompanyName());
+        seller.setCreatedAt(LocalDateTime.now());
+        seller.setUpdatedAt(LocalDateTime.now());
+        return seller;
+    }
+
+    private void validateUser(AuthRegisterRequest input, Boolean isCustomer) {
         if (userRepository.existsByUsername(input.getUsername())) {
             throw new BaseException(new ErrorMessage(MessageType.USERNAME_ALREADY_EXISTS, input.getUsername()));
         }
@@ -83,6 +92,21 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         if (userRepository.existsByPhoneNumber(input.getPhoneNumber())) {
             throw new BaseException(new ErrorMessage(MessageType.PHONE_NUMBER_ALREADY_EXISTS, input.getPhoneNumber()));
+        }
+
+        if (isCustomer) {
+            AuthCustomerRegisterRequest customerInput = (AuthCustomerRegisterRequest) input;
+
+            if (customerInput.getFirstName() == null || customerInput.getFirstName().isEmpty() ||
+                    customerInput.getLastName() == null || customerInput.getLastName().isEmpty()) {
+                throw new BaseException(new ErrorMessage(MessageType.FIRST_NAME_AND_LAST_NAME_REQUIRED, ""));
+            }
+        } else {
+            AuthSellerRegisterRequest sellerInput = (AuthSellerRegisterRequest) input;
+
+            if (sellerInput.getCompanyName() == null || sellerInput.getCompanyName().isEmpty()) {
+                throw new BaseException(new ErrorMessage(MessageType.COMPANY_NAME_REQUIRED, ""));
+            }
         }
     }
 
@@ -101,33 +125,84 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return LocalDateTime.now().isBefore(expiredDate);
     }
 
-    @Override
-    public DtoUser register(AuthRegisterRequest input) {
-        validateUser(input);
-        DtoUser dtoUser = new DtoUser();
-        DtoCustomer dtoCustomer = new DtoCustomer();
-        DtoSeller dtoSeller = new DtoSeller();
-        User savedUser = userRepository.save(createUser(input));
-        if (input.getRole().equals(UserRole.CUSTOMER)) {
-            Customer customer = createCustomer(input, savedUser);
-            customerRepository.save(customer);
-            BeanUtils.copyProperties(customer, dtoCustomer);
-            dtoCustomer.setCreatedDate(customer.getCreatedAt());
-            dtoCustomer.setUpdatedDate(customer.getUpdatedAt());
+//    @Override
+//    public DtoUser register(AuthRegisterRequest input) {
+//        validateUser(input);
+//        DtoUser dtoUser = new DtoUser();
+//        DtoCustomer dtoCustomer = new DtoCustomer();
+//        DtoSeller dtoSeller = new DtoSeller();
+//        User savedUser = userRepository.save(createUser(input));
+//        if (input.getRole().equals(UserRole.CUSTOMER)) {
+//            Customer customer = createCustomer((AuthCustomerRegisterRequest) input, savedUser);
+//            customerRepository.save(customer);
+//            BeanUtils.copyProperties(customer, dtoCustomer);
+//            dtoCustomer.setCreatedDate(customer.getCreatedAt());
+//            dtoCustomer.setUpdatedDate(customer.getUpdatedAt());
+//
+//        } else if (input.getRole().equals(UserRole.SELLER)) {
+//            Seller seller = createSeller((AuthSellerRegisterRequest) input, savedUser);
+//            sellerRepository.save(seller);
+//            BeanUtils.copyProperties(seller, dtoSeller);
+//            dtoSeller.setCreatedDate(seller.getCreatedAt());
+//            dtoSeller.setUpdatedDate(seller.getUpdatedAt());
+//        }
+//        BeanUtils.copyProperties(savedUser, dtoUser);
+//        dtoUser.setCreatedDate(savedUser.getCreatedAt());
+//        dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
+//        return dtoUser;
+//    }
 
-        } else if (input.getRole().equals(UserRole.SELLER)) {
-            Seller seller = new Seller();
-            seller.setUserId(savedUser);
-            sellerRepository.save(seller);
-            BeanUtils.copyProperties(seller, dtoSeller);
-            dtoSeller.setCreatedDate(seller.getCreatedAt());
-            dtoSeller.setUpdatedDate(seller.getUpdatedAt());
-        }
-        BeanUtils.copyProperties(savedUser, dtoUser);
+    @Override
+    public DtoCustomer registerCustomer(AuthCustomerRegisterRequest input) {
+        validateUser(input, true);
+        DtoCustomer dtoCustomer = new DtoCustomer();
+        DtoUser dtoUser = new DtoUser();
+        User savedUser = userRepository.save(createUser(input, UserRole.CUSTOMER));
+        Customer customer = createCustomer(input, savedUser);
+        customerRepository.save(customer);
+        BeanUtils.copyProperties(customer, dtoCustomer);
+
+        dtoUser.setId(savedUser.getId());
+        dtoUser.setUsername(savedUser.getUsername());
+        dtoUser.setEmail(savedUser.getEmail());
+        dtoUser.setPhoneNumber(savedUser.getPhoneNumber());
+        dtoUser.setRole(savedUser.getRole());
         dtoUser.setCreatedDate(savedUser.getCreatedAt());
         dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
-        return dtoUser;
+
+        dtoCustomer.setCreatedDate(customer.getCreatedAt());
+        dtoCustomer.setUpdatedDate(customer.getUpdatedAt());
+        dtoCustomer.setFirstName(customer.getFirstName());
+        dtoCustomer.setLastName(customer.getLastName());
+        dtoCustomer.setUserId(dtoUser);
+        return dtoCustomer;
     }
+
+    @Override
+    public DtoSeller registerSeller(AuthSellerRegisterRequest input) {
+        validateUser(input, false);
+        DtoSeller dtoSeller = new DtoSeller();
+        DtoUser dtoUser = new DtoUser();
+        User savedUser = userRepository.save(createUser(input, UserRole.SELLER));
+        Seller seller = createSeller(input, savedUser);
+        sellerRepository.save(seller);
+        BeanUtils.copyProperties(seller, dtoSeller);
+        
+        dtoUser.setId(savedUser.getId());
+        dtoUser.setUsername(savedUser.getUsername());
+        dtoUser.setEmail(savedUser.getEmail());
+        dtoUser.setPhoneNumber(savedUser.getPhoneNumber());
+        dtoUser.setRole(savedUser.getRole());
+        dtoUser.setCreatedDate(savedUser.getCreatedAt());
+        dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
+
+        dtoSeller.setCreatedDate(seller.getCreatedAt());
+        dtoSeller.setUpdatedDate(seller.getUpdatedAt());
+        dtoSeller.setCompanyName(seller.getCompanyName());
+        dtoSeller.setUserId(dtoUser);
+        return dtoSeller;
+    }
+
 
     @Override
     public AuthResponse authenticate(AuthRequest input) {
