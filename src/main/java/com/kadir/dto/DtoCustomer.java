@@ -9,7 +9,7 @@ import lombok.Setter;
 public class DtoCustomer extends DtoBase {
 
     @NotNull
-    private DtoUser userId;
+    private DtoUser user;
 
     @NotNull
     private String firstName;

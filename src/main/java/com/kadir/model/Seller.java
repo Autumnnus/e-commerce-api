@@ -1,9 +1,7 @@
 package com.kadir.model;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +15,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Seller extends BaseEntity {
 
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
 
     @Column(name = "company_name")
     private String companyName;

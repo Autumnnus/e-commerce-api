@@ -28,7 +28,7 @@ public class Product extends BaseEntity {
     @Column(name = "stock_quantity")
     private int stockQuantity;
 
-    // @Column(name = "category_id")
-    // private Category categoryId;
+//    @Column(name = "category_id")
+//    private Category categoryId;
 
 }

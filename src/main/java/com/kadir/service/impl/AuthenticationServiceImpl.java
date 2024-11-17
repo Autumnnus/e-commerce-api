@@ -59,6 +59,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         user.setPhoneNumber(input.getPhoneNumber());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
+        user.setAddress(input.getAddress());
         return user;
     }
 
@@ -66,7 +67,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         Customer customer = new Customer();
         customer.setFirstName(input.getFirstName());
         customer.setLastName(input.getLastName());
-        customer.setUserId(user.getId());
+        customer.setUser(user);
         customer.setCreatedAt(LocalDateTime.now());
         customer.setUpdatedAt(LocalDateTime.now());
         return customer;
@@ -74,7 +75,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     private Seller createSeller(AuthSellerRegisterRequest input, User user) {
         Seller seller = new Seller();
-        seller.setUserId(user.getId());
+        seller.setUser(user);
         seller.setCompanyName(input.getCompanyName());
         seller.setCreatedAt(LocalDateTime.now());
         seller.setUpdatedAt(LocalDateTime.now());
@@ -125,32 +126,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return LocalDateTime.now().isBefore(expiredDate);
     }
 
-//    @Override
-//    public DtoUser register(AuthRegisterRequest input) {
-//        validateUser(input);
-//        DtoUser dtoUser = new DtoUser();
-//        DtoCustomer dtoCustomer = new DtoCustomer();
-//        DtoSeller dtoSeller = new DtoSeller();
-//        User savedUser = userRepository.save(createUser(input));
-//        if (input.getRole().equals(UserRole.CUSTOMER)) {
-//            Customer customer = createCustomer((AuthCustomerRegisterRequest) input, savedUser);
-//            customerRepository.save(customer);
-//            BeanUtils.copyProperties(customer, dtoCustomer);
-//            dtoCustomer.setCreatedDate(customer.getCreatedAt());
-//            dtoCustomer.setUpdatedDate(customer.getUpdatedAt());
-//
-//        } else if (input.getRole().equals(UserRole.SELLER)) {
-//            Seller seller = createSeller((AuthSellerRegisterRequest) input, savedUser);
-//            sellerRepository.save(seller);
-//            BeanUtils.copyProperties(seller, dtoSeller);
-//            dtoSeller.setCreatedDate(seller.getCreatedAt());
-//            dtoSeller.setUpdatedDate(seller.getUpdatedAt());
-//        }
-//        BeanUtils.copyProperties(savedUser, dtoUser);
-//        dtoUser.setCreatedDate(savedUser.getCreatedAt());
-//        dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
-//        return dtoUser;
-//    }
 
     @Override
     public DtoCustomer registerCustomer(AuthCustomerRegisterRequest input) {
@@ -169,12 +144,13 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         dtoUser.setRole(savedUser.getRole());
         dtoUser.setCreatedDate(savedUser.getCreatedAt());
         dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
+        dtoUser.setAddress(savedUser.getAddress());
 
         dtoCustomer.setCreatedDate(customer.getCreatedAt());
         dtoCustomer.setUpdatedDate(customer.getUpdatedAt());
         dtoCustomer.setFirstName(customer.getFirstName());
         dtoCustomer.setLastName(customer.getLastName());
-        dtoCustomer.setUserId(dtoUser);
+        dtoCustomer.setUser(dtoUser);
         return dtoCustomer;
     }
 
@@ -187,7 +163,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         Seller seller = createSeller(input, savedUser);
         sellerRepository.save(seller);
         BeanUtils.copyProperties(seller, dtoSeller);
-        
+
         dtoUser.setId(savedUser.getId());
         dtoUser.setUsername(savedUser.getUsername());
         dtoUser.setEmail(savedUser.getEmail());
@@ -195,11 +171,12 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         dtoUser.setRole(savedUser.getRole());
         dtoUser.setCreatedDate(savedUser.getCreatedAt());
         dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
+        dtoUser.setAddress(savedUser.getAddress());
 
         dtoSeller.setCreatedDate(seller.getCreatedAt());
         dtoSeller.setUpdatedDate(seller.getUpdatedAt());
         dtoSeller.setCompanyName(seller.getCompanyName());
-        dtoSeller.setUserId(dtoUser);
+        dtoSeller.setUser(dtoUser);
         return dtoSeller;
     }
 

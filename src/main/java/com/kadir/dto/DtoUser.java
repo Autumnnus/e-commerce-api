@@ -24,4 +24,6 @@ public class DtoUser extends DtoBase {
     private String email;
 
     private String phoneNumber;
+
+    private String address;
 }

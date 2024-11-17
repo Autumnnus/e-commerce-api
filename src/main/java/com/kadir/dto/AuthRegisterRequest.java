@@ -17,4 +17,6 @@ public class AuthRegisterRequest extends AuthRequest {
     @Pattern(regexp = "[0-9\\s]{12}", message = "Phone number should be 12 digits")
     private String phoneNumber;
 
+    private String address;
+
 }

@@ -24,10 +24,10 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "role")
     private UserRole role;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "password")
@@ -35,6 +35,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "phone_number")
     private String phoneNumber;
+
+    @Column(name = "address")
+    private String address;
 
     public String getEmail() {
         return this.email;
