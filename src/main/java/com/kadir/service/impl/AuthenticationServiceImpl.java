@@ -1,13 +1,18 @@
 package com.kadir.service.impl;
 
 import com.kadir.dto.*;
+import com.kadir.enums.UserRole;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
 import com.kadir.jwt.JWTService;
+import com.kadir.model.Customer;
 import com.kadir.model.RefreshToken;
+import com.kadir.model.Seller;
 import com.kadir.model.User;
+import com.kadir.repository.CustomerRepository;
 import com.kadir.repository.RefreshTokenRepository;
+import com.kadir.repository.SellerRepository;
 import com.kadir.repository.UserRepository;
 import com.kadir.service.IAuthenticationService;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +31,12 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private SellerRepository sellerRepository;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -49,6 +60,16 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         return user;
+    }
+
+    private Customer createCustomer(AuthRegisterRequest input, User user) {
+        Customer customer = new Customer();
+        customer.setFirstName(input.getFirstName());
+        customer.setLastName(input.getLastName());
+        customer.setUserId(user.getId());
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+        return customer;
     }
 
     private void validateUser(AuthRegisterRequest input) {
@@ -84,7 +105,24 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     public DtoUser register(AuthRegisterRequest input) {
         validateUser(input);
         DtoUser dtoUser = new DtoUser();
+        DtoCustomer dtoCustomer = new DtoCustomer();
+        DtoSeller dtoSeller = new DtoSeller();
         User savedUser = userRepository.save(createUser(input));
+        if (input.getRole().equals(UserRole.CUSTOMER)) {
+            Customer customer = createCustomer(input, savedUser);
+            customerRepository.save(customer);
+            BeanUtils.copyProperties(customer, dtoCustomer);
+            dtoCustomer.setCreatedDate(customer.getCreatedAt());
+            dtoCustomer.setUpdatedDate(customer.getUpdatedAt());
+
+        } else if (input.getRole().equals(UserRole.SELLER)) {
+            Seller seller = new Seller();
+            seller.setUserId(savedUser);
+            sellerRepository.save(seller);
+            BeanUtils.copyProperties(seller, dtoSeller);
+            dtoSeller.setCreatedDate(seller.getCreatedAt());
+            dtoSeller.setUpdatedDate(seller.getUpdatedAt());
+        }
         BeanUtils.copyProperties(savedUser, dtoUser);
         dtoUser.setCreatedDate(savedUser.getCreatedAt());
         dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
