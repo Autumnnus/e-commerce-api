@@ -13,13 +13,14 @@ import com.kadir.repository.ProductRepository;
 import com.kadir.service.IProductService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-public class ProductServiceImpl implements IProductService {
+public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, DtoProduct> implements IProductService {
 
     @Autowired
     private ProductRepository productRepository;
@@ -27,37 +28,43 @@ public class ProductServiceImpl implements IProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public Product mapDtoToProduct(DtoProductIU dtoProductIU, Product existingProduct) {
-        Optional<Category> category = categoryRepository.findById(dtoProductIU.getCategoryId());
+    @Override
+    protected JpaRepository<Product, Long> getRepository() {
+        return productRepository;
+    }
+
+    @Override
+    protected Product mapDtoToEntity(DtoProductIU dto, Product existingEntity) {
+        Optional<Category> category = categoryRepository.findById(dto.getCategoryId());
         if (category.isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
         }
-
-        if (existingProduct != null) {
-            existingProduct.setName(dtoProductIU.getName());
-            existingProduct.setDescription(dtoProductIU.getDescription());
-            existingProduct.setPrice(dtoProductIU.getPrice());
-            existingProduct.setStockQuantity(dtoProductIU.getStockQuantity());
-            existingProduct.setCategory(category.get());
-            existingProduct.setUpdatedAt(LocalDateTime.now());
-            return existingProduct;
-        } else {
-            Product newProduct = new Product();
-            newProduct.setCreatedAt(LocalDateTime.now());
-            newProduct.setUpdatedAt(LocalDateTime.now());
-            newProduct.setName(dtoProductIU.getName());
-            newProduct.setDescription(dtoProductIU.getDescription());
-            newProduct.setPrice(dtoProductIU.getPrice());
-            newProduct.setStockQuantity(dtoProductIU.getStockQuantity());
-            newProduct.setCategory(category.get());
-            return newProduct;
+        if (existingEntity == null) {
+            existingEntity = new Product();
+            existingEntity.setCreatedAt(LocalDateTime.now());
         }
+        existingEntity.setUpdatedAt(LocalDateTime.now());
+        existingEntity.setName(dto.getName());
+        existingEntity.setDescription(dto.getDescription());
+        existingEntity.setPrice(dto.getPrice());
+        existingEntity.setStockQuantity(dto.getStockQuantity());
+        existingEntity.setCategory(category.get());
+        return existingEntity;
+    }
+
+    @Override
+    protected DtoProduct mapEntityToDto(Product entity) {
+        DtoProduct dto = new DtoProduct();
+        BeanUtils.copyProperties(entity, dto);
+        dto.setCreatedDate(entity.getCreatedAt());
+        dto.setUpdatedDate(entity.getUpdatedAt());
+        return dto;
     }
 
 
     @Override
     public DtoProduct createProduct(DtoProductIU dtoProductIU) {
-        Product savedProduct = productRepository.save(mapDtoToProduct(dtoProductIU, null));
+        Product savedProduct = productRepository.save(mapDtoToEntity(dtoProductIU, null));
         DtoProduct dtoProduct = new DtoProduct();
         DtoCategory category = new DtoCategory();
         BeanUtils.copyProperties(savedProduct, dtoProduct);
@@ -80,7 +87,7 @@ public class ProductServiceImpl implements IProductService {
         }
 
         Product existingProduct = optionalProduct.get();
-        Product updatedProduct = mapDtoToProduct(dtoProductIU, existingProduct);
+        Product updatedProduct = mapDtoToEntity(dtoProductIU, existingProduct);
         Product savedProduct = productRepository.save(updatedProduct);
 
         DtoProduct updatedDtoProduct = new DtoProduct();
@@ -103,7 +110,7 @@ public class ProductServiceImpl implements IProductService {
         BeanUtils.copyProperties(optionalProduct.get(), dtoProduct);
         dtoProduct.setCreatedDate(optionalProduct.get().getCreatedAt());
         dtoProduct.setUpdatedDate(optionalProduct.get().getUpdatedAt());
-        
+
         return dtoProduct;
     }
 

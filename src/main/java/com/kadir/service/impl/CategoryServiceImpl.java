@@ -10,37 +10,47 @@ import com.kadir.repository.CategoryRepository;
 import com.kadir.service.ICategoryService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-public class CategoryServiceImpl implements ICategoryService {
+public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU, DtoCategory> implements ICategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public Category mapDtoToProduct(DtoCategoryIU dtoCategoryIU, Category existingCategory) {
-        if (existingCategory != null) {
-            existingCategory.setName(dtoCategoryIU.getName());
-            existingCategory.setDescription(dtoCategoryIU.getDescription());
-            existingCategory.setUpdatedAt(LocalDateTime.now());
+    @Override
+    protected JpaRepository<Category, Long> getRepository() {
+        return categoryRepository;
+    }
+
+    @Override
+    protected Category mapDtoToEntity(DtoCategoryIU dto, Category existingCategory) {
+        if (existingCategory == null) {
+            existingCategory = new Category();
             existingCategory.setCreatedAt(LocalDateTime.now());
-            return existingCategory;
-        } else {
-            Category newCategory = new Category();
-            newCategory.setCreatedAt(LocalDateTime.now());
-            newCategory.setUpdatedAt(LocalDateTime.now());
-            newCategory.setName(dtoCategoryIU.getName());
-            newCategory.setDescription(dtoCategoryIU.getDescription());
-            return newCategory;
         }
+        existingCategory.setUpdatedAt(LocalDateTime.now());
+        existingCategory.setName(dto.getName());
+        existingCategory.setDescription(dto.getDescription());
+        return existingCategory;
+    }
+
+    @Override
+    protected DtoCategory mapEntityToDto(Category entity) {
+        DtoCategory dto = new DtoCategory();
+        BeanUtils.copyProperties(entity, dto);
+        dto.setCreatedDate(entity.getCreatedAt());
+        dto.setUpdatedDate(entity.getUpdatedAt());
+        return dto;
     }
 
     @Override
     public DtoCategory createCategory(DtoCategoryIU dtoCategoryIU) {
-        Category savedCategory = categoryRepository.save(mapDtoToProduct(dtoCategoryIU, null));
+        Category savedCategory = categoryRepository.save(mapDtoToEntity(dtoCategoryIU, null));
         DtoCategory dtoCategory = new DtoCategory();
         BeanUtils.copyProperties(savedCategory, dtoCategory);
 
@@ -59,12 +69,14 @@ public class CategoryServiceImpl implements ICategoryService {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
         }
         Category existingCategory = optionalCategory.get();
-        Category updatedCategory = mapDtoToProduct(dtoCategoryIU, existingCategory);
+        Category updatedCategory = mapDtoToEntity(dtoCategoryIU, existingCategory);
         Category savedCategory = categoryRepository.save(updatedCategory);
+        DtoCategory dtoCategory = new DtoCategory();
+        BeanUtils.copyProperties(savedCategory, dtoCategory);
 
-        DtoCategory updatedDtoProduct = new DtoCategory();
-        BeanUtils.copyProperties(savedCategory, updatedDtoProduct);
-        return updatedDtoProduct;
+        dtoCategory.setCreatedDate(savedCategory.getCreatedAt());
+        dtoCategory.setUpdatedDate(savedCategory.getUpdatedAt());
+        return dtoCategory;
 
     }
 
@@ -77,9 +89,9 @@ public class CategoryServiceImpl implements ICategoryService {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
         }
         DtoCategory dtoCategory = new DtoCategory();
-
         categoryRepository.delete(optionalCategory.get());
         BeanUtils.copyProperties(optionalCategory.get(), dtoCategory);
+
         dtoCategory.setCreatedDate(optionalCategory.get().getCreatedAt());
         dtoCategory.setUpdatedDate(optionalCategory.get().getUpdatedAt());
 
