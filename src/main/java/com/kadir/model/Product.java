@@ -26,8 +26,8 @@ public class Product extends BaseEntity {
     @Column(name = "stock_quantity")
     private int stockQuantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
 }

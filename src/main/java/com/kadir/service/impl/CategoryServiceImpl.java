@@ -47,7 +47,7 @@ public class CategoryServiceImpl implements ICategoryService {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
 
         if (optionalCategory.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found"));
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
         }
         optionalCategory.get().setName(dtoCategory.getName());
         optionalCategory.get().setDescription(dtoCategory.getDescription());
@@ -69,7 +69,7 @@ public class CategoryServiceImpl implements ICategoryService {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
 
         if (optionalCategory.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found"));
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
         }
         categoryRepository.delete(optionalCategory.get());
 
