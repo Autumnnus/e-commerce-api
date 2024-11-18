@@ -1,12 +1,13 @@
 package com.kadir.controller;
 
 import com.kadir.dto.DtoCategory;
+import com.kadir.dto.DtoCategoryIU;
 
 public interface ICategoryRestController {
 
-    RootEntity<DtoCategory> createCategory(DtoCategory dtoCategory);
+    RootEntity<DtoCategory> createCategory(DtoCategoryIU dtoCategoryIU);
 
-    RootEntity<DtoCategory> updateCategory(Long id, DtoCategory dtoCategory);
+    RootEntity<DtoCategory> updateCategory(Long id, DtoCategoryIU dtoCategoryIU);
 
     RootEntity<DtoCategory> deleteCategory(Long id);
 }

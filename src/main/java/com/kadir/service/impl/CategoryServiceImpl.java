@@ -1,6 +1,7 @@
 package com.kadir.service.impl;
 
 import com.kadir.dto.DtoCategory;
+import com.kadir.dto.DtoCategoryIU;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
@@ -20,47 +21,51 @@ public class CategoryServiceImpl implements ICategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public Category convertToCategory(DtoCategory dtoCategory) {
-        Category category = new Category();
-        category.setName(dtoCategory.getName());
-        category.setDescription(dtoCategory.getDescription());
-        category.setCreatedAt(LocalDateTime.now());
-        category.setUpdatedAt(LocalDateTime.now());
-        return category;
+    public Category mapDtoToProduct(DtoCategoryIU dtoCategoryIU, Category existingCategory) {
+        if (existingCategory != null) {
+            existingCategory.setName(dtoCategoryIU.getName());
+            existingCategory.setDescription(dtoCategoryIU.getDescription());
+            existingCategory.setUpdatedAt(LocalDateTime.now());
+            existingCategory.setCreatedAt(LocalDateTime.now());
+            return existingCategory;
+        } else {
+            Category newCategory = new Category();
+            newCategory.setCreatedAt(LocalDateTime.now());
+            newCategory.setUpdatedAt(LocalDateTime.now());
+            newCategory.setName(dtoCategoryIU.getName());
+            newCategory.setDescription(dtoCategoryIU.getDescription());
+            return newCategory;
+        }
     }
 
-
     @Override
-    public DtoCategory createCategory(DtoCategory dtoCategory) {
-        DtoCategory category = new DtoCategory();
-        Category savedCategory = categoryRepository.save(convertToCategory(dtoCategory));
-        BeanUtils.copyProperties(savedCategory, category);
-        dtoCategory.setName(dtoCategory.getName());
-        dtoCategory.setDescription(dtoCategory.getDescription());
+    public DtoCategory createCategory(DtoCategoryIU dtoCategoryIU) {
+        Category savedCategory = categoryRepository.save(mapDtoToProduct(dtoCategoryIU, null));
+        DtoCategory dtoCategory = new DtoCategory();
+        BeanUtils.copyProperties(savedCategory, dtoCategory);
+
+        dtoCategory.setName(savedCategory.getName());
+        dtoCategory.setDescription(savedCategory.getDescription());
         dtoCategory.setCreatedDate(savedCategory.getCreatedAt());
         dtoCategory.setUpdatedDate(savedCategory.getUpdatedAt());
         return dtoCategory;
     }
 
     @Override
-    public DtoCategory updateCategory(Long id, DtoCategory dtoCategory) {
+    public DtoCategory updateCategory(Long id, DtoCategoryIU dtoCategoryIU) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
 
         if (optionalCategory.isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
         }
-        optionalCategory.get().setName(dtoCategory.getName());
-        optionalCategory.get().setDescription(dtoCategory.getDescription());
-        optionalCategory.get().setUpdatedAt(LocalDateTime.now());
+        Category existingCategory = optionalCategory.get();
+        Category updatedCategory = mapDtoToProduct(dtoCategoryIU, existingCategory);
+        Category savedCategory = categoryRepository.save(updatedCategory);
 
-        Category updatedCategory = categoryRepository.save(optionalCategory.get());
+        DtoCategory updatedDtoProduct = new DtoCategory();
+        BeanUtils.copyProperties(savedCategory, updatedDtoProduct);
+        return updatedDtoProduct;
 
-        DtoCategory updatedDtoCategory = new DtoCategory();
-        BeanUtils.copyProperties(updatedCategory, updatedDtoCategory);
-        updatedDtoCategory.setCreatedDate(updatedCategory.getCreatedAt());
-        updatedDtoCategory.setUpdatedDate(updatedCategory.getUpdatedAt());
-
-        return dtoCategory;
     }
 
 
@@ -71,14 +76,14 @@ public class CategoryServiceImpl implements ICategoryService {
         if (optionalCategory.isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
         }
+        DtoCategory dtoCategory = new DtoCategory();
+
         categoryRepository.delete(optionalCategory.get());
+        BeanUtils.copyProperties(optionalCategory.get(), dtoCategory);
+        dtoCategory.setCreatedDate(optionalCategory.get().getCreatedAt());
+        dtoCategory.setUpdatedDate(optionalCategory.get().getUpdatedAt());
 
-        DtoCategory deletedCategory = new DtoCategory();
-        BeanUtils.copyProperties(optionalCategory.get(), deletedCategory);
-        deletedCategory.setCreatedDate(optionalCategory.get().getCreatedAt());
-        deletedCategory.setUpdatedDate(optionalCategory.get().getUpdatedAt());
-
-        return deletedCategory;
+        return dtoCategory;
     }
 
 }

@@ -99,10 +99,11 @@ public class ProductServiceImpl implements IProductService {
         }
         DtoProduct dtoProduct = new DtoProduct();
 
-        Product deletedProduct = optionalProduct.get();
-        productRepository.delete(deletedProduct);
-
-        BeanUtils.copyProperties(deletedProduct, dtoProduct);
+        productRepository.delete(optionalProduct.get());
+        BeanUtils.copyProperties(optionalProduct.get(), dtoProduct);
+        dtoProduct.setCreatedDate(optionalProduct.get().getCreatedAt());
+        dtoProduct.setUpdatedDate(optionalProduct.get().getUpdatedAt());
+        
         return dtoProduct;
     }
 
