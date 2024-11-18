@@ -2,8 +2,8 @@ package com.kadir.controller;
 
 import com.kadir.dto.DtoProduct;
 import com.kadir.dto.DtoProductIU;
-
-import java.util.List;
+import com.kadir.utils.pagination.RestPageableEntity;
+import com.kadir.utils.pagination.RestPageableRequest;
 
 public interface IProductRestController {
 
@@ -13,7 +13,7 @@ public interface IProductRestController {
 
     RootEntity<DtoProduct> deleteProduct(Long id);
 
-    RootEntity<List<DtoProduct>> getAllProducts();
+    RootEntity<RestPageableEntity<DtoProduct>> getAllProducts(RestPageableRequest request);
 
     RootEntity<DtoProduct> getProductById(Long id);
 }

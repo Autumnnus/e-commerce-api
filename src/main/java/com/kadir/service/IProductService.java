@@ -2,8 +2,7 @@ package com.kadir.service;
 
 import com.kadir.dto.DtoProduct;
 import com.kadir.dto.DtoProductIU;
-
-import java.util.List;
+import com.kadir.utils.pagination.RestPageableEntity;
 
 public interface IProductService {
 
@@ -13,7 +12,7 @@ public interface IProductService {
 
     DtoProduct deleteProduct(Long id);
 
-    List<DtoProduct> getAllProducts();
+    RestPageableEntity<DtoProduct> getAllProducts(int pageNumber, int pageSize);
 
     DtoProduct getProductById(Long id);
 }

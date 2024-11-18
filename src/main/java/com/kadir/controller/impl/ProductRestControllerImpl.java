@@ -5,11 +5,11 @@ import com.kadir.controller.RootEntity;
 import com.kadir.dto.DtoProduct;
 import com.kadir.dto.DtoProductIU;
 import com.kadir.service.IProductService;
+import com.kadir.utils.pagination.RestPageableEntity;
+import com.kadir.utils.pagination.RestPageableRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/rest/api/product")
@@ -38,8 +38,8 @@ public class ProductRestControllerImpl extends RestBaseController implements IPr
 
     @GetMapping("/all")
     @Override
-    public RootEntity<List<DtoProduct>> getAllProducts() {
-        return RootEntity.success(productService.getAllProducts());
+    public RootEntity<RestPageableEntity<DtoProduct>> getAllProducts(RestPageableRequest request) {
+        return ok(productService.getAllProducts(request.getPageNumber(), request.getPageSize()));
     }
 
     @GetMapping("/{id}")

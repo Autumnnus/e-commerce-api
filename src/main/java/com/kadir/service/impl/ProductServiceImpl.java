@@ -11,15 +11,19 @@ import com.kadir.model.Product;
 import com.kadir.repository.CategoryRepository;
 import com.kadir.repository.ProductRepository;
 import com.kadir.service.IProductService;
+import com.kadir.utils.pagination.PaginationUtils;
+import com.kadir.utils.pagination.RestPageableEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, DtoProduct> implements IProductService {
@@ -117,17 +121,12 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
     }
 
     @Override
-    public List<DtoProduct> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(category -> {
-                    DtoProduct dto = new DtoProduct();
-                    BeanUtils.copyProperties(category, dto);
-                    dto.setCreatedDate(category.getCreatedAt());
-                    dto.setUpdatedDate(category.getUpdatedAt());
-                    return dto;
-                })
-                .collect(Collectors.toList());
+    public RestPageableEntity<DtoProduct> getAllProducts(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+        Page<Product> productPage = productRepository.findAll(pageable);
+        return PaginationUtils.toPageableResponse(productPage, DtoProduct.class);
     }
+
 
     @Override
     public DtoProduct getProductById(Long id) {
