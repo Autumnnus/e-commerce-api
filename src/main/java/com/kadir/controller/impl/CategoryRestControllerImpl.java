@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/rest/api/category")
 public class CategoryRestControllerImpl extends RestBaseController implements ICategoryRestController {
@@ -32,5 +34,17 @@ public class CategoryRestControllerImpl extends RestBaseController implements IC
     @Override
     public RootEntity<DtoCategory> deleteCategory(@PathVariable(name = "id") Long id) {
         return RootEntity.success(categoryService.deleteCategory(id));
+    }
+
+    @GetMapping("/all")
+    @Override
+    public RootEntity<List<DtoCategory>> getAllCategories() {
+        return RootEntity.success(categoryService.getAllCategories());
+    }
+
+    @GetMapping("/{id}")
+    @Override
+    public RootEntity<DtoCategory> getCategoryById(@PathVariable(name = "id") Long id) {
+        return RootEntity.success(categoryService.getCategoryById(id));
     }
 }

@@ -14,7 +14,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU, DtoCategory> implements ICategoryService {
@@ -96,6 +98,34 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
         dtoCategory.setUpdatedDate(optionalCategory.get().getUpdatedAt());
 
         return dtoCategory;
+    }
+
+    @Override
+    public List<DtoCategory> getAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(category -> {
+                    DtoCategory dto = new DtoCategory();
+                    BeanUtils.copyProperties(category, dto);
+                    dto.setCreatedDate(category.getCreatedAt());
+                    dto.setUpdatedDate(category.getUpdatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public DtoCategory getCategoryById(Long id) {
+        Optional<Category> optionalCategory = categoryRepository.findById(id);
+        if (optionalCategory.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
+        }
+        Category category = optionalCategory.get();
+        DtoCategory dto = new DtoCategory();
+        BeanUtils.copyProperties(category, dto);
+        dto.setCreatedDate(category.getCreatedAt());
+        dto.setUpdatedDate(category.getUpdatedAt());
+        return dto;
     }
 
 }

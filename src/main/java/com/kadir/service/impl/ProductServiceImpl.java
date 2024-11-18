@@ -17,7 +17,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, DtoProduct> implements IProductService {
@@ -112,6 +114,33 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
         dtoProduct.setUpdatedDate(optionalProduct.get().getUpdatedAt());
 
         return dtoProduct;
+    }
+
+    @Override
+    public List<DtoProduct> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(category -> {
+                    DtoProduct dto = new DtoProduct();
+                    BeanUtils.copyProperties(category, dto);
+                    dto.setCreatedDate(category.getCreatedAt());
+                    dto.setUpdatedDate(category.getUpdatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DtoProduct getProductById(Long id) {
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if (optionalProduct.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found"));
+        }
+        Product product = optionalProduct.get();
+        DtoProduct dto = new DtoProduct();
+        BeanUtils.copyProperties(product, dto);
+        dto.setCreatedDate(product.getCreatedAt());
+        dto.setUpdatedDate(product.getUpdatedAt());
+        return dto;
     }
 
 }

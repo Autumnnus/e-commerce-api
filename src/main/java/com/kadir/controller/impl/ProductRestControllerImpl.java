@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/rest/api/product")
 public class ProductRestControllerImpl extends RestBaseController implements IProductRestController {
@@ -32,5 +34,17 @@ public class ProductRestControllerImpl extends RestBaseController implements IPr
     @Override
     public RootEntity<DtoProduct> deleteProduct(@PathVariable(name = "id") Long id) {
         return RootEntity.success(productService.deleteProduct(id));
+    }
+
+    @GetMapping("/all")
+    @Override
+    public RootEntity<List<DtoProduct>> getAllProducts() {
+        return RootEntity.success(productService.getAllProducts());
+    }
+
+    @GetMapping("/{id}")
+    @Override
+    public RootEntity<DtoProduct> getProductById(@PathVariable(name = "id") Long id) {
+        return RootEntity.success(productService.getProductById(id));
     }
 }
