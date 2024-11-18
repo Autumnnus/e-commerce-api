@@ -6,7 +6,7 @@ public interface ICategoryRestController {
 
     RootEntity<DtoCategory> createCategory(DtoCategory dtoCategory);
 
-    RootEntity<DtoCategory> updateCategory(DtoCategory dtoCategory);
+    RootEntity<DtoCategory> updateCategory(Long id, DtoCategory dtoCategory);
 
     RootEntity<DtoCategory> deleteCategory(Long id);
 }

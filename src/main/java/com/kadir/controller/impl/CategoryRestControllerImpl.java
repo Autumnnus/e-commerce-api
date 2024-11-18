@@ -6,10 +6,7 @@ import com.kadir.dto.DtoCategory;
 import com.kadir.service.ICategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/rest/api/category")
@@ -24,13 +21,15 @@ public class CategoryRestControllerImpl extends RestBaseController implements IC
         return RootEntity.success(categoryService.createCategory(dtoCategory));
     }
 
+    @PutMapping(path = "/update/{id}")
     @Override
-    public RootEntity<DtoCategory> updateCategory(@RequestBody @Valid DtoCategory dtoCategory) {
-        return null;
+    public RootEntity<DtoCategory> updateCategory(@PathVariable(name = "id") Long id, @RequestBody @Valid DtoCategory dtoCategory) {
+        return RootEntity.success(categoryService.updateCategory(id, dtoCategory));
     }
 
+    @DeleteMapping("/delete/{id}")
     @Override
-    public RootEntity<DtoCategory> deleteCategory(Long id) {
-        return null;
+    public RootEntity<DtoCategory> deleteCategory(@PathVariable(name = "id") Long id) {
+        return RootEntity.success(categoryService.deleteCategory(id));
     }
 }

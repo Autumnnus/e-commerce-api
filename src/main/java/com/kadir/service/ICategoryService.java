@@ -6,7 +6,7 @@ public interface ICategoryService {
 
     DtoCategory createCategory(DtoCategory dtoCategory);
 
-    DtoCategory updateCategory(DtoCategory dtoCategory);
+    DtoCategory updateCategory(Long id, DtoCategory dtoCategory);
 
-    void deleteCategory(Long id);
+    DtoCategory deleteCategory(Long id);
 }

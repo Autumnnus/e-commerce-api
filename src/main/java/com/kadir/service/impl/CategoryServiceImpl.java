@@ -1,6 +1,9 @@
 package com.kadir.service.impl;
 
 import com.kadir.dto.DtoCategory;
+import com.kadir.exception.BaseException;
+import com.kadir.exception.ErrorMessage;
+import com.kadir.exception.MessageType;
 import com.kadir.model.Category;
 import com.kadir.repository.CategoryRepository;
 import com.kadir.service.ICategoryService;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements ICategoryService {
@@ -25,6 +29,7 @@ public class CategoryServiceImpl implements ICategoryService {
         return category;
     }
 
+
     @Override
     public DtoCategory createCategory(DtoCategory dtoCategory) {
         DtoCategory category = new DtoCategory();
@@ -38,12 +43,42 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    public DtoCategory updateCategory(DtoCategory dtoCategory) {
-        return null;
+    public DtoCategory updateCategory(Long id, DtoCategory dtoCategory) {
+        Optional<Category> optionalCategory = categoryRepository.findById(id);
+
+        if (optionalCategory.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found"));
+        }
+        optionalCategory.get().setName(dtoCategory.getName());
+        optionalCategory.get().setDescription(dtoCategory.getDescription());
+        optionalCategory.get().setUpdatedAt(LocalDateTime.now());
+
+        Category updatedCategory = categoryRepository.save(optionalCategory.get());
+
+        DtoCategory updatedDtoCategory = new DtoCategory();
+        BeanUtils.copyProperties(updatedCategory, updatedDtoCategory);
+        updatedDtoCategory.setCreatedDate(updatedCategory.getCreatedAt());
+        updatedDtoCategory.setUpdatedDate(updatedCategory.getUpdatedAt());
+
+        return dtoCategory;
     }
+
 
     @Override
-    public void deleteCategory(Long id) {
+    public DtoCategory deleteCategory(Long id) {
+        Optional<Category> optionalCategory = categoryRepository.findById(id);
 
+        if (optionalCategory.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found"));
+        }
+        categoryRepository.delete(optionalCategory.get());
+
+        DtoCategory deletedCategory = new DtoCategory();
+        BeanUtils.copyProperties(optionalCategory.get(), deletedCategory);
+        deletedCategory.setCreatedDate(optionalCategory.get().getCreatedAt());
+        deletedCategory.setUpdatedDate(optionalCategory.get().getUpdatedAt());
+
+        return deletedCategory;
     }
+
 }
