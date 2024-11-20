@@ -1,6 +1,7 @@
 package com.kadir.handler;
 
 import com.kadir.exception.BaseException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,14 +16,24 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.*;
 
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = {BaseException.class})
-    public ResponseEntity<ApiError<?>> handleBaseException(BaseException e, WebRequest request) {
-        return ResponseEntity.badRequest().body(createApiError(e.getMessage(), request));
+    public ResponseEntity<ApiError<?>> handleBaseException(BaseException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(), request));
     }
+
+    @ExceptionHandler(value = {ExpiredJwtException.class})
+    public ResponseEntity<ApiError<?>> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiError("Token has expired.", request));
+    }
+    
+    @ExceptionHandler(value = {RuntimeException.class})
+    public ResponseEntity<ApiError<?>> handleJwtRuntimeException(RuntimeException ex, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiError("JWT processing error: " + ex.getMessage(), request));
+    }
+
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<ApiError<Map<String, List<String>>>> handleMethodArgumentNotValidException(
@@ -42,12 +53,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
-    public ResponseEntity<ApiError<?>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, WebRequest request) {
+    public ResponseEntity<ApiError<?>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e,
+                                                                             WebRequest request) {
         String message = e.getMessage();
 
         return ResponseEntity.badRequest().body(createApiError(message, request));
     }
-
 
     private List<String> addValue(List<String> list, String value) {
         list.add(value);

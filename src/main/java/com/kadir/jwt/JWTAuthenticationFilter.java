@@ -1,8 +1,5 @@
 package com.kadir.jwt;
 
-import com.kadir.exception.BaseException;
-import com.kadir.exception.ErrorMessage;
-import com.kadir.exception.MessageType;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,11 +12,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private HandlerExceptionResolver handlerExceptionResolver;
 
     @Autowired
     private JWTService jwtService;
@@ -54,9 +55,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } catch (ExpiredJwtException ex) {
-            throw new BaseException(new ErrorMessage(MessageType.TOKEN_IS_EXPIRED, ex.getMessage()));
-        } catch (Exception e) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, e.getMessage()));
+            handlerExceptionResolver.resolveException(request, response, null, ex);
+        } catch (Exception ex) {
+            handlerExceptionResolver.resolveException(request, response, null, ex);
         }
         filterChain.doFilter(request, response);
     }
