@@ -4,6 +4,8 @@ import com.kadir.model.Category;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class DtoProduct extends DtoBase {
@@ -12,7 +14,7 @@ public class DtoProduct extends DtoBase {
 
     private String description;
 
-    private double price;
+    private BigDecimal price;
 
     private int stockQuantity;
 
