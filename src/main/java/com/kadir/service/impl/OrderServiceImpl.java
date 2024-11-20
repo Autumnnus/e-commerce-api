@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,48 +44,67 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
 
     @Override
     public DtoOrder createOrder(DtoOrderIU dto) {
-        // List<CartItems> cartItems =
-        // cartItemsRepository.findByUserId(dtoOrderIU.getUserId());
-        // if (cartItems.isEmpty()) {
-        // throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Cart
-        // is empty"));
-        // }
+        User user = getUserById(dto.getUserId());
+        List<CartItems> cartItems = getCartItemsByUser(user);
+        Set<OrderItems> orderItems = getOrderItemsByCartItems(cartItems);
+        Order order = createAndSaveOrder(user, cartItems, orderItems);
+        createAndSaveOrderItems(order, cartItems);
+        clearCart(cartItems);
+        return mapEntityToDto(order);
+    }
 
-        Order order = new Order();
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"))
+        );
+    }
 
-        order.setUser(userRepository.findById(dto.getUserId()).orElseThrow(
-                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"))));
-        order.setOrderDate(java.time.LocalDateTime.now());
-        order.setPaymentMethod("CREDIT CARD");
-        order.setStatus(OrderStatus.PENDING);
-        Optional<User> user = userRepository.findById(dto.getUserId());
-        if (user.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
-        }
-        order.setUser(user.get());
+    private Set<OrderItems> getOrderItemsByCartItems(List<CartItems> cartItems) {
+        return cartItems.stream()
+                .map(cartItem -> {
+                    OrderItems item = new OrderItems();
+//                    item.setOrder(order);
+                    item.setProduct(cartItem.getProduct());
+                    item.setQuantity(cartItem.getQuantity());
+                    item.setCreatedAt(LocalDateTime.now());
+                    item.setUpdatedAt(LocalDateTime.now());
+                    item.setPrice(cartItem.getProduct().getPrice());
+                    return item;
+                }).collect(Collectors.toSet());
+    }
 
-        // Set<Long> orderItemIds = dto.getOrderItems()
-        // .stream()
-        // .map(Long::valueOf) // String -> Long dönüşümü
-        // .collect(Collectors.toSet());
-
-        List<CartItems> cartItems = cartItemsRepository.findByUserId(user.get().getId());
+    private List<CartItems> getCartItemsByUser(User user) {
+        List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
         if (cartItems.isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Cart is empty"));
         }
+        return cartItems;
+    }
+
+    private Order createAndSaveOrder(User user, List<CartItems> cartItems, Set<OrderItems> orderItems) {
+        Order order = new Order();
+        order.setUser(user);
+//        order.setOrderItems(orderItems);
+        order.setOrderDate(LocalDateTime.now());
+        order.setPaymentMethod("CREDIT CARD");
+        order.setStatus(OrderStatus.PENDING);
 
         BigDecimal totalAmount = cartItems.stream()
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalAmount(totalAmount);
+
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
-        Order savedOrder = orderRepository.save(order);
 
+        return orderRepository.save(order);
+    }
+
+    private void createAndSaveOrderItems(Order order, List<CartItems> cartItems) {
         List<OrderItems> orderItems = cartItems.stream()
                 .map(cartItem -> {
                     OrderItems item = new OrderItems();
-                    item.setOrder(savedOrder);
+                    item.setOrder(order);
                     item.setProduct(cartItem.getProduct());
                     item.setQuantity(cartItem.getQuantity());
                     item.setCreatedAt(LocalDateTime.now());
@@ -94,11 +113,12 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
                     return item;
                 }).collect(Collectors.toList());
         orderItemsRepository.saveAll(orderItems);
+    }
+
+    private void clearCart(List<CartItems> cartItems) {
         if (!cartItems.isEmpty()) {
             cartItemsRepository.deleteAll(cartItems);
         }
-
-        return mapEntityToDto(order);
     }
 
     @Override
@@ -118,18 +138,20 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
 
     @Override
     protected JpaRepository<Order, Long> getRepository() {
-        return null;
+        return orderRepository;
     }
 
     @Override
     protected Order mapDtoToEntity(DtoOrderIU dto, Order existingEntity) {
-        if (existingEntity == null) {
-            existingEntity = new Order();
-            existingEntity.setCreatedAt(LocalDateTime.now());
-        }
+        User user = userRepository.findById(dto.getUserId()).orElseThrow(
+                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"))
+        );
+
+        existingEntity.setCreatedAt(LocalDateTime.now());
         existingEntity.setUpdatedAt(LocalDateTime.now());
-        // existingEntity.setUser(user.get());
-        // existingEntity.setOrderItems(orderItems);
+        existingEntity.setUser(user);
+//        existingEntity.setOrderItems(orderItems);
+        //TODO orderItems boş geliyor
         existingEntity.setOrderDate(LocalDateTime.now());
         existingEntity.setStatus(OrderStatus.PENDING);
         existingEntity.setTotalAmount(BigDecimal.valueOf(100));
@@ -148,6 +170,11 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
             BeanUtils.copyProperties(entity.getUser(), dtoUser);
             dto.setUser(dtoUser);
         }
+//        if (entity.getOrderItems() == null) {
+//            DtoOrderItems dtoOrderItems = new DtoOrderItems();
+//            BeanUtils.copyProperties(entity.getOrderItems(), dtoOrderItems);
+//            dto.setOrderItems(Set.of(dtoOrderItems));
+//        }
         return dto;
     }
 }
