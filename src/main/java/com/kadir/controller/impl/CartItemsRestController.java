@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/rest/api/cart-items")
 public class CartItemsRestController extends RestBaseController implements ICartItemsRestController {
@@ -39,4 +41,12 @@ public class CartItemsRestController extends RestBaseController implements ICart
     public RootEntity<DtoCartItems> getCartItemsById(@PathVariable(name = "id") Long id) {
         return ok(cartItemsService.getCartItemsById(id));
     }
+
+    @GetMapping("/user/{id}")
+    @Override
+    public RootEntity<List<DtoCartItems>> getUserCartItems(@PathVariable(name = "id") Long userId) {
+        return ok(cartItemsService.getUserCartItems(userId));
+    }
+
+
 }

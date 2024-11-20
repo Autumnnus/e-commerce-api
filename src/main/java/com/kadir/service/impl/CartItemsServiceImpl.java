@@ -20,7 +20,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItemsIU, DtoCartItems> implements ICartItemsService {
@@ -68,7 +70,22 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
         BeanUtils.copyProperties(entity, dto);
         dto.setCreatedDate(entity.getCreatedAt());
         dto.setUpdatedDate(entity.getUpdatedAt());
+        if (entity.getUser() != null) {
+            DtoUser dtoUser = new DtoUser();
+            BeanUtils.copyProperties(entity.getUser(), dtoUser);
+            dto.setUser(dtoUser);
+        }
+
+        if (entity.getProduct() != null) {
+            DtoProduct dtoProduct = new DtoProduct();
+            BeanUtils.copyProperties(entity.getProduct(), dtoProduct);
+            dto.setProduct(dtoProduct);
+        }
         return dto;
+    }
+
+    public List<DtoCartItems> listMapEntityToDto(List<CartItems> cartItems) {
+        return cartItems.stream().map(this::mapEntityToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -132,5 +149,13 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
         return mapEntityToDto(cartItems.get());
     }
 
-
+    @Override
+    public List<DtoCartItems> getUserCartItems(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
+        }
+        List<CartItems> cartItems = cartItemsRepository.findByUserId(userId);
+        return listMapEntityToDto(cartItems);
+    }
 }
