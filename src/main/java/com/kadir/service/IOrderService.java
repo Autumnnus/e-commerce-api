@@ -3,16 +3,15 @@ package com.kadir.service;
 import com.kadir.dto.DtoOrder;
 import com.kadir.dto.DtoOrderIU;
 import com.kadir.enums.OrderStatus;
-
-import java.util.List;
+import com.kadir.utils.pagination.RestPageableEntity;
 
 public interface IOrderService {
 
     DtoOrder createOrder(DtoOrderIU dtoOrderIU);
 
-    List<DtoOrder> getAllOrders();
+    RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize);
 
-    List<DtoOrder> getOrdersByUser(Long userId);
+    RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize);
 
     DtoOrder updateOrderStatus(Long orderId, OrderStatus paymentStatus);
 }

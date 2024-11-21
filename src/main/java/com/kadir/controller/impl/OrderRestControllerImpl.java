@@ -6,11 +6,11 @@ import com.kadir.dto.DtoOrder;
 import com.kadir.dto.DtoOrderIU;
 import com.kadir.dto.OrderStatusUpdateRequest;
 import com.kadir.service.IOrderService;
+import com.kadir.utils.pagination.RestPageableEntity;
+import com.kadir.utils.pagination.RestPageableRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/rest/api/order")
@@ -27,14 +27,14 @@ public class OrderRestControllerImpl extends RestBaseController implements IOrde
 
     @GetMapping("/all")
     @Override
-    public RootEntity<List<DtoOrder>> getAllOrders() {
-        return ok(orderService.getAllOrders());
+    public RootEntity<RestPageableEntity<DtoOrder>> getAllOrders(RestPageableRequest request) {
+        return ok(orderService.getAllOrders(request.getPageNumber(), request.getPageSize()));
     }
 
     @GetMapping("/user/{id}")
     @Override
-    public RootEntity<List<DtoOrder>> getOrdersByUser(@PathVariable(name = "id") Long userId) {
-        return ok(orderService.getOrdersByUser(userId));
+    public RootEntity<RestPageableEntity<DtoOrder>> getOrdersByUser(@PathVariable(name = "id") Long userId, RestPageableRequest request) {
+        return ok(orderService.getOrdersByUser(userId, request.getPageNumber(), request.getPageSize()));
     }
 
     @PutMapping("/update-status/{id}")

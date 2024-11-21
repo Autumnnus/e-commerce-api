@@ -14,8 +14,14 @@ import com.kadir.repository.OrderItemsRepository;
 import com.kadir.repository.OrderRepository;
 import com.kadir.repository.UserRepository;
 import com.kadir.service.IOrderService;
+import com.kadir.utils.pagination.PaginationUtils;
+import com.kadir.utils.pagination.RestPageableEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -53,23 +59,40 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
     }
 
     @Override
-    public List<DtoOrder> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
-        return orders.stream().map(order -> {
-            List<OrderItems> orderItems = orderItemsRepository.findByOrderId(order.getId());
-            return mapEntityToDto(order, orderItems);
-        }).collect(Collectors.toList());
+    public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+        Page<Order> productPage = orderRepository.findAll(pageable);
+        return PaginationUtils.toPageableResponse(productPage, DtoOrder.class);
+
+//        Page<Order> orders = orderRepository.findAll();
+//        return orders.stream().map(order -> {
+//            List<OrderItems> orderItems = orderItemsRepository.findByOrderId(order.getId());
+//            return mapEntityToDto(order, orderItems);
+//        }).collect(Collectors.toList());
     }
 
+//    @Override
+//    public RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+//        Optional<User> user = userRepository.findById(userId);
+//        if (user.isEmpty()) {
+//            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
+//        }
+//        List<Order> cartItems = orderRepository.findByUserId(userId);
+//        return listMapEntityToDto(cartItems);
+//    }
+
     @Override
-    public List<DtoOrder> getOrdersByUser(Long userId) {
+    public RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
         }
-        List<Order> cartItems = orderRepository.findByUserId(userId);
-        return listMapEntityToDto(cartItems);
+        Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);
+        return PaginationUtils.toPageableResponse(orderPage, DtoOrder.class);
     }
+
 
     @Override
     public DtoOrder updateOrderStatus(Long orderId, OrderStatus paymentStatus) {
