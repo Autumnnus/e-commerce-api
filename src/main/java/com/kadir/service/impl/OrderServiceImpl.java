@@ -63,24 +63,8 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Order> productPage = orderRepository.findAll(pageable);
         return PaginationUtils.toPageableResponse(productPage, DtoOrder.class);
-
-//        Page<Order> orders = orderRepository.findAll();
-//        return orders.stream().map(order -> {
-//            List<OrderItems> orderItems = orderItemsRepository.findByOrderId(order.getId());
-//            return mapEntityToDto(order, orderItems);
-//        }).collect(Collectors.toList());
     }
 
-//    @Override
-//    public RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
-//        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
-//        Optional<User> user = userRepository.findById(userId);
-//        if (user.isEmpty()) {
-//            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
-//        }
-//        List<Order> cartItems = orderRepository.findByUserId(userId);
-//        return listMapEntityToDto(cartItems);
-//    }
 
     @Override
     public RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
