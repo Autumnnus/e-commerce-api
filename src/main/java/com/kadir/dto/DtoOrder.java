@@ -20,9 +20,7 @@ public class DtoOrder extends DtoBase {
 
     private BigDecimal totalAmount;
 
-    private OrderStatus status;
-
     private String paymentMethod;
 
-    private String paymentStatus;
+    private OrderStatus paymentStatus;
 }

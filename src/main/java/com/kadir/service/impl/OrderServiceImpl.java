@@ -1,8 +1,6 @@
 package com.kadir.service.impl;
 
-import com.kadir.dto.DtoOrder;
-import com.kadir.dto.DtoOrderIU;
-import com.kadir.dto.DtoUser;
+import com.kadir.dto.*;
 import com.kadir.enums.OrderStatus;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
@@ -24,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,22 +47,56 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
         List<CartItems> cartItems = getCartItemsByUser(user);
         Set<OrderItems> orderItems = getOrderItemsByCartItems(cartItems);
         Order order = createAndSaveOrder(user, cartItems, orderItems);
-        createAndSaveOrderItems(order, cartItems);
+        List<OrderItems> savedOrderItems = createAndSaveOrderItems(order, cartItems);
         clearCart(cartItems);
-        return mapEntityToDto(order);
+        return mapEntityToDto(order, savedOrderItems);
+    }
+
+    @Override
+    public List<DtoOrder> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream().map(order -> {
+            List<OrderItems> orderItems = orderItemsRepository.findByOrderId(order.getId());
+            return mapEntityToDto(order, orderItems);
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DtoOrder> getOrdersByUser(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
+        }
+        List<Order> cartItems = orderRepository.findByUserId(userId);
+        return listMapEntityToDto(cartItems);
+    }
+
+    @Override
+    public DtoOrder updateOrderStatus(Long orderId, OrderStatus paymentStatus) {
+        DtoOrder dtoOrder = new DtoOrder();
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Sipariş bulunamadı."));
+        order.setPaymentStatus(paymentStatus);
+        Order savedOrder = orderRepository.save(order);
+
+        BeanUtils.copyProperties(savedOrder, dtoOrder);
+        return mapEntityToDto(savedOrder);
+    }
+
+    public List<DtoOrder> listMapEntityToDto(List<Order> order) {
+        return order.stream().map(this::mapEntityToDto).collect(Collectors.toList());
     }
 
     private User getUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"))
-        );
+                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
     }
 
     private Set<OrderItems> getOrderItemsByCartItems(List<CartItems> cartItems) {
         return cartItems.stream()
                 .map(cartItem -> {
                     OrderItems item = new OrderItems();
-//                    item.setOrder(order);
+                    // item.setOrder(order);
                     item.setProduct(cartItem.getProduct());
                     item.setQuantity(cartItem.getQuantity());
                     item.setCreatedAt(LocalDateTime.now());
@@ -84,23 +117,22 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
     private Order createAndSaveOrder(User user, List<CartItems> cartItems, Set<OrderItems> orderItems) {
         Order order = new Order();
         order.setUser(user);
-//        order.setOrderItems(orderItems);
+        // order.setOrderItems(orderItems);
         order.setOrderDate(LocalDateTime.now());
         order.setPaymentMethod("CREDIT CARD");
-        order.setStatus(OrderStatus.PENDING);
+        order.setPaymentStatus(OrderStatus.PENDING);
 
         BigDecimal totalAmount = cartItems.stream()
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalAmount(totalAmount);
-
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
 
         return orderRepository.save(order);
     }
 
-    private void createAndSaveOrderItems(Order order, List<CartItems> cartItems) {
+    private List<OrderItems> createAndSaveOrderItems(Order order, List<CartItems> cartItems) {
         List<OrderItems> orderItems = cartItems.stream()
                 .map(cartItem -> {
                     OrderItems item = new OrderItems();
@@ -112,7 +144,8 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
                     item.setPrice(cartItem.getProduct().getPrice());
                     return item;
                 }).collect(Collectors.toList());
-        orderItemsRepository.saveAll(orderItems);
+        List<OrderItems> savedOrderItems = orderItemsRepository.saveAll(orderItems);
+        return savedOrderItems;
     }
 
     private void clearCart(List<CartItems> cartItems) {
@@ -121,20 +154,6 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
         }
     }
 
-    @Override
-    public List<DtoOrder> getAllOrders() {
-        return List.of();
-    }
-
-    @Override
-    public List<DtoOrder> getOrdersByUser(String userId) {
-        return List.of();
-    }
-
-    @Override
-    public DtoOrder updateOrderStatus(String orderId, String status) {
-        return null;
-    }
 
     @Override
     protected JpaRepository<Order, Long> getRepository() {
@@ -144,16 +163,13 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
     @Override
     protected Order mapDtoToEntity(DtoOrderIU dto, Order existingEntity) {
         User user = userRepository.findById(dto.getUserId()).orElseThrow(
-                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"))
-        );
+                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
 
         existingEntity.setCreatedAt(LocalDateTime.now());
         existingEntity.setUpdatedAt(LocalDateTime.now());
         existingEntity.setUser(user);
-//        existingEntity.setOrderItems(orderItems);
-        //TODO orderItems boş geliyor
         existingEntity.setOrderDate(LocalDateTime.now());
-        existingEntity.setStatus(OrderStatus.PENDING);
+        existingEntity.setPaymentStatus(OrderStatus.PENDING);
         existingEntity.setTotalAmount(BigDecimal.valueOf(100));
         existingEntity.setPaymentMethod("CREDIT CARD");
         return existingEntity;
@@ -170,11 +186,31 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
             BeanUtils.copyProperties(entity.getUser(), dtoUser);
             dto.setUser(dtoUser);
         }
-//        if (entity.getOrderItems() == null) {
-//            DtoOrderItems dtoOrderItems = new DtoOrderItems();
-//            BeanUtils.copyProperties(entity.getOrderItems(), dtoOrderItems);
-//            dto.setOrderItems(Set.of(dtoOrderItems));
-//        }
+        return dto;
+    }
+
+    protected DtoOrder mapEntityToDto(Order entity, List<OrderItems> orderItems) {
+        DtoOrder dto = new DtoOrder();
+        BeanUtils.copyProperties(entity, dto);
+        dto.setCreatedDate(entity.getCreatedAt());
+        dto.setUpdatedDate(entity.getUpdatedAt());
+        dto.setOrderItems(orderItems.stream().map(orderItem -> {
+            DtoOrderItems dtoOrderItems = new DtoOrderItems();
+            BeanUtils.copyProperties(orderItem, dtoOrderItems);
+            DtoProduct dtoProduct = new DtoProduct();
+            //* Eğer Product içerisindeki tüm verileri almak istemiyorsak BeanUtils'i kullanmamalıyız
+            // BeanUtils.copyProperties(orderItem.getProduct(), dtoProduct);
+
+            dtoProduct.setId(orderItem.getProduct().getId());
+            dtoProduct.setName(orderItem.getProduct().getName());
+            dtoOrderItems.setProduct(dtoProduct);
+            return dtoOrderItems;
+        }).collect(Collectors.toSet()));
+        if (entity.getUser() != null) {
+            DtoUser dtoUser = new DtoUser();
+            BeanUtils.copyProperties(entity.getUser(), dtoUser);
+            dto.setUser(dtoUser);
+        }
         return dto;
     }
 }

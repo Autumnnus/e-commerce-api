@@ -33,8 +33,8 @@ public class Order extends BaseEntity {
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private OrderStatus status;
+    @Column(name = "payment_status")
+    private OrderStatus paymentStatus;
 
     @Column(name = "payment_method")
     private String paymentMethod; // Ödeme yöntemi (örneğin, "Credit Card", "PayPal")
