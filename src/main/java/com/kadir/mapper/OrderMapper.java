@@ -12,20 +12,14 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
-    // Entity -> DTO dönüşümü
     DtoOrder mapEntityToDto(Order entity);
 
-    // DTO -> Entity dönüşümü
+    DtoOrder mapEntityToDto(Order entity, List<OrderItems> orderItems);
+
     Order mapDtoToEntity(DtoOrderIU dto);
 
-    // OrderItems -> DtoOrderItems dönüşümü
     DtoOrderItems mapEntityToDto(OrderItems entity);
 
-    // DtoOrderItems -> OrderItems dönüşümü
     OrderItems mapDtoToEntity(DtoOrderItems dto);
 
-    // Liste dönüşümleri
-    List<DtoOrderItems> mapEntityListToDtoList(List<OrderItems> entities);
-
-    List<OrderItems> mapDtoListToEntityList(List<DtoOrderItems> dtos);
 }

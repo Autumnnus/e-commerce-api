@@ -1,6 +1,8 @@
 package com.kadir.service.impl;
 
-import com.kadir.dto.*;
+import com.kadir.dto.DtoOrder;
+import com.kadir.dto.DtoOrderIU;
+import com.kadir.dto.DtoOrderItems;
 import com.kadir.enums.OrderStatus;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
@@ -37,6 +39,9 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrder> implements IOrderService {
 
     @Autowired
+    private OrderMapper orderMapper;
+
+    @Autowired
     private OrderRepository orderRepository;
 
     @Autowired
@@ -51,19 +56,41 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
     @Override
     public DtoOrder createOrder(DtoOrderIU dto) {
         User user = getUserById(dto.getUserId());
+        DtoOrder dtoOrder = new DtoOrder();
         List<CartItems> cartItems = getCartItemsByUser(user);
         Set<OrderItems> orderItems = getOrderItemsByCartItems(cartItems);
         Order order = createAndSaveOrder(user, cartItems, orderItems);
         List<OrderItems> savedOrderItems = createAndSaveOrderItems(order, cartItems);
         clearCart(cartItems);
-        return mapEntityToDto(order, savedOrderItems);
+        DtoOrder mappedDtoOrder = orderMapper.mapEntityToDto(order, savedOrderItems);
+        BeanUtils.copyProperties(mappedDtoOrder, dtoOrder);
+        dtoOrder.setOrderItems(savedOrderItems.stream()
+                .map(this::mapOrderItemToDto)
+                .collect(Collectors.toSet()));
+        dtoOrder.setCreatedDate(order.getCreatedAt());
+        dtoOrder.setUpdatedDate(order.getUpdatedAt());
+        return dtoOrder;
     }
 
     @Override
     public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
+        DtoOrder dtoOrder = new DtoOrder();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Order> productPage = orderRepository.findAll(pageable);
-        return PaginationUtils.toPageableResponse(productPage, DtoOrder.class);
+        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class);
+        pageableResponse.setDocs(productPage.getContent().stream()
+                .map(order -> {
+                    DtoOrder mappedDtoOrder = orderMapper.mapEntityToDto(order);
+                    BeanUtils.copyProperties(mappedDtoOrder, dtoOrder);
+                    dtoOrder.setOrderItems(order.getOrderItems().stream()
+                            .map(this::mapOrderItemToDto)
+                            .collect(Collectors.toSet()));
+                    dtoOrder.setCreatedDate(order.getCreatedAt());
+                    dtoOrder.setUpdatedDate(order.getUpdatedAt());
+                    return dtoOrder;
+                })
+                .collect(Collectors.toList()));
+        return pageableResponse;
     }
 
 
@@ -75,7 +102,21 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
         }
         Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);
-        return PaginationUtils.toPageableResponse(orderPage, DtoOrder.class);
+        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(orderPage, DtoOrder.class);
+        pageableResponse.setDocs(orderPage.getContent().stream()
+                .map(order -> {
+                    DtoOrder dtoOrder = new DtoOrder();
+                    DtoOrder mappedDtoOrder = orderMapper.mapEntityToDto(order);
+                    BeanUtils.copyProperties(mappedDtoOrder, dtoOrder);
+                    dtoOrder.setOrderItems(order.getOrderItems().stream()
+                            .map(this::mapOrderItemToDto)
+                            .collect(Collectors.toSet()));
+                    dtoOrder.setCreatedDate(order.getCreatedAt());
+                    dtoOrder.setUpdatedDate(order.getUpdatedAt());
+                    return dtoOrder;
+                })
+                .collect(Collectors.toList()));
+        return pageableResponse;
     }
 
 
@@ -88,17 +129,29 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
         Order savedOrder = orderRepository.save(order);
 
         BeanUtils.copyProperties(savedOrder, dtoOrder);
-        return mapEntityToDto(savedOrder);
-    }
-
-    public List<DtoOrder> listMapEntityToDto(List<Order> order) {
-        return order.stream().map(this::mapEntityToDto).collect(Collectors.toList());
+        DtoOrder mapEntityToDto = orderMapper.mapEntityToDto(savedOrder);
+        BeanUtils.copyProperties(mapEntityToDto, dtoOrder);
+        dtoOrder.setCreatedDate(savedOrder.getCreatedAt());
+        dtoOrder.setUpdatedDate(savedOrder.getUpdatedAt());
+        dtoOrder.setOrderItems(savedOrder.getOrderItems().stream()
+                .map(this::mapOrderItemToDto)
+                .collect(Collectors.toSet()));
+        return dtoOrder;
     }
 
     private User getUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
     }
+
+    private DtoOrderItems mapOrderItemToDto(OrderItems orderItem) {
+        DtoOrderItems dtoOrderItems = new DtoOrderItems();
+        BeanUtils.copyProperties(orderItem, dtoOrderItems);
+        dtoOrderItems.setCreatedDate(orderItem.getCreatedAt());
+        dtoOrderItems.setUpdatedDate(orderItem.getUpdatedAt());
+        return dtoOrderItems;
+    }
+
 
     private Set<OrderItems> getOrderItemsByCartItems(List<CartItems> cartItems) {
         return cartItems.stream()
@@ -165,65 +218,18 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
 
     @Override
     protected JpaRepository<Order, Long> getRepository() {
-        return orderRepository;
+        return null;
     }
 
     @Override
     protected Order mapDtoToEntity(DtoOrderIU dto, Order existingEntity) {
-        return orderMapper.mapDtoToEntity(dto);
-//        User user = userRepository.findById(dto.getUserId()).orElseThrow(
-//                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
-//
-//        existingEntity.setCreatedAt(LocalDateTime.now());
-//        existingEntity.setUpdatedAt(LocalDateTime.now());
-//        existingEntity.setUser(user);
-//        existingEntity.setOrderDate(LocalDateTime.now());
-//        existingEntity.setPaymentStatus(OrderStatus.PENDING);
-//        existingEntity.setTotalAmount(BigDecimal.valueOf(100));
-//        existingEntity.setPaymentMethod("CREDIT CARD");
-//        return existingEntity;
+        return null;
     }
 
-    @Autowired
-    private OrderMapper orderMapper;
 
     @Override
     protected DtoOrder mapEntityToDto(Order entity) {
-        return orderMapper.mapEntityToDto(entity);
-//        DtoOrder dto = new DtoOrder();
-//        BeanUtils.copyProperties(entity, dto);
-//        dto.setCreatedDate(entity.getCreatedAt());
-//        dto.setUpdatedDate(entity.getUpdatedAt());
-//        if (entity.getUser() != null) {
-//            DtoUser dtoUser = new DtoUser();
-//            BeanUtils.copyProperties(entity.getUser(), dtoUser);
-//            dto.setUser(dtoUser);
-//        }
-//        return dto;
+        return null;
     }
 
-    protected DtoOrder mapEntityToDto(Order entity, List<OrderItems> orderItems) {
-        DtoOrder dto = new DtoOrder();
-        BeanUtils.copyProperties(entity, dto);
-        dto.setCreatedDate(entity.getCreatedAt());
-        dto.setUpdatedDate(entity.getUpdatedAt());
-        dto.setOrderItems(orderItems.stream().map(orderItem -> {
-            DtoOrderItems dtoOrderItems = new DtoOrderItems();
-            BeanUtils.copyProperties(orderItem, dtoOrderItems);
-            DtoProduct dtoProduct = new DtoProduct();
-            //* Eğer Product içerisindeki tüm verileri almak istemiyorsak BeanUtils'i kullanmamalıyız
-            // BeanUtils.copyProperties(orderItem.getProduct(), dtoProduct);
-
-            dtoProduct.setId(orderItem.getProduct().getId());
-            dtoProduct.setName(orderItem.getProduct().getName());
-            dtoOrderItems.setProduct(dtoProduct);
-            return dtoOrderItems;
-        }).collect(Collectors.toSet()));
-        if (entity.getUser() != null) {
-            DtoUser dtoUser = new DtoUser();
-            BeanUtils.copyProperties(entity.getUser(), dtoUser);
-            dto.setUser(dtoUser);
-        }
-        return dto;
-    }
 }
