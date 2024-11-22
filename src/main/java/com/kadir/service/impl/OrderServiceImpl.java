@@ -5,6 +5,7 @@ import com.kadir.enums.OrderStatus;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
+import com.kadir.mapper.OrderMapper;
 import com.kadir.model.CartItems;
 import com.kadir.model.Order;
 import com.kadir.model.OrderItems;
@@ -169,31 +170,36 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
 
     @Override
     protected Order mapDtoToEntity(DtoOrderIU dto, Order existingEntity) {
-        User user = userRepository.findById(dto.getUserId()).orElseThrow(
-                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
-
-        existingEntity.setCreatedAt(LocalDateTime.now());
-        existingEntity.setUpdatedAt(LocalDateTime.now());
-        existingEntity.setUser(user);
-        existingEntity.setOrderDate(LocalDateTime.now());
-        existingEntity.setPaymentStatus(OrderStatus.PENDING);
-        existingEntity.setTotalAmount(BigDecimal.valueOf(100));
-        existingEntity.setPaymentMethod("CREDIT CARD");
-        return existingEntity;
+        return orderMapper.mapDtoToEntity(dto);
+//        User user = userRepository.findById(dto.getUserId()).orElseThrow(
+//                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+//
+//        existingEntity.setCreatedAt(LocalDateTime.now());
+//        existingEntity.setUpdatedAt(LocalDateTime.now());
+//        existingEntity.setUser(user);
+//        existingEntity.setOrderDate(LocalDateTime.now());
+//        existingEntity.setPaymentStatus(OrderStatus.PENDING);
+//        existingEntity.setTotalAmount(BigDecimal.valueOf(100));
+//        existingEntity.setPaymentMethod("CREDIT CARD");
+//        return existingEntity;
     }
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Override
     protected DtoOrder mapEntityToDto(Order entity) {
-        DtoOrder dto = new DtoOrder();
-        BeanUtils.copyProperties(entity, dto);
-        dto.setCreatedDate(entity.getCreatedAt());
-        dto.setUpdatedDate(entity.getUpdatedAt());
-        if (entity.getUser() != null) {
-            DtoUser dtoUser = new DtoUser();
-            BeanUtils.copyProperties(entity.getUser(), dtoUser);
-            dto.setUser(dtoUser);
-        }
-        return dto;
+        return orderMapper.mapEntityToDto(entity);
+//        DtoOrder dto = new DtoOrder();
+//        BeanUtils.copyProperties(entity, dto);
+//        dto.setCreatedDate(entity.getCreatedAt());
+//        dto.setUpdatedDate(entity.getUpdatedAt());
+//        if (entity.getUser() != null) {
+//            DtoUser dtoUser = new DtoUser();
+//            BeanUtils.copyProperties(entity.getUser(), dtoUser);
+//            dto.setUser(dtoUser);
+//        }
+//        return dto;
     }
 
     protected DtoOrder mapEntityToDto(Order entity, List<OrderItems> orderItems) {
