@@ -7,6 +7,7 @@ import com.kadir.dto.DtoUser;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
+import com.kadir.mapper.CartItemsMapper;
 import com.kadir.model.CartItems;
 import com.kadir.model.Product;
 import com.kadir.model.User;
@@ -36,6 +37,9 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CartItemsMapper cartItemsMapper;
+
     @Override
     protected JpaRepository<CartItems, Long> getRepository() {
         return cartItemsRepository;
@@ -62,26 +66,28 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
         existingEntity.setProduct(product.get());
         existingEntity.setUser(user.get());
         return existingEntity;
+//        return cartItemsMapper.mapDtoToEntity(dto);
     }
 
     @Override
     protected DtoCartItems mapEntityToDto(CartItems entity) {
-        DtoCartItems dto = new DtoCartItems();
-        BeanUtils.copyProperties(entity, dto);
-        dto.setCreatedDate(entity.getCreatedAt());
-        dto.setUpdatedDate(entity.getUpdatedAt());
-        if (entity.getUser() != null) {
-            DtoUser dtoUser = new DtoUser();
-            BeanUtils.copyProperties(entity.getUser(), dtoUser);
-            dto.setUser(dtoUser);
-        }
-
-        if (entity.getProduct() != null) {
-            DtoProduct dtoProduct = new DtoProduct();
-            BeanUtils.copyProperties(entity.getProduct(), dtoProduct);
-            dto.setProduct(dtoProduct);
-        }
-        return dto;
+//        DtoCartItems dto = new DtoCartItems();
+//        BeanUtils.copyProperties(entity, dto);
+//        dto.setCreatedDate(entity.getCreatedAt());
+//        dto.setUpdatedDate(entity.getUpdatedAt());
+//        if (entity.getUser() != null) {
+//            DtoUser dtoUser = new DtoUser();
+//            BeanUtils.copyProperties(entity.getUser(), dtoUser);
+//            dto.setUser(dtoUser);
+//        }
+//
+//        if (entity.getProduct() != null) {
+//            DtoProduct dtoProduct = new DtoProduct();
+//            BeanUtils.copyProperties(entity.getProduct(), dtoProduct);
+//            dto.setProduct(dtoProduct);
+//        }
+//        return dto;
+        return null;
     }
 
     public List<DtoCartItems> listMapEntityToDto(List<CartItems> cartItems) {
@@ -90,7 +96,8 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
 
     @Override
     public DtoCartItems createCartItems(DtoCartItemsIU dtoCartItemsIU) {
-        CartItems savedCartItems = cartItemsRepository.save(mapDtoToEntity(dtoCartItemsIU, null));
+        CartItems cartItems = cartItemsMapper.mapDtoToEntity(dtoCartItemsIU);
+        CartItems savedCartItems = cartItemsRepository.save(cartItems);
         DtoCartItems dtoCartItems = new DtoCartItems();
         DtoProduct product = new DtoProduct();
         DtoUser user = new DtoUser();
@@ -98,9 +105,8 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
         BeanUtils.copyProperties(savedCartItems.getProduct(), product);
         BeanUtils.copyProperties(savedCartItems.getUser(), user);
 
-        dtoCartItems.setQuantity(savedCartItems.getQuantity());
-        dtoCartItems.setCreatedDate(savedCartItems.getCreatedAt());
-        dtoCartItems.setUpdatedDate(savedCartItems.getUpdatedAt());
+//        dtoCartItems.setCreatedDate(savedCartItems.getCreatedAt());
+//        dtoCartItems.setUpdatedDate(savedCartItems.getUpdatedAt());
         return dtoCartItems;
     }
 
@@ -146,7 +152,7 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
         if (cartItems.isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found"));
         }
-        return mapEntityToDto(cartItems.get());
+        return cartItemsMapper.mapEntityToDto(cartItems.get());
     }
 
     @Override
@@ -156,6 +162,6 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
         }
         List<CartItems> cartItems = cartItemsRepository.findByUserId(userId);
-        return listMapEntityToDto(cartItems);
+        return cartItemsMapper.mapEntityListToDtoList(cartItems);
     }
 }

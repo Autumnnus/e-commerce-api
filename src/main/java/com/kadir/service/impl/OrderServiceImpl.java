@@ -85,8 +85,9 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
                     dtoOrder.setOrderItems(order.getOrderItems().stream()
                             .map(this::mapOrderItemToDto)
                             .collect(Collectors.toSet()));
-                    dtoOrder.setCreatedDate(order.getCreatedAt());
-                    dtoOrder.setUpdatedDate(order.getUpdatedAt());
+//                    dtoOrder.setCreatedDate(order.getCreatedAt());
+//                    dtoOrder.setUpdatedDate(order.getUpdatedAt());
+                    BeanUtils.copyProperties(order, dtoOrder);
                     return dtoOrder;
                 })
                 .collect(Collectors.toList()));
