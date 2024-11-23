@@ -14,12 +14,12 @@ public class DtoProductIU {
     @NotNull(message = "Name is required")
     private String name;
 
-
     private String description;
 
-    private BigDecimal price;
+    private BigDecimal price = BigDecimal.ZERO;
 
-    private int stockQuantity;
+    private int stockQuantity = 0;
 
+    @NotNull(message = "Category is required")
     private Long categoryId;
 }
