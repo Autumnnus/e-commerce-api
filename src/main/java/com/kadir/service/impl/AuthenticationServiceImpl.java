@@ -142,12 +142,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         dtoUser.setEmail(savedUser.getEmail());
         dtoUser.setPhoneNumber(savedUser.getPhoneNumber());
         dtoUser.setRole(savedUser.getRole());
-        dtoUser.setCreatedDate(savedUser.getCreatedAt());
-        dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
         dtoUser.setAddress(savedUser.getAddress());
 
-        dtoCustomer.setCreatedDate(customer.getCreatedAt());
-        dtoCustomer.setUpdatedDate(customer.getUpdatedAt());
         dtoCustomer.setFirstName(customer.getFirstName());
         dtoCustomer.setLastName(customer.getLastName());
         dtoCustomer.setUser(dtoUser);
@@ -169,12 +165,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         dtoUser.setEmail(savedUser.getEmail());
         dtoUser.setPhoneNumber(savedUser.getPhoneNumber());
         dtoUser.setRole(savedUser.getRole());
-        dtoUser.setCreatedDate(savedUser.getCreatedAt());
-        dtoUser.setUpdatedDate(savedUser.getUpdatedAt());
         dtoUser.setAddress(savedUser.getAddress());
 
-        dtoSeller.setCreatedDate(seller.getCreatedAt());
-        dtoSeller.setUpdatedDate(seller.getUpdatedAt());
         dtoSeller.setCompanyName(seller.getCompanyName());
         dtoSeller.setUser(dtoUser);
         return dtoSeller;

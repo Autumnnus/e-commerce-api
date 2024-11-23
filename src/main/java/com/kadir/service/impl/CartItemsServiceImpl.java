@@ -141,8 +141,6 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
 
         cartItemsRepository.deleteById(id);
         BeanUtils.copyProperties(cartItems.get(), dtoCartItems);
-        dtoCartItems.setCreatedDate(cartItems.get().getCreatedAt());
-        dtoCartItems.setUpdatedDate(cartItems.get().getUpdatedAt());
         return dtoCartItems;
     }
 

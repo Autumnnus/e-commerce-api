@@ -62,8 +62,6 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
     protected DtoProduct mapEntityToDto(Product entity) {
         DtoProduct dto = new DtoProduct();
         BeanUtils.copyProperties(entity, dto);
-        dto.setCreatedDate(entity.getCreatedAt());
-        dto.setUpdatedDate(entity.getUpdatedAt());
         return dto;
     }
 
@@ -80,8 +78,6 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
         dtoProduct.setDescription(savedProduct.getDescription());
         dtoProduct.setPrice(savedProduct.getPrice());
         dtoProduct.setStockQuantity(savedProduct.getStockQuantity());
-        dtoProduct.setCreatedDate(savedProduct.getCreatedAt());
-        dtoProduct.setUpdatedDate(savedProduct.getUpdatedAt());
         return dtoProduct;
     }
 
@@ -114,8 +110,6 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
 
         productRepository.delete(optionalProduct.get());
         BeanUtils.copyProperties(optionalProduct.get(), dtoProduct);
-        dtoProduct.setCreatedDate(optionalProduct.get().getCreatedAt());
-        dtoProduct.setUpdatedDate(optionalProduct.get().getUpdatedAt());
 
         return dtoProduct;
     }
@@ -137,8 +131,6 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
         Product product = optionalProduct.get();
         DtoProduct dto = new DtoProduct();
         BeanUtils.copyProperties(product, dto);
-        dto.setCreatedDate(product.getCreatedAt());
-        dto.setUpdatedDate(product.getUpdatedAt());
         return dto;
     }
 

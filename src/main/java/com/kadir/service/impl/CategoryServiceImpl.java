@@ -45,8 +45,6 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
     protected DtoCategory mapEntityToDto(Category entity) {
         DtoCategory dto = new DtoCategory();
         BeanUtils.copyProperties(entity, dto);
-        dto.setCreatedDate(entity.getCreatedAt());
-        dto.setUpdatedDate(entity.getUpdatedAt());
         return dto;
     }
 
@@ -58,8 +56,6 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
 
         dtoCategory.setName(savedCategory.getName());
         dtoCategory.setDescription(savedCategory.getDescription());
-        dtoCategory.setCreatedDate(savedCategory.getCreatedAt());
-        dtoCategory.setUpdatedDate(savedCategory.getUpdatedAt());
         return dtoCategory;
     }
 
@@ -76,8 +72,6 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
         DtoCategory dtoCategory = new DtoCategory();
         BeanUtils.copyProperties(savedCategory, dtoCategory);
 
-        dtoCategory.setCreatedDate(savedCategory.getCreatedAt());
-        dtoCategory.setUpdatedDate(savedCategory.getUpdatedAt());
         return dtoCategory;
 
     }
@@ -94,8 +88,6 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
         categoryRepository.delete(optionalCategory.get());
         BeanUtils.copyProperties(optionalCategory.get(), dtoCategory);
 
-        dtoCategory.setCreatedDate(optionalCategory.get().getCreatedAt());
-        dtoCategory.setUpdatedDate(optionalCategory.get().getUpdatedAt());
 
         return dtoCategory;
     }
@@ -106,8 +98,6 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
                 .map(category -> {
                     DtoCategory dto = new DtoCategory();
                     BeanUtils.copyProperties(category, dto);
-                    dto.setCreatedDate(category.getCreatedAt());
-                    dto.setUpdatedDate(category.getUpdatedAt());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -123,8 +113,6 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
         Category category = optionalCategory.get();
         DtoCategory dto = new DtoCategory();
         BeanUtils.copyProperties(category, dto);
-        dto.setCreatedDate(category.getCreatedAt());
-        dto.setUpdatedDate(category.getUpdatedAt());
         return dto;
     }
 

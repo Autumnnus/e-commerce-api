@@ -67,8 +67,6 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
         dtoOrder.setOrderItems(savedOrderItems.stream()
                 .map(this::mapOrderItemToDto)
                 .collect(Collectors.toSet()));
-        dtoOrder.setCreatedDate(order.getCreatedAt());
-        dtoOrder.setUpdatedDate(order.getUpdatedAt());
         return dtoOrder;
     }
 
@@ -112,8 +110,6 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
                     dtoOrder.setOrderItems(order.getOrderItems().stream()
                             .map(this::mapOrderItemToDto)
                             .collect(Collectors.toSet()));
-                    dtoOrder.setCreatedDate(order.getCreatedAt());
-                    dtoOrder.setUpdatedDate(order.getUpdatedAt());
                     return dtoOrder;
                 })
                 .collect(Collectors.toList()));
@@ -132,8 +128,6 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
         BeanUtils.copyProperties(savedOrder, dtoOrder);
         DtoOrder mapEntityToDto = orderMapper.mapEntityToDto(savedOrder);
         BeanUtils.copyProperties(mapEntityToDto, dtoOrder);
-        dtoOrder.setCreatedDate(savedOrder.getCreatedAt());
-        dtoOrder.setUpdatedDate(savedOrder.getUpdatedAt());
         dtoOrder.setOrderItems(savedOrder.getOrderItems().stream()
                 .map(this::mapOrderItemToDto)
                 .collect(Collectors.toSet()));
@@ -148,8 +142,6 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
     private DtoOrderItems mapOrderItemToDto(OrderItems orderItem) {
         DtoOrderItems dtoOrderItems = new DtoOrderItems();
         BeanUtils.copyProperties(orderItem, dtoOrderItems);
-        dtoOrderItems.setCreatedDate(orderItem.getCreatedAt());
-        dtoOrderItems.setUpdatedDate(orderItem.getUpdatedAt());
         return dtoOrderItems;
     }
 
