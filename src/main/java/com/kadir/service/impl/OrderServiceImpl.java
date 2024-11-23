@@ -110,6 +110,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
                     dtoOrder.setOrderItems(order.getOrderItems().stream()
                             .map(this::mapOrderItemToDto)
                             .collect(Collectors.toSet()));
+                    BeanUtils.copyProperties(order, dtoOrder);
                     return dtoOrder;
                 })
                 .collect(Collectors.toList()));
@@ -125,12 +126,12 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
         order.setPaymentStatus(paymentStatus);
         Order savedOrder = orderRepository.save(order);
 
-        BeanUtils.copyProperties(savedOrder, dtoOrder);
         DtoOrder mapEntityToDto = orderMapper.mapEntityToDto(savedOrder);
         BeanUtils.copyProperties(mapEntityToDto, dtoOrder);
         dtoOrder.setOrderItems(savedOrder.getOrderItems().stream()
                 .map(this::mapOrderItemToDto)
                 .collect(Collectors.toSet()));
+        BeanUtils.copyProperties(savedOrder, dtoOrder);
         return dtoOrder;
     }
 
