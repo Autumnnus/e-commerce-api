@@ -72,21 +72,16 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
 
     @Override
     public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
-        DtoOrder dtoOrder = new DtoOrder();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Order> productPage = orderRepository.findAll(pageable);
         RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class);
         pageableResponse.setDocs(productPage.getContent().stream()
                 .map(order -> {
                     DtoOrder mappedDtoOrder = orderMapper.mapEntityToDto(order);
-                    BeanUtils.copyProperties(mappedDtoOrder, dtoOrder);
-                    dtoOrder.setOrderItems(order.getOrderItems().stream()
+                    mappedDtoOrder.setOrderItems(order.getOrderItems().stream()
                             .map(this::mapOrderItemToDto)
                             .collect(Collectors.toSet()));
-//                    dtoOrder.setCreatedDate(order.getCreatedAt());
-//                    dtoOrder.setUpdatedDate(order.getUpdatedAt());
-                    BeanUtils.copyProperties(order, dtoOrder);
-                    return dtoOrder;
+                    return mappedDtoOrder;
                 })
                 .collect(Collectors.toList()));
         return pageableResponse;

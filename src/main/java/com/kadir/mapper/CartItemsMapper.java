@@ -14,7 +14,6 @@ public interface CartItemsMapper {
     DtoCartItems mapEntityToDto(CartItems entity);
 
     @Mapping(target = "product.id", source = "productId")
-    @Mapping(target = "quantity", source = "quantity")
     @Mapping(target = "user.id", source = "userId")
     CartItems mapDtoToEntity(DtoCartItemsIU dto);
 

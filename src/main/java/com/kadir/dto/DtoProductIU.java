@@ -2,6 +2,7 @@ package com.kadir.dto;
 
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+@Data
 public class DtoProductIU {
 
     @NotNull(message = "Name is required")
@@ -22,4 +24,5 @@ public class DtoProductIU {
 
     @NotNull(message = "Category is required")
     private Long categoryId;
+
 }
