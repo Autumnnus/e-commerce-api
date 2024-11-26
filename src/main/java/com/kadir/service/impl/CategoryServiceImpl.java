@@ -5,24 +5,30 @@ import com.kadir.dto.DtoCategoryIU;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
+import com.kadir.mapper.CategoryMapper;
 import com.kadir.model.Category;
+import com.kadir.model.Product;
 import com.kadir.repository.CategoryRepository;
+import com.kadir.repository.ProductRepository;
 import com.kadir.service.ICategoryService;
-import org.springframework.beans.BeanUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU, DtoCategory> implements ICategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Override
     protected JpaRepository<Category, Long> getRepository() {
@@ -31,89 +37,57 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
 
     @Override
     protected Category mapDtoToEntity(DtoCategoryIU dto, Category existingCategory) {
-        if (existingCategory == null) {
-            existingCategory = new Category();
-            existingCategory.setCreatedAt(LocalDateTime.now());
-        }
-        existingCategory.setUpdatedAt(LocalDateTime.now());
-        existingCategory.setName(dto.getName());
-        existingCategory.setDescription(dto.getDescription());
-        return existingCategory;
+        return null;
     }
 
     @Override
     protected DtoCategory mapEntityToDto(Category entity) {
-        DtoCategory dto = new DtoCategory();
-        BeanUtils.copyProperties(entity, dto);
-        return dto;
+        return null;
     }
 
     @Override
     public DtoCategory createCategory(DtoCategoryIU dtoCategoryIU) {
-        Category savedCategory = categoryRepository.save(mapDtoToEntity(dtoCategoryIU, null));
-        DtoCategory dtoCategory = new DtoCategory();
-        BeanUtils.copyProperties(savedCategory, dtoCategory);
-
-        dtoCategory.setName(savedCategory.getName());
-        dtoCategory.setDescription(savedCategory.getDescription());
-        return dtoCategory;
+        Category dtoToEntity = categoryMapper.mapDtoToEntity(dtoCategoryIU);
+        Category savedCategory = categoryRepository.save(dtoToEntity);
+        return categoryMapper.mapEntityToDto(savedCategory);
     }
 
     @Override
     public DtoCategory updateCategory(Long id, DtoCategoryIU dtoCategoryIU) {
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
 
-        if (optionalCategory.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
-        }
-        Category existingCategory = optionalCategory.get();
-        Category updatedCategory = mapDtoToEntity(dtoCategoryIU, existingCategory);
+        Category updatedCategory = categoryMapper.mapDtoToEntity(dtoCategoryIU);
+        updatedCategory.setId(existingCategory.getId());
+        updatedCategory.setUpdatedAt(existingCategory.getUpdatedAt());
+        updatedCategory.setCreatedAt(existingCategory.getCreatedAt());
         Category savedCategory = categoryRepository.save(updatedCategory);
-        DtoCategory dtoCategory = new DtoCategory();
-        BeanUtils.copyProperties(savedCategory, dtoCategory);
-
-        return dtoCategory;
-
+        return categoryMapper.mapEntityToDto(savedCategory);
     }
 
 
+    @Transactional
     @Override
     public DtoCategory deleteCategory(Long id) {
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
-
-        if (optionalCategory.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
-        }
-        DtoCategory dtoCategory = new DtoCategory();
-        categoryRepository.delete(optionalCategory.get());
-        BeanUtils.copyProperties(optionalCategory.get(), dtoCategory);
-
-
-        return dtoCategory;
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+        List<Product> products = productRepository.findByCategoryId(id);
+        products.forEach(product -> product.setCategory(null));
+        productRepository.saveAll(products);
+        categoryRepository.deleteById(id);
+        return categoryMapper.mapEntityToDto(category);
     }
 
     @Override
     public List<DtoCategory> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(category -> {
-                    DtoCategory dto = new DtoCategory();
-                    BeanUtils.copyProperties(category, dto);
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        List<Category> categories = categoryRepository.findAll();
+        return categoryMapper.mapEntityListToDtoList(categories);
     }
-
 
     @Override
     public DtoCategory getCategoryById(Long id) {
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
-        if (optionalCategory.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"));
-        }
-        Category category = optionalCategory.get();
-        DtoCategory dto = new DtoCategory();
-        BeanUtils.copyProperties(category, dto);
-        return dto;
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+        return categoryMapper.mapEntityToDto(category);
     }
-
 }

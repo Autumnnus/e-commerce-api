@@ -63,7 +63,8 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
 
     @Override
     public DtoProduct updateProduct(Long id, DtoProductIU dtoProductIU) {
-        Product existingProduct = productRepository.findById(id).orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
         Category existingCategory = categoryRepository.findById(dtoProductIU.getCategoryId()).orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
         Product updatedProduct = productMapper.mapDtoToEntity(dtoProductIU);
 
@@ -75,24 +76,12 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
 
         return productMapper.mapEntityToDto(savedProduct);
     }
-//    @Override
-//    public DtoProduct updateProduct(Long id, DtoProductIU dtoProductIU) {
-//        Product existingProduct = productRepository.findById(id)
-//                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
-//
-//        Category existingCategory = categoryRepository.findById(dtoProductIU.getCategoryId())
-//                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
-//        Product updatedProduct = productMapper.mapDtoToEntity(dtoProductIU);
-//        updatedProduct.setCategory(existingCategory);
-//        Product savedProduct = productRepository.save(updatedProduct);
-//
-//        return productMapper.mapEntityToDto(savedProduct);
-//    }
 
     @Transactional
     @Override
     public DtoProduct deleteProduct(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
         DtoProduct dtoProduct = productMapper.mapEntityToDto(product);
         productRepository.deleteById(id);
         return dtoProduct;
