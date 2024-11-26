@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/rest/api/order")
-public class OrderRestControllerImpl extends RestBaseController implements IOrderRestController {
+public class OrderRestController extends RestBaseController implements IOrderRestController {
 
     @Autowired
     private IOrderService orderService;

@@ -3,6 +3,7 @@ package com.kadir.service.impl;
 import com.kadir.dto.DtoOrder;
 import com.kadir.dto.DtoOrderIU;
 import com.kadir.dto.DtoOrderItems;
+import com.kadir.dto.DtoUser;
 import com.kadir.enums.OrderStatus;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
@@ -35,7 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class OrderServiceImpl implements IOrderService {
+public class OrderService implements IOrderService {
 
     @Autowired
     private OrderMapper orderMapper;
@@ -76,16 +77,23 @@ public class OrderServiceImpl implements IOrderService {
         RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class);
         pageableResponse.setDocs(productPage.getContent().stream()
                 .map(order -> {
-                    DtoOrder mappedDtoOrder = orderMapper.mapEntityToDto(order);
+                    DtoOrder mappedDtoOrder = new DtoOrder();
+                    BeanUtils.copyProperties(order, mappedDtoOrder);
                     mappedDtoOrder.setOrderItems(order.getOrderItems().stream()
-                            .map(this::mapOrderItemToDto)
+                            .map(orderItem -> {
+                                DtoOrderItems mappedOrderItem = new DtoOrderItems();
+                                BeanUtils.copyProperties(orderItem, mappedOrderItem);
+                                return mappedOrderItem;
+                            })
                             .collect(Collectors.toSet()));
+                    DtoUser dtoUser = new DtoUser();
+                    BeanUtils.copyProperties(order.getUser(), dtoUser);
+                    mappedDtoOrder.setUser(dtoUser);
                     return mappedDtoOrder;
                 })
                 .collect(Collectors.toList()));
         return pageableResponse;
     }
-
 
     @Override
     public RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
@@ -98,19 +106,23 @@ public class OrderServiceImpl implements IOrderService {
         RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(orderPage, DtoOrder.class);
         pageableResponse.setDocs(orderPage.getContent().stream()
                 .map(order -> {
-                    DtoOrder dtoOrder = new DtoOrder();
-                    DtoOrder mappedDtoOrder = orderMapper.mapEntityToDto(order);
-                    BeanUtils.copyProperties(mappedDtoOrder, dtoOrder);
-                    dtoOrder.setOrderItems(order.getOrderItems().stream()
-                            .map(this::mapOrderItemToDto)
+                    DtoOrder mappedDtoOrder = new DtoOrder();
+                    BeanUtils.copyProperties(order, mappedDtoOrder);
+                    mappedDtoOrder.setOrderItems(order.getOrderItems().stream()
+                            .map(orderItem -> {
+                                DtoOrderItems mappedOrderItem = new DtoOrderItems();
+                                BeanUtils.copyProperties(orderItem, mappedOrderItem);
+                                return mappedOrderItem;
+                            })
                             .collect(Collectors.toSet()));
-                    BeanUtils.copyProperties(order, dtoOrder);
-                    return dtoOrder;
+                    DtoUser dtoUser = new DtoUser();
+                    BeanUtils.copyProperties(order.getUser(), dtoUser);
+                    mappedDtoOrder.setUser(dtoUser);
+                    return mappedDtoOrder;
                 })
                 .collect(Collectors.toList()));
         return pageableResponse;
     }
-
 
     @Override
     public DtoOrder updateOrderStatus(Long orderId, OrderStatus paymentStatus) {
@@ -139,7 +151,6 @@ public class OrderServiceImpl implements IOrderService {
         BeanUtils.copyProperties(orderItem, dtoOrderItems);
         return dtoOrderItems;
     }
-
 
     private Set<OrderItems> getOrderItemsByCartItems(List<CartItems> cartItems) {
         return cartItems.stream()
@@ -202,6 +213,5 @@ public class OrderServiceImpl implements IOrderService {
             cartItemsRepository.deleteAll(cartItems);
         }
     }
-
 
 }

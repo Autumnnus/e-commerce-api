@@ -22,7 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductServiceImpl implements IProductService {
+public class ProductService implements IProductService {
 
     @Autowired
     private ProductRepository productRepository;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class RestAuthenticationControllerImpl extends RestBaseController implements IRestAuthenticationController {
+public class RestAuthenticationController extends RestBaseController implements IRestAuthenticationController {
 
     @Autowired
     private IAuthenticationService authenticationService;

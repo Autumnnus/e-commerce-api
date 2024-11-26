@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CartItemsServiceImpl implements ICartItemsService {
+public class CartItemsService implements ICartItemsService {
 
     @Autowired
     private CartItemsRepository cartItemsRepository;
@@ -41,7 +41,7 @@ public class CartItemsServiceImpl implements ICartItemsService {
 
     @Autowired
     private ProductMapper productMapper;
-    
+
     @Override
     public DtoCartItems createCartItems(DtoCartItemsIU dtoCartItemsIU) {
         User user = userRepository.findById(dtoCartItemsIU.getUserId())

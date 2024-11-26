@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class AuthenticationServiceImpl implements IAuthenticationService {
+public class AuthenticationService implements IAuthenticationService {
 
     @Autowired
     private UserRepository userRepository;
