@@ -2,11 +2,10 @@ package com.kadir.service;
 
 import com.kadir.dto.DtoCategory;
 import com.kadir.dto.DtoCategoryIU;
-import com.kadir.model.Category;
 
 import java.util.List;
 
-public interface ICategoryService extends IBaseService<Category, DtoCategoryIU, DtoCategory> {
+public interface ICategoryService {
 
     DtoCategory createCategory(DtoCategoryIU dtoCategoryIU);
 

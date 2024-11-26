@@ -13,13 +13,12 @@ import com.kadir.repository.ProductRepository;
 import com.kadir.service.ICategoryService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU, DtoCategory> implements ICategoryService {
+public class CategoryServiceImpl implements ICategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -30,20 +29,6 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, DtoCategoryIU
     @Autowired
     private CategoryMapper categoryMapper;
 
-    @Override
-    protected JpaRepository<Category, Long> getRepository() {
-        return categoryRepository;
-    }
-
-    @Override
-    protected Category mapDtoToEntity(DtoCategoryIU dto, Category existingCategory) {
-        return null;
-    }
-
-    @Override
-    protected DtoCategory mapEntityToDto(Category entity) {
-        return null;
-    }
 
     @Override
     public DtoCategory createCategory(DtoCategoryIU dtoCategoryIU) {

@@ -25,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -36,7 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrder> implements IOrderService {
+public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     private OrderMapper orderMapper;
@@ -204,21 +203,5 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, DtoOrderIU, DtoOrde
         }
     }
 
-
-    @Override
-    protected JpaRepository<Order, Long> getRepository() {
-        return null;
-    }
-
-    @Override
-    protected Order mapDtoToEntity(DtoOrderIU dto, Order existingEntity) {
-        return null;
-    }
-
-
-    @Override
-    protected DtoOrder mapEntityToDto(Order entity) {
-        return null;
-    }
 
 }

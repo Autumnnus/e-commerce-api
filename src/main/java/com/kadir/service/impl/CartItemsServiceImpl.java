@@ -16,16 +16,13 @@ import com.kadir.repository.ProductRepository;
 import com.kadir.repository.UserRepository;
 import com.kadir.service.ICartItemsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItemsIU, DtoCartItems>
-        implements ICartItemsService {
+public class CartItemsServiceImpl implements ICartItemsService {
 
     @Autowired
     private CartItemsRepository cartItemsRepository;
@@ -44,26 +41,7 @@ public class CartItemsServiceImpl extends BaseServiceImpl<CartItems, DtoCartItem
 
     @Autowired
     private ProductMapper productMapper;
-
-    @Override
-    protected JpaRepository<CartItems, Long> getRepository() {
-        return cartItemsRepository;
-    }
-
-    @Override
-    protected CartItems mapDtoToEntity(DtoCartItemsIU dto, CartItems existingEntity) {
-        return null;
-    }
-
-    @Override
-    protected DtoCartItems mapEntityToDto(CartItems entity) {
-        return null;
-    }
-
-    public List<DtoCartItems> listMapEntityToDto(List<CartItems> cartItems) {
-        return cartItems.stream().map(this::mapEntityToDto).collect(Collectors.toList());
-    }
-
+    
     @Override
     public DtoCartItems createCartItems(DtoCartItemsIU dtoCartItemsIU) {
         User user = userRepository.findById(dtoCartItemsIU.getUserId())

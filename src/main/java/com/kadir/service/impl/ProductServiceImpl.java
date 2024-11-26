@@ -19,11 +19,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, DtoProduct> implements IProductService {
+public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private ProductRepository productRepository;
@@ -33,22 +32,6 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, DtoProductIU, D
 
     @Autowired
     private ProductMapper productMapper;
-
-    @Override
-    protected JpaRepository<Product, Long> getRepository() {
-        return productRepository;
-    }
-
-    @Override
-    protected Product mapDtoToEntity(DtoProductIU dto, Product existingEntity) {
-        return null;
-    }
-
-    @Override
-    protected DtoProduct mapEntityToDto(Product entity) {
-        return null;
-    }
-
 
     @Override
     public DtoProduct createProduct(DtoProductIU dtoProductIU) {
