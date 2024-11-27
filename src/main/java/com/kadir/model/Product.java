@@ -18,14 +18,14 @@ import java.util.List;
 @AllArgsConstructor
 public class Product extends BaseEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "price")
-    private BigDecimal price;
+    @Column(name = "price", nullable = false)
+    private BigDecimal price = BigDecimal.ZERO;
 
     @Column(name = "stock_quantity")
     private int stockQuantity;

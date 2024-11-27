@@ -1,12 +1,14 @@
 package com.kadir.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class DtoOrderItemsIU {
 
     private Long orderId;

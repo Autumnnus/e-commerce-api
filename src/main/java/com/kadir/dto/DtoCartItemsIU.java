@@ -1,11 +1,13 @@
 package com.kadir.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class DtoCartItemsIU {
 
     @NotNull(message = "User id is required")
