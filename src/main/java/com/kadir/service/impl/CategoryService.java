@@ -5,13 +5,13 @@ import com.kadir.dto.DtoCategoryIU;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
-import com.kadir.mapper.CategoryMapper;
 import com.kadir.model.Category;
 import com.kadir.model.Product;
 import com.kadir.repository.CategoryRepository;
 import com.kadir.repository.ProductRepository;
 import com.kadir.service.ICategoryService;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,27 +27,27 @@ public class CategoryService implements ICategoryService {
     private ProductRepository productRepository;
 
     @Autowired
-    private CategoryMapper categoryMapper;
-
+    private ModelMapper modelMapper;
 
     @Override
     public DtoCategory createCategory(DtoCategoryIU dtoCategoryIU) {
-        Category dtoToEntity = categoryMapper.mapDtoToEntity(dtoCategoryIU);
-        Category savedCategory = categoryRepository.save(dtoToEntity);
-        return categoryMapper.mapEntityToDto(savedCategory);
+        Category categoryEntity = modelMapper.map(dtoCategoryIU, Category.class);
+        Category savedCategory = categoryRepository.save(categoryEntity);
+        return modelMapper.map(savedCategory, DtoCategory.class);
     }
+
 
     @Override
     public DtoCategory updateCategory(Long id, DtoCategoryIU dtoCategoryIU) {
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
 
-        Category updatedCategory = categoryMapper.mapDtoToEntity(dtoCategoryIU);
+        Category updatedCategory = modelMapper.map(dtoCategoryIU, Category.class);
         updatedCategory.setId(existingCategory.getId());
         updatedCategory.setUpdatedAt(existingCategory.getUpdatedAt());
         updatedCategory.setCreatedAt(existingCategory.getCreatedAt());
         Category savedCategory = categoryRepository.save(updatedCategory);
-        return categoryMapper.mapEntityToDto(savedCategory);
+        return modelMapper.map(savedCategory, DtoCategory.class);
     }
 
 
@@ -60,19 +60,19 @@ public class CategoryService implements ICategoryService {
         products.forEach(product -> product.setCategory(null));
         productRepository.saveAll(products);
         categoryRepository.deleteById(id);
-        return categoryMapper.mapEntityToDto(category);
+        return modelMapper.map(category, DtoCategory.class);
     }
 
     @Override
     public List<DtoCategory> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
-        return categoryMapper.mapEntityListToDtoList(categories);
+        return modelMapper.map(categories, List.class);
     }
 
     @Override
     public DtoCategory getCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
-        return categoryMapper.mapEntityToDto(category);
+        return modelMapper.map(category, DtoCategory.class);
     }
 }

@@ -1,17 +1,19 @@
 package com.kadir.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class DtoCartItems extends DtoBase {
 
     private DtoUser user;
 
-    private DtoProduct product;
+    private DtoProductIU product;
 
     private int quantity;
 

@@ -15,11 +15,12 @@ import com.kadir.repository.CartItemsRepository;
 import com.kadir.repository.ProductRepository;
 import com.kadir.repository.UserRepository;
 import com.kadir.service.ICartItemsService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CartItemsService implements ICartItemsService {
@@ -42,23 +43,22 @@ public class CartItemsService implements ICartItemsService {
     @Autowired
     private ProductMapper productMapper;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public DtoCartItems createCartItems(DtoCartItemsIU dtoCartItemsIU) {
         User user = userRepository.findById(dtoCartItemsIU.getUserId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         Product product = productRepository.findById(dtoCartItemsIU.getProductId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
-        CartItems cartItems = cartItemsMapper.mapDtoToEntity(dtoCartItemsIU);
-        cartItems.getUser().setId(dtoCartItemsIU.getUserId());
-        cartItems.getProduct().setId(dtoCartItemsIU.getProductId());
+        CartItems cartItems = new CartItems();
+        cartItems.setUser(user);
+        cartItems.setProduct(product);
+        cartItems.setQuantity(dtoCartItemsIU.getQuantity());
 
         CartItems savedCartItems = cartItemsRepository.save(cartItems);
-
-        DtoCartItems dtoCartItems = cartItemsMapper.mapEntityToDto(savedCartItems);
-        dtoCartItems.setUser(userMapper.mapEntityToDto(user));
-        dtoCartItems.setProduct(productMapper.mapEntityToDto(product));
-
-        return dtoCartItems;
+        return modelMapper.map(savedCartItems, DtoCartItems.class);
     }
 
 
@@ -71,15 +71,14 @@ public class CartItemsService implements ICartItemsService {
         cartItems.setQuantity(dtoCartItemsIU.getQuantity());
 
         CartItems savedCartItems = cartItemsRepository.save(cartItems);
-
-        return cartItemsMapper.mapEntityToDto(savedCartItems);
+        return modelMapper.map(savedCartItems, DtoCartItems.class);
     }
 
     @Override
     public DtoCartItems deleteCartItems(Long id) {
         CartItems cartItems = cartItemsRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found")));
-        DtoCartItems dtoCartItems = cartItemsMapper.mapEntityToDto(cartItems);
+        DtoCartItems dtoCartItems = modelMapper.map(cartItems, DtoCartItems.class);
 
         cartItemsRepository.deleteById(id);
         return dtoCartItems;
@@ -88,20 +87,17 @@ public class CartItemsService implements ICartItemsService {
 
     @Override
     public DtoCartItems getCartItemsById(Long id) {
-        Optional<CartItems> cartItems = cartItemsRepository.findById(id);
-        if (cartItems.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found"));
-        }
-        return cartItemsMapper.mapEntityToDto(cartItems.get());
+        CartItems cartItems = cartItemsRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found")));
+        return modelMapper.map(cartItems, DtoCartItems.class);
     }
 
     @Override
     public List<DtoCartItems> getUserCartItems(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
-        }
+        userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         List<CartItems> cartItems = cartItemsRepository.findByUserId(userId);
-        return cartItemsMapper.mapEntityListToDtoList(cartItems);
+        return modelMapper.map(cartItems, new TypeToken<List<DtoCartItems>>() {
+        }.getType());
     }
 }

@@ -39,13 +39,11 @@ public class ProductService implements IProductService {
 
     @Override
     public DtoProduct createProduct(DtoProductIU dtoProductIU) {
-        Category category = categoryRepository.findById(dtoProductIU.getCategoryId()).orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
-        Product product = productMapper.mapDtoToEntity(dtoProductIU);
+        categoryRepository.findById(dtoProductIU.getCategoryId())
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+        Product product = modelMapper.map(dtoProductIU, Product.class);
         Product savedProduct = productRepository.save(product);
-
-        DtoProduct dtoProduct = productMapper.mapEntityToDto(savedProduct);
-        dtoProduct.setCategory(category);
-        return dtoProduct;
+        return modelMapper.map(savedProduct, DtoProduct.class);
     }
 
     @Override
