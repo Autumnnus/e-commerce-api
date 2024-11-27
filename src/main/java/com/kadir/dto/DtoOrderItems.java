@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class DtoOrderItems extends DtoBase {
 
-    private DtoOrder order;
+    private DtoOrderIU order;
 
     private DtoProduct product;
 

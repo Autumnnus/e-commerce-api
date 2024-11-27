@@ -20,6 +20,7 @@ import com.kadir.repository.UserRepository;
 import com.kadir.service.IOrderService;
 import com.kadir.utils.pagination.PaginationUtils;
 import com.kadir.utils.pagination.RestPageableEntity;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -53,6 +54,9 @@ public class OrderService implements IOrderService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public DtoOrder createOrder(DtoOrderIU dto) {
         User user = getUserById(dto.getUserId());
@@ -74,7 +78,7 @@ public class OrderService implements IOrderService {
     public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Order> productPage = orderRepository.findAll(pageable);
-        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class);
+        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class, modelMapper);
         pageableResponse.setDocs(productPage.getContent().stream()
                 .map(order -> {
                     DtoOrder mappedDtoOrder = new DtoOrder();
@@ -103,7 +107,7 @@ public class OrderService implements IOrderService {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
         }
         Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);
-        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(orderPage, DtoOrder.class);
+        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(orderPage, DtoOrder.class, modelMapper);
         pageableResponse.setDocs(orderPage.getContent().stream()
                 .map(order -> {
                     DtoOrder mappedDtoOrder = new DtoOrder();

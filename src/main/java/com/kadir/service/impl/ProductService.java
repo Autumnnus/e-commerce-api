@@ -14,6 +14,7 @@ import com.kadir.service.IProductService;
 import com.kadir.utils.pagination.PaginationUtils;
 import com.kadir.utils.pagination.RestPageableEntity;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +33,9 @@ public class ProductService implements IProductService {
 
     @Autowired
     private ProductMapper productMapper;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public DtoProduct createProduct(DtoProductIU dtoProductIU) {
@@ -74,7 +78,7 @@ public class ProductService implements IProductService {
     public RestPageableEntity<DtoProduct> getAllProducts(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Product> productPage = productRepository.findAll(pageable);
-        RestPageableEntity<DtoProduct> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoProduct.class);
+        RestPageableEntity<DtoProduct> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoProduct.class, modelMapper);
         pageableResponse.setDocs(productMapper.mapEntityListToDtoList(productPage.getContent()));
         return pageableResponse;
     }

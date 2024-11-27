@@ -1,5 +1,6 @@
 package com.kadir.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kadir.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class Order extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<OrderItems> orderItems;
 
     @Column(name = "order_date", nullable = false)

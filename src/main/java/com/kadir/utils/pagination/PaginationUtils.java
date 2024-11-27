@@ -1,24 +1,20 @@
 package com.kadir.utils.pagination;
 
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 import java.util.stream.Collectors;
 
 public class PaginationUtils {
 
-    public static <T, D> RestPageableEntity<D> toPageableResponse(Page<T> page, Class<D> dtoClass) {
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public static <T, D> RestPageableEntity<D> toPageableResponse(Page<T> page, Class<D> dtoClass, ModelMapper modelMapper) {
         RestPageableEntity<D> restPageableEntity = new RestPageableEntity<>();
         restPageableEntity.setDocs(page.getContent().stream()
-                .map(entity -> {
-                    try {
-                        D dto = dtoClass.getDeclaredConstructor().newInstance();
-                        BeanUtils.copyProperties(entity, dto);
-                        return dto;
-                    } catch (Exception e) {
-                        throw new RuntimeException("Error while mapping entity to DTO", e);
-                    }
-                })
+                .map(entity -> modelMapper.map(entity, dtoClass))  // Use ModelMapper here
                 .collect(Collectors.toList()));
 
         restPageableEntity.setPageNumber(page.getPageable().getPageNumber());
@@ -27,4 +23,25 @@ public class PaginationUtils {
 
         return restPageableEntity;
     }
+
+//    public static <T, D> RestPageableEntity<D> toPageableResponse(Page<T> page, Class<D> dtoClass) {
+//        RestPageableEntity<D> restPageableEntity = new RestPageableEntity<>();
+//        restPageableEntity.setDocs(page.getContent().stream()
+//                .map(entity -> {
+//                    try {
+//                        D dto = dtoClass.getDeclaredConstructor().newInstance();
+//                        BeanUtils.copyProperties(entity, dto);
+//                        return dto;
+//                    } catch (Exception e) {
+//                        throw new RuntimeException("Error while mapping entity to DTO", e);
+//                    }
+//                })
+//                .collect(Collectors.toList()));
+//
+//        restPageableEntity.setPageNumber(page.getPageable().getPageNumber());
+//        restPageableEntity.setPageSize(page.getPageable().getPageSize());
+//        restPageableEntity.setTotalDocs(page.getTotalElements());
+//
+//        return restPageableEntity;
+//    }
 }

@@ -5,7 +5,6 @@ import com.kadir.dto.DtoOrderIU;
 import com.kadir.dto.DtoOrderItems;
 import com.kadir.model.Order;
 import com.kadir.model.OrderItems;
-import com.kadir.utils.pagination.RestPageableEntity;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -22,7 +21,5 @@ public interface OrderMapper {
     DtoOrderItems mapEntityToDto(OrderItems entity);
 
     OrderItems mapDtoToEntity(DtoOrderItems dto);
-
-    RestPageableEntity<Order> mapEntityPageToDtoPage(RestPageableEntity<DtoOrder> entityPage);
 
 }
