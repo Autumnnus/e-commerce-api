@@ -19,9 +19,8 @@ import com.kadir.service.IOrderService;
 import com.kadir.utils.pagination.PaginationUtils;
 import com.kadir.utils.pagination.RestPageableEntity;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,38 +30,34 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService implements IOrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private OrderItemsRepository orderItemsRepository;
-
-    @Autowired
-    private CartItemsRepository cartItemsRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final OrderRepository orderRepository;
+    private final OrderItemsRepository orderItemsRepository;
+    private final CartItemsRepository cartItemsRepository;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     @Transactional
     @Override
     public DtoOrder createOrder(DtoOrderIU dto) {
-        User user = getUserById(dto.getUserId());
-        List<CartItems> cartItems = getCartItemsByUser(user);
-        Set<OrderItems> orderItems = getOrderItemsByCartItems(cartItems);
-        Order order = createAndSaveOrder(user, cartItems, orderItems);
+        User user = userRepository.findById(dto.getUserId()).orElseThrow(
+                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+        List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
+        if (cartItems.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Cart is empty"));
+        }
+        Order order = createAndSaveOrder(user, cartItems);
 
         List<OrderItems> savedOrderItems = createAndSaveOrderItems(order, cartItems);
 
-        clearCart(cartItems);
+        if (!cartItems.isEmpty()) {
+            cartItemsRepository.deleteAll(cartItems);
+        }
 
         DtoOrder dtoOrder = modelMapper.map(order, DtoOrder.class);
         dtoOrder.setOrderItems(savedOrderItems.stream()
@@ -107,44 +102,9 @@ public class OrderService implements IOrderService {
         return dtoOrder;
     }
 
-
-    private User getUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
-    }
-
-    private DtoOrderItems mapOrderItemToDto(OrderItems orderItem) {
-        DtoOrderItems dtoOrderItems = new DtoOrderItems();
-        BeanUtils.copyProperties(orderItem, dtoOrderItems);
-        return dtoOrderItems;
-    }
-
-    private Set<OrderItems> getOrderItemsByCartItems(List<CartItems> cartItems) {
-        return cartItems.stream()
-                .map(cartItem -> {
-                    OrderItems item = new OrderItems();
-                    // item.setOrder(order);
-                    item.setProduct(cartItem.getProduct());
-                    item.setQuantity(cartItem.getQuantity());
-                    item.setCreatedAt(LocalDateTime.now());
-                    item.setUpdatedAt(LocalDateTime.now());
-                    item.setPrice(cartItem.getProduct().getPrice());
-                    return item;
-                }).collect(Collectors.toSet());
-    }
-
-    private List<CartItems> getCartItemsByUser(User user) {
-        List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
-        if (cartItems.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Cart is empty"));
-        }
-        return cartItems;
-    }
-
-    private Order createAndSaveOrder(User user, List<CartItems> cartItems, Set<OrderItems> orderItems) {
+    private Order createAndSaveOrder(User user, List<CartItems> cartItems) {
         Order order = new Order();
         order.setUser(user);
-        // order.setOrderItems(orderItems);
         order.setOrderDate(LocalDateTime.now());
         order.setPaymentMethod("CREDIT CARD");
         order.setPaymentStatus(OrderStatus.PENDING);
@@ -173,12 +133,6 @@ public class OrderService implements IOrderService {
                 }).collect(Collectors.toList());
         List<OrderItems> savedOrderItems = orderItemsRepository.saveAll(orderItems);
         return savedOrderItems;
-    }
-
-    private void clearCart(List<CartItems> cartItems) {
-        if (!cartItems.isEmpty()) {
-            cartItemsRepository.deleteAll(cartItems);
-        }
     }
 
 }

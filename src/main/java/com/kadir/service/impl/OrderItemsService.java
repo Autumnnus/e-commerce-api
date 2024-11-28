@@ -6,8 +6,8 @@ import com.kadir.repository.OrderItemsRepository;
 import com.kadir.service.IOrderItemsService;
 import com.kadir.utils.pagination.PaginationUtils;
 import com.kadir.utils.pagination.RestPageableEntity;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,14 +18,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderItemsService implements IOrderItemsService {
 
-    @Autowired
-    private OrderItemsRepository orderItemsRepository;
+    private final OrderItemsRepository orderItemsRepository;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private ModelMapper modelMapper;
-    
     @Override
     public List<DtoOrderItems> getOrderItemsByOrderId(Long orderId) {
         List<OrderItems> orderItems = orderItemsRepository.findByOrderId(orderId);

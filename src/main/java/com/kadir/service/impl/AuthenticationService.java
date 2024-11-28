@@ -15,8 +15,8 @@ import com.kadir.repository.RefreshTokenRepository;
 import com.kadir.repository.SellerRepository;
 import com.kadir.repository.UserRepository;
 import com.kadir.service.IAuthenticationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,28 +27,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    private SellerRepository sellerRepository;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
-
-    @Autowired
-    private JWTService jwtService;
-
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
+    private final SellerRepository sellerRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationProvider authenticationProvider;
+    private final JWTService jwtService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private User createUser(AuthRegisterRequest input, UserRole role) {
         User user = new User();
@@ -179,10 +167,11 @@ public class AuthenticationService implements IAuthenticationService {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(input.getUsername(), input.getPassword());
             authenticationProvider.authenticate(authenticationToken);
 
-            Optional<User> optUser = userRepository.findByUsername(input.getUsername());
+            User user = userRepository.findByUsername(input.getUsername())
+                    .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.USERNAME_OR_PASSWORD_INVALID, input.getUsername())));
 
-            String accessToken = jwtService.generateToken(optUser.get());
-            RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(optUser.get()));
+            String accessToken = jwtService.generateToken(user);
+            RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(user));
             return new AuthResponse(accessToken, savedRefreshToken.getRefreshToken());
         } catch (Exception e) {
             throw new BaseException(new ErrorMessage(MessageType.USERNAME_OR_PASSWORD_INVALID, e.getMessage()));

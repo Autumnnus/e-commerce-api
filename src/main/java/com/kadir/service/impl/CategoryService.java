@@ -11,23 +11,19 @@ import com.kadir.repository.CategoryRepository;
 import com.kadir.repository.ProductRepository;
 import com.kadir.service.ICategoryService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public DtoCategory createCategory(DtoCategoryIU dtoCategoryIU) {

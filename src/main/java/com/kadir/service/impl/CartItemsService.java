@@ -12,27 +12,21 @@ import com.kadir.repository.CartItemsRepository;
 import com.kadir.repository.ProductRepository;
 import com.kadir.repository.UserRepository;
 import com.kadir.service.ICartItemsService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CartItemsService implements ICartItemsService {
 
-    @Autowired
-    private CartItemsRepository cartItemsRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final CartItemsRepository cartItemsRepository;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public DtoCartItems createCartItems(DtoCartItemsIU dtoCartItemsIU) {

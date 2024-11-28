@@ -5,7 +5,6 @@ import com.kadir.dto.DtoProductIU;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
-import com.kadir.mapper.ProductMapper;
 import com.kadir.model.Category;
 import com.kadir.model.Product;
 import com.kadir.repository.CategoryRepository;
@@ -14,28 +13,23 @@ import com.kadir.service.IProductService;
 import com.kadir.utils.pagination.PaginationUtils;
 import com.kadir.utils.pagination.RestPageableEntity;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
 public class ProductService implements IProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private ProductMapper productMapper;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public DtoProduct createProduct(DtoProductIU dtoProductIU) {
@@ -50,8 +44,10 @@ public class ProductService implements IProductService {
     public DtoProduct updateProduct(Long id, DtoProductIU dtoProductIU) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
-        Category existingCategory = categoryRepository.findById(dtoProductIU.getCategoryId()).orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
-        Product updatedProduct = productMapper.mapDtoToEntity(dtoProductIU);
+        Category existingCategory = categoryRepository.findById(dtoProductIU.getCategoryId())
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+
+        Product updatedProduct = modelMapper.map(dtoProductIU, Product.class);
 
         updatedProduct.setId(existingProduct.getId());
         updatedProduct.setUpdatedAt(existingProduct.getUpdatedAt());
@@ -59,15 +55,16 @@ public class ProductService implements IProductService {
         updatedProduct.setCategory(existingCategory);
         Product savedProduct = productRepository.save(updatedProduct);
 
-        return productMapper.mapEntityToDto(savedProduct);
+        return modelMapper.map(savedProduct, DtoProduct.class);
     }
+
 
     @Transactional
     @Override
     public DtoProduct deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
-        DtoProduct dtoProduct = productMapper.mapEntityToDto(product);
+        DtoProduct dtoProduct = modelMapper.map(product, DtoProduct.class);
         productRepository.deleteById(id);
         return dtoProduct;
     }
@@ -77,20 +74,19 @@ public class ProductService implements IProductService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Product> productPage = productRepository.findAll(pageable);
         RestPageableEntity<DtoProduct> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoProduct.class, modelMapper);
-        pageableResponse.setDocs(productMapper.mapEntityListToDtoList(productPage.getContent()));
+        pageableResponse.setDocs(productPage.getContent().stream()
+                .map(product -> modelMapper.map(product, DtoProduct.class))
+                .collect(Collectors.toList()));
         return pageableResponse;
     }
 
-
     @Override
     public DtoProduct getProductById(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
-        Category category = null;
-        if (product.getCategory() != null && product.getCategory().getId() != null) {
-            category = categoryRepository.findById(product.getCategory().getId())
-                    .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
-        }
-        DtoProduct dtoProduct = productMapper.mapEntityToDto(product);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+        Category category = product.getCategory() != null ? categoryRepository.findById(product.getCategory().getId())
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found"))) : null;
+        DtoProduct dtoProduct = modelMapper.map(product, DtoProduct.class);
         dtoProduct.setCategory(category);
         return dtoProduct;
     }
