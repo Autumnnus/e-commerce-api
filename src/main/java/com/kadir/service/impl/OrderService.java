@@ -3,12 +3,10 @@ package com.kadir.service.impl;
 import com.kadir.dto.DtoOrder;
 import com.kadir.dto.DtoOrderIU;
 import com.kadir.dto.DtoOrderItems;
-import com.kadir.dto.DtoUser;
 import com.kadir.enums.OrderStatus;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
-import com.kadir.mapper.OrderMapper;
 import com.kadir.model.CartItems;
 import com.kadir.model.Order;
 import com.kadir.model.OrderItems;
@@ -33,15 +31,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class OrderService implements IOrderService {
-
-    @Autowired
-    private OrderMapper orderMapper;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -65,16 +59,18 @@ public class OrderService implements IOrderService {
         List<CartItems> cartItems = getCartItemsByUser(user);
         Set<OrderItems> orderItems = getOrderItemsByCartItems(cartItems);
         Order order = createAndSaveOrder(user, cartItems, orderItems);
+
         List<OrderItems> savedOrderItems = createAndSaveOrderItems(order, cartItems);
 
         clearCart(cartItems);
-        DtoOrder dtoOrder = modelMapper.map(order, DtoOrder.class);
 
+        DtoOrder dtoOrder = modelMapper.map(order, DtoOrder.class);
         dtoOrder.setOrderItems(savedOrderItems.stream()
                 .map(item -> modelMapper.map(item, DtoOrderItems.class))
                 .collect(Collectors.toSet()));
         return dtoOrder;
     }
+
 
     @Override
     public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
@@ -85,76 +81,32 @@ public class OrderService implements IOrderService {
 
         return pageableResponse;
     }
-//    @Override
-//    public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
-//        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
-//        Page<Order> productPage = orderRepository.findAll(pageable);
-//        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class, modelMapper);
 
-    /// /        pageableResponse.setDocs(productPage.getContent().stream()
-    /// /                .map(order -> {
-    /// /                    DtoOrder mappedDtoOrder = new DtoOrder();
-    /// /                    BeanUtils.copyProperties(order, mappedDtoOrder);
-    /// /                    mappedDtoOrder.setOrderItems(order.getOrderItems().stream()
-    /// /                            .map(orderItem -> {
-    /// /                                DtoOrderItems mappedOrderItem = new DtoOrderItems();
-    /// /                                BeanUtils.copyProperties(orderItem, mappedOrderItem);
-    /// /                                return mappedOrderItem;
-    /// /                            })
-    /// /                            .collect(Collectors.toSet()));
-    /// /                    DtoUser dtoUser = new DtoUser();
-    /// /                    BeanUtils.copyProperties(order.getUser(), dtoUser);
-    /// /                    mappedDtoOrder.setUser(dtoUser);
-    /// /                    return mappedDtoOrder;
-    /// /                })
-    /// /                .collect(Collectors.toList()));
-//        return pageableResponse;
-//    }
     @Override
     public RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found"));
-        }
+        userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);
         RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(orderPage, DtoOrder.class, modelMapper);
-        pageableResponse.setDocs(orderPage.getContent().stream()
-                .map(order -> {
-                    DtoOrder mappedDtoOrder = new DtoOrder();
-                    BeanUtils.copyProperties(order, mappedDtoOrder);
-                    mappedDtoOrder.setOrderItems(order.getOrderItems().stream()
-                            .map(orderItem -> {
-                                DtoOrderItems mappedOrderItem = new DtoOrderItems();
-                                BeanUtils.copyProperties(orderItem, mappedOrderItem);
-                                return mappedOrderItem;
-                            })
-                            .collect(Collectors.toSet()));
-                    DtoUser dtoUser = new DtoUser();
-                    BeanUtils.copyProperties(order.getUser(), dtoUser);
-                    mappedDtoOrder.setUser(dtoUser);
-                    return mappedDtoOrder;
-                })
-                .collect(Collectors.toList()));
         return pageableResponse;
     }
 
     @Override
     public DtoOrder updateOrderStatus(Long orderId, OrderStatus paymentStatus) {
-        DtoOrder dtoOrder = new DtoOrder();
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Sipariş bulunamadı."));
+                .orElseThrow(() -> new IllegalArgumentException("Order not found."));
         order.setPaymentStatus(paymentStatus);
         Order savedOrder = orderRepository.save(order);
 
-        DtoOrder mapEntityToDto = orderMapper.mapEntityToDto(savedOrder);
-        BeanUtils.copyProperties(mapEntityToDto, dtoOrder);
+        DtoOrder dtoOrder = modelMapper.map(savedOrder, DtoOrder.class);
         dtoOrder.setOrderItems(savedOrder.getOrderItems().stream()
-                .map(this::mapOrderItemToDto)
+                .map(orderItem -> modelMapper.map(orderItem, DtoOrderItems.class))
                 .collect(Collectors.toSet()));
-        BeanUtils.copyProperties(savedOrder, dtoOrder);
+
         return dtoOrder;
     }
+
 
     private User getUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(
