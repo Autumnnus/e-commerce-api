@@ -5,9 +5,6 @@ import com.kadir.dto.DtoCartItemsIU;
 import com.kadir.exception.BaseException;
 import com.kadir.exception.ErrorMessage;
 import com.kadir.exception.MessageType;
-import com.kadir.mapper.CartItemsMapper;
-import com.kadir.mapper.ProductMapper;
-import com.kadir.mapper.UserMapper;
 import com.kadir.model.CartItems;
 import com.kadir.model.Product;
 import com.kadir.model.User;
@@ -33,15 +30,6 @@ public class CartItemsService implements ICartItemsService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private CartItemsMapper cartItemsMapper;
-
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private ProductMapper productMapper;
 
     @Autowired
     private ModelMapper modelMapper;

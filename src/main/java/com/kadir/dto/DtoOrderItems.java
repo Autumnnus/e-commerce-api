@@ -15,7 +15,7 @@ public class DtoOrderItems extends DtoBase {
 
     private DtoOrderIU order;
 
-    private DtoProduct product;
+    private DtoProductIU product;
 
     private int quantity;
 

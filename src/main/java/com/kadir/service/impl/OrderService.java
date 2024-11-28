@@ -20,6 +20,7 @@ import com.kadir.repository.UserRepository;
 import com.kadir.service.IOrderService;
 import com.kadir.utils.pagination.PaginationUtils;
 import com.kadir.utils.pagination.RestPageableEntity;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,19 +58,20 @@ public class OrderService implements IOrderService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Transactional
     @Override
     public DtoOrder createOrder(DtoOrderIU dto) {
         User user = getUserById(dto.getUserId());
-        DtoOrder dtoOrder = new DtoOrder();
         List<CartItems> cartItems = getCartItemsByUser(user);
         Set<OrderItems> orderItems = getOrderItemsByCartItems(cartItems);
         Order order = createAndSaveOrder(user, cartItems, orderItems);
         List<OrderItems> savedOrderItems = createAndSaveOrderItems(order, cartItems);
+
         clearCart(cartItems);
-        DtoOrder mappedDtoOrder = orderMapper.mapEntityToDto(order, savedOrderItems);
-        BeanUtils.copyProperties(mappedDtoOrder, dtoOrder);
+        DtoOrder dtoOrder = modelMapper.map(order, DtoOrder.class);
+
         dtoOrder.setOrderItems(savedOrderItems.stream()
-                .map(this::mapOrderItemToDto)
+                .map(item -> modelMapper.map(item, DtoOrderItems.class))
                 .collect(Collectors.toSet()));
         return dtoOrder;
     }
@@ -78,27 +80,36 @@ public class OrderService implements IOrderService {
     public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Order> productPage = orderRepository.findAll(pageable);
+
         RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class, modelMapper);
-        pageableResponse.setDocs(productPage.getContent().stream()
-                .map(order -> {
-                    DtoOrder mappedDtoOrder = new DtoOrder();
-                    BeanUtils.copyProperties(order, mappedDtoOrder);
-                    mappedDtoOrder.setOrderItems(order.getOrderItems().stream()
-                            .map(orderItem -> {
-                                DtoOrderItems mappedOrderItem = new DtoOrderItems();
-                                BeanUtils.copyProperties(orderItem, mappedOrderItem);
-                                return mappedOrderItem;
-                            })
-                            .collect(Collectors.toSet()));
-                    DtoUser dtoUser = new DtoUser();
-                    BeanUtils.copyProperties(order.getUser(), dtoUser);
-                    mappedDtoOrder.setUser(dtoUser);
-                    return mappedDtoOrder;
-                })
-                .collect(Collectors.toList()));
+
         return pageableResponse;
     }
+//    @Override
+//    public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+//        Page<Order> productPage = orderRepository.findAll(pageable);
+//        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class, modelMapper);
 
+    /// /        pageableResponse.setDocs(productPage.getContent().stream()
+    /// /                .map(order -> {
+    /// /                    DtoOrder mappedDtoOrder = new DtoOrder();
+    /// /                    BeanUtils.copyProperties(order, mappedDtoOrder);
+    /// /                    mappedDtoOrder.setOrderItems(order.getOrderItems().stream()
+    /// /                            .map(orderItem -> {
+    /// /                                DtoOrderItems mappedOrderItem = new DtoOrderItems();
+    /// /                                BeanUtils.copyProperties(orderItem, mappedOrderItem);
+    /// /                                return mappedOrderItem;
+    /// /                            })
+    /// /                            .collect(Collectors.toSet()));
+    /// /                    DtoUser dtoUser = new DtoUser();
+    /// /                    BeanUtils.copyProperties(order.getUser(), dtoUser);
+    /// /                    mappedDtoOrder.setUser(dtoUser);
+    /// /                    return mappedDtoOrder;
+    /// /                })
+    /// /                .collect(Collectors.toList()));
+//        return pageableResponse;
+//    }
     @Override
     public RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
