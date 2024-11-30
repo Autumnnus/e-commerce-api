@@ -13,7 +13,10 @@ import lombok.Setter;
 public class DtoAddressIU {
 
     @NotNull(message = "User id is required")
-    private String user_id;
+    private Long userId;
+
+    @NotNull(message = "Title is required")
+    private String title;
 
     @NotNull(message = "Street is required")
     private String street;
@@ -28,4 +31,7 @@ public class DtoAddressIU {
 
     @NotNull(message = "Country is required")
     private String country;
+
+//    @NotNull(message = "Is Default is required")
+//    private boolean isDefault;
 }

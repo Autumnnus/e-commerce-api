@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "addresses")
+@Table(name = "address")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,6 +23,9 @@ public class Address extends BaseEntity {
     @Column(name = "street", nullable = false)
     private String street;
 
+    @Column(name = "title", nullable = false)
+    private String title;
+
     @Column(name = "city", nullable = false)
     private String city;
 
@@ -35,11 +38,6 @@ public class Address extends BaseEntity {
     @Column(name = "country", nullable = false)
     private String country;
 
-    public Address(String street, String city, String state, String zipCode, String country) {
-        this.street = street;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
-        this.country = country;
-    }
+//    @Column(name = "is_default")
+//    private boolean isDefault = false;
 }
