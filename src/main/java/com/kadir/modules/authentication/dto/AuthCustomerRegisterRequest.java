@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 public class AuthCustomerRegisterRequest extends AuthRegisterRequest {
 
-
     @NotNull(message = "First name is required")
     private String firstName;
 

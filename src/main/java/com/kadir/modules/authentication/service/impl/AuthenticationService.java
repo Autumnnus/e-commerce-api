@@ -16,7 +16,7 @@ import com.kadir.modules.authentication.repository.SellerRepository;
 import com.kadir.modules.authentication.repository.UserRepository;
 import com.kadir.modules.authentication.service.IAuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,6 +37,7 @@ public class AuthenticationService implements IAuthenticationService {
     private final AuthenticationProvider authenticationProvider;
     private final JWTService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ModelMapper modelMapper;
 
     private User createUser(AuthRegisterRequest input, UserRole role) {
         User user = new User();
@@ -47,7 +48,6 @@ public class AuthenticationService implements IAuthenticationService {
         user.setPhoneNumber(input.getPhoneNumber());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
-        user.setAddress(input.getAddress());
         return user;
     }
 
@@ -114,48 +114,31 @@ public class AuthenticationService implements IAuthenticationService {
         return LocalDateTime.now().isBefore(expiredDate);
     }
 
-
     @Override
     public DtoCustomer registerCustomer(AuthCustomerRegisterRequest input) {
         validateUser(input, true);
-        DtoCustomer dtoCustomer = new DtoCustomer();
-        DtoUser dtoUser = new DtoUser();
         User savedUser = userRepository.save(createUser(input, UserRole.CUSTOMER));
         Customer customer = createCustomer(input, savedUser);
         customerRepository.save(customer);
-        BeanUtils.copyProperties(customer, dtoCustomer);
 
-        dtoUser.setId(savedUser.getId());
-        dtoUser.setUsername(savedUser.getUsername());
-        dtoUser.setEmail(savedUser.getEmail());
-        dtoUser.setPhoneNumber(savedUser.getPhoneNumber());
-        dtoUser.setRole(savedUser.getRole());
-        dtoUser.setAddress(savedUser.getAddress());
+        DtoCustomer dtoCustomer = modelMapper.map(customer, DtoCustomer.class);
+        DtoUser dtoUser = modelMapper.map(savedUser, DtoUser.class);
 
-        dtoCustomer.setFirstName(customer.getFirstName());
-        dtoCustomer.setLastName(customer.getLastName());
         dtoCustomer.setUser(dtoUser);
         return dtoCustomer;
     }
 
+
     @Override
     public DtoSeller registerSeller(AuthSellerRegisterRequest input) {
         validateUser(input, false);
-        DtoSeller dtoSeller = new DtoSeller();
-        DtoUser dtoUser = new DtoUser();
         User savedUser = userRepository.save(createUser(input, UserRole.SELLER));
         Seller seller = createSeller(input, savedUser);
         sellerRepository.save(seller);
-        BeanUtils.copyProperties(seller, dtoSeller);
 
-        dtoUser.setId(savedUser.getId());
-        dtoUser.setUsername(savedUser.getUsername());
-        dtoUser.setEmail(savedUser.getEmail());
-        dtoUser.setPhoneNumber(savedUser.getPhoneNumber());
-        dtoUser.setRole(savedUser.getRole());
-        dtoUser.setAddress(savedUser.getAddress());
+        DtoSeller dtoSeller = modelMapper.map(seller, DtoSeller.class);
+        DtoUser dtoUser = modelMapper.map(savedUser, DtoUser.class);
 
-        dtoSeller.setCompanyName(seller.getCompanyName());
         dtoSeller.setUser(dtoUser);
         return dtoSeller;
     }

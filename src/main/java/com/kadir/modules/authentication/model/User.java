@@ -2,6 +2,7 @@ package com.kadir.modules.authentication.model;
 
 import com.kadir.common.enums.UserRole;
 import com.kadir.common.model.BaseEntity;
+import com.kadir.modules.address.model.Address;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -37,8 +39,8 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "address")
-    private String address;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Address> addresses;
 
     public String getEmail() {
         return this.email;
