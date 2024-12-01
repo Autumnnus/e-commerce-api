@@ -3,7 +3,7 @@ package com.kadir.modules.authentication.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kadir.common.dto.DtoBase;
 import com.kadir.common.enums.UserRole;
-import com.kadir.modules.address.dto.AddressDtoIU;
+import com.kadir.modules.address.dto.AddressCreateDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,5 +31,5 @@ public class UserDto extends DtoBase {
 
     private String phoneNumber;
 
-    private AddressDtoIU address;
+    private AddressCreateDto address;
 }

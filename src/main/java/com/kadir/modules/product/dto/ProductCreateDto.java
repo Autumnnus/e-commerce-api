@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductDtoIU {
+public class ProductCreateDto {
 
     @NotNull(message = "Name is required")
     private String name;

@@ -5,8 +5,9 @@ import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.address.controller.IAddressController;
+import com.kadir.modules.address.dto.AddressCreateDto;
 import com.kadir.modules.address.dto.AddressDto;
-import com.kadir.modules.address.dto.AddressDtoIU;
+import com.kadir.modules.address.dto.AddressUpdateDto;
 import com.kadir.modules.address.service.IAddressService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,14 @@ public class AddressController extends RestBaseController implements IAddressCon
 
     @PostMapping("/create")
     @Override
-    public RootEntity<AddressDto> createAddress(@RequestBody @Valid AddressDtoIU addressDtoIU) {
-        return ok(addressService.createAddress(addressDtoIU));
+    public RootEntity<AddressDto> createAddress(@RequestBody @Valid AddressCreateDto addressCreateDto) {
+        return ok(addressService.createAddress(addressCreateDto));
     }
 
     @PutMapping(path = "/update/{id}")
     @Override
-    public RootEntity<AddressDto> updateAddress(@PathVariable(name = "id") Long id, @RequestBody @Valid AddressDtoIU addressDtoIU) {
-        return ok(addressService.updateAddress(id, addressDtoIU));
+    public RootEntity<AddressDto> updateAddress(@PathVariable(name = "id") Long id, @RequestBody @Valid AddressUpdateDto addressUpdateDto) {
+        return ok(addressService.updateAddress(id, addressUpdateDto));
     }
 
     @DeleteMapping("/delete/{id}")

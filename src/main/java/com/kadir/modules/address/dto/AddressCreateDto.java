@@ -1,7 +1,6 @@
 package com.kadir.modules.address.dto;
 
-import com.kadir.common.dto.DtoBase;
-import com.kadir.modules.authentication.dto.UserDtoIU;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,19 +10,26 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressDto extends DtoBase {
+public class AddressCreateDto {
 
-    private UserDtoIU user;
+    @NotNull(message = "User id is required")
+    private Long userId;
 
+    @NotNull(message = "Title is required")
     private String title;
 
+    @NotNull(message = "Street is required")
     private String street;
 
+    @NotNull(message = "City is required")
     private String city;
 
     private String state;
 
+    @NotNull(message = "Zip code is required")
     private String zipCode;
 
+    @NotNull(message = "Country is required")
     private String country;
+
 }

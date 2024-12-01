@@ -1,9 +1,11 @@
 package com.kadir.modules.address.service.impl;
 
+import com.kadir.common.utils.merge.MergeUtils;
 import com.kadir.common.utils.pagination.PaginationUtils;
 import com.kadir.common.utils.pagination.RestPageableEntity;
+import com.kadir.modules.address.dto.AddressCreateDto;
 import com.kadir.modules.address.dto.AddressDto;
-import com.kadir.modules.address.dto.AddressDtoIU;
+import com.kadir.modules.address.dto.AddressUpdateDto;
 import com.kadir.modules.address.model.Address;
 import com.kadir.modules.address.repository.AddressRepository;
 import com.kadir.modules.address.service.IAddressService;
@@ -30,27 +32,27 @@ public class AddressService implements IAddressService {
     private final ModelMapper modelMapper;
 
     @Override
-    public AddressDto createAddress(AddressDtoIU addressDtoIU) {
-        User user = userRepository.findById(addressDtoIU.getUserId())
+    public AddressDto createAddress(AddressCreateDto addressCreateDto) {
+        User user = userRepository.findById(addressCreateDto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Address address = modelMapper.map(addressDtoIU, Address.class);
+        Address address = modelMapper.map(addressCreateDto, Address.class);
         address.setUser(user);
         Address savedAddress = addressRepository.save(address);
         return modelMapper.map(savedAddress, AddressDto.class);
     }
 
-
     @Override
-    public AddressDto updateAddress(Long id, AddressDtoIU addressDtoIU) {
+    public AddressDto updateAddress(Long id, AddressUpdateDto addressUpdateDto) {
         Address existingAddress = addressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
-        User user = userRepository.findById(addressDtoIU.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Address address = modelMapper.map(addressDtoIU, Address.class);
-        address.setId(existingAddress.getId());
-        address.setCreatedAt(existingAddress.getCreatedAt());
-        address.setUser(user);
-        Address savedAddress = addressRepository.save(address);
+
+        if (addressUpdateDto.getUserId() != null) {
+            User user = userRepository.findById(addressUpdateDto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            existingAddress.setUser(user);
+        }
+        MergeUtils.copyNonNullProperties(addressUpdateDto, existingAddress);
+        Address savedAddress = addressRepository.save(existingAddress);
         return modelMapper.map(savedAddress, AddressDto.class);
     }
 

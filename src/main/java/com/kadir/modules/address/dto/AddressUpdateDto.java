@@ -10,28 +10,21 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressDtoIU {
+public class AddressUpdateDto {
 
     @NotNull(message = "User id is required")
     private Long userId;
 
-    @NotNull(message = "Title is required")
     private String title;
 
-    @NotNull(message = "Street is required")
     private String street;
 
-    @NotNull(message = "City is required")
     private String city;
 
     private String state;
 
-    @NotNull(message = "Zip code is required")
     private String zipCode;
 
-    @NotNull(message = "Country is required")
     private String country;
 
-//    @NotNull(message = "Is Default is required")
-//    private boolean isDefault;
 }

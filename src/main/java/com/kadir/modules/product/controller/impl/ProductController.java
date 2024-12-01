@@ -5,8 +5,9 @@ import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.product.controller.IProductController;
+import com.kadir.modules.product.dto.ProductCreateDto;
 import com.kadir.modules.product.dto.ProductDto;
-import com.kadir.modules.product.dto.ProductDtoIU;
+import com.kadir.modules.product.dto.ProductUpdateDto;
 import com.kadir.modules.product.service.IProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,14 @@ public class ProductController extends RestBaseController implements IProductCon
 
     @PostMapping("/create")
     @Override
-    public RootEntity<ProductDto> createProduct(@RequestBody @Valid ProductDtoIU productDtoIU) {
-        return RootEntity.success(productService.createProduct(productDtoIU));
+    public RootEntity<ProductDto> createProduct(@RequestBody @Valid ProductCreateDto productCreateDto) {
+        return RootEntity.success(productService.createProduct(productCreateDto));
     }
 
     @PutMapping(path = "/update/{id}")
     @Override
-    public RootEntity<ProductDto> updateProduct(@PathVariable(name = "id") Long id, @RequestBody @Valid ProductDtoIU productDtoIU) {
-        return RootEntity.success(productService.updateProduct(id, productDtoIU));
+    public RootEntity<ProductDto> updateProduct(@PathVariable(name = "id") Long id, @RequestBody @Valid ProductUpdateDto productUpdateDto) {
+        return RootEntity.success(productService.updateProduct(id, productUpdateDto));
     }
 
     @DeleteMapping("/delete/{id}")

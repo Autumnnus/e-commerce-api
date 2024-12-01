@@ -3,8 +3,9 @@ package com.kadir.modules.category.controller.impl;
 import com.kadir.common.controller.RootEntity;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.category.controller.ICategoryController;
+import com.kadir.modules.category.dto.CategoryCreateDto;
 import com.kadir.modules.category.dto.CategoryDto;
-import com.kadir.modules.category.dto.CategoryDtoIU;
+import com.kadir.modules.category.dto.CategoryUpdateDto;
 import com.kadir.modules.category.service.ICategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,14 @@ public class CategoryController extends RestBaseController implements ICategoryC
 
     @PostMapping("/create")
     @Override
-    public RootEntity<CategoryDto> createCategory(@RequestBody @Valid CategoryDtoIU categoryDtoIU) {
-        return RootEntity.success(categoryService.createCategory(categoryDtoIU));
+    public RootEntity<CategoryDto> createCategory(@RequestBody @Valid CategoryCreateDto categoryCreateDto) {
+        return RootEntity.success(categoryService.createCategory(categoryCreateDto));
     }
 
     @PutMapping(path = "/update/{id}")
     @Override
-    public RootEntity<CategoryDto> updateCategory(@PathVariable(name = "id") Long id, @RequestBody @Valid CategoryDtoIU categoryDtoIU) {
-        return RootEntity.success(categoryService.updateCategory(id, categoryDtoIU));
+    public RootEntity<CategoryDto> updateCategory(@PathVariable(name = "id") Long id, @RequestBody @Valid CategoryUpdateDto categoryUpdateDto) {
+        return RootEntity.success(categoryService.updateCategory(id, categoryUpdateDto));
     }
 
     @DeleteMapping("/delete/{id}")

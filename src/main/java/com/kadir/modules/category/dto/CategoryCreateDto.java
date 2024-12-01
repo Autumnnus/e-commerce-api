@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoryDtoIU {
+public class CategoryCreateDto {
 
     @NotNull(message = "Name is required")
     private String name;

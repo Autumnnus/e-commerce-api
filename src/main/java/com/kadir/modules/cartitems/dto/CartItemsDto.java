@@ -2,7 +2,7 @@ package com.kadir.modules.cartitems.dto;
 
 import com.kadir.common.dto.DtoBase;
 import com.kadir.modules.authentication.dto.UserDto;
-import com.kadir.modules.product.dto.ProductDtoIU;
+import com.kadir.modules.product.dto.ProductCreateDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ public class CartItemsDto extends DtoBase {
 
     private UserDto user;
 
-    private ProductDtoIU product;
+    private ProductCreateDto product;
 
     private int quantity;
 
