@@ -2,9 +2,9 @@ package com.kadir.modules.category.controller.impl;
 
 import com.kadir.common.controller.RootEntity;
 import com.kadir.common.controller.impl.RestBaseController;
-import com.kadir.modules.category.controller.ICategoryRestController;
-import com.kadir.modules.category.dto.DtoCategory;
-import com.kadir.modules.category.dto.DtoCategoryIU;
+import com.kadir.modules.category.controller.ICategoryController;
+import com.kadir.modules.category.dto.CategoryDto;
+import com.kadir.modules.category.dto.CategoryDtoIU;
 import com.kadir.modules.category.service.ICategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,38 +14,38 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rest/api/category")
-public class CategoryRestController extends RestBaseController implements ICategoryRestController {
+public class CategoryController extends RestBaseController implements ICategoryController {
 
     @Autowired
     private ICategoryService categoryService;
 
     @PostMapping("/create")
     @Override
-    public RootEntity<DtoCategory> createCategory(@RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
-        return RootEntity.success(categoryService.createCategory(dtoCategoryIU));
+    public RootEntity<CategoryDto> createCategory(@RequestBody @Valid CategoryDtoIU categoryDtoIU) {
+        return RootEntity.success(categoryService.createCategory(categoryDtoIU));
     }
 
     @PutMapping(path = "/update/{id}")
     @Override
-    public RootEntity<DtoCategory> updateCategory(@PathVariable(name = "id") Long id, @RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
-        return RootEntity.success(categoryService.updateCategory(id, dtoCategoryIU));
+    public RootEntity<CategoryDto> updateCategory(@PathVariable(name = "id") Long id, @RequestBody @Valid CategoryDtoIU categoryDtoIU) {
+        return RootEntity.success(categoryService.updateCategory(id, categoryDtoIU));
     }
 
     @DeleteMapping("/delete/{id}")
     @Override
-    public RootEntity<DtoCategory> deleteCategory(@PathVariable(name = "id") Long id) {
+    public RootEntity<CategoryDto> deleteCategory(@PathVariable(name = "id") Long id) {
         return RootEntity.success(categoryService.deleteCategory(id));
     }
 
     @GetMapping("/all")
     @Override
-    public RootEntity<List<DtoCategory>> getAllCategories() {
+    public RootEntity<List<CategoryDto>> getAllCategories() {
         return RootEntity.success(categoryService.getAllCategories());
     }
 
     @GetMapping("/{id}")
     @Override
-    public RootEntity<DtoCategory> getCategoryById(@PathVariable(name = "id") Long id) {
+    public RootEntity<CategoryDto> getCategoryById(@PathVariable(name = "id") Long id) {
         return RootEntity.success(categoryService.getCategoryById(id));
     }
 }

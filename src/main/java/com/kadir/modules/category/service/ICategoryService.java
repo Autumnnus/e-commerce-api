@@ -1,19 +1,19 @@
 package com.kadir.modules.category.service;
 
-import com.kadir.modules.category.dto.DtoCategory;
-import com.kadir.modules.category.dto.DtoCategoryIU;
+import com.kadir.modules.category.dto.CategoryDto;
+import com.kadir.modules.category.dto.CategoryDtoIU;
 
 import java.util.List;
 
 public interface ICategoryService {
 
-    DtoCategory createCategory(DtoCategoryIU dtoCategoryIU);
+    CategoryDto createCategory(CategoryDtoIU categoryDtoIU);
 
-    DtoCategory updateCategory(Long id, DtoCategoryIU dtoCategoryIU);
+    CategoryDto updateCategory(Long id, CategoryDtoIU categoryDtoIU);
 
-    DtoCategory deleteCategory(Long id);
+    CategoryDto deleteCategory(Long id);
 
-    List<DtoCategory> getAllCategories();
+    List<CategoryDto> getAllCategories();
 
-    DtoCategory getCategoryById(Long id);
+    CategoryDto getCategoryById(Long id);
 }

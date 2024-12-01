@@ -2,8 +2,8 @@ package com.kadir.modules.address.service.impl;
 
 import com.kadir.common.utils.pagination.PaginationUtils;
 import com.kadir.common.utils.pagination.RestPageableEntity;
-import com.kadir.modules.address.dto.DtoAddress;
-import com.kadir.modules.address.dto.DtoAddressIU;
+import com.kadir.modules.address.dto.AddressDto;
+import com.kadir.modules.address.dto.AddressDtoIU;
 import com.kadir.modules.address.model.Address;
 import com.kadir.modules.address.repository.AddressRepository;
 import com.kadir.modules.address.service.IAddressService;
@@ -30,62 +30,62 @@ public class AddressService implements IAddressService {
     private final ModelMapper modelMapper;
 
     @Override
-    public DtoAddress createAddress(DtoAddressIU dtoAddressIU) {
-        User user = userRepository.findById(dtoAddressIU.getUserId())
+    public AddressDto createAddress(AddressDtoIU addressDtoIU) {
+        User user = userRepository.findById(addressDtoIU.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Address address = modelMapper.map(dtoAddressIU, Address.class);
+        Address address = modelMapper.map(addressDtoIU, Address.class);
         address.setUser(user);
         Address savedAddress = addressRepository.save(address);
-        return modelMapper.map(savedAddress, DtoAddress.class);
+        return modelMapper.map(savedAddress, AddressDto.class);
     }
 
 
     @Override
-    public DtoAddress updateAddress(Long id, DtoAddressIU dtoAddressIU) {
+    public AddressDto updateAddress(Long id, AddressDtoIU addressDtoIU) {
         Address existingAddress = addressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
-        User user = userRepository.findById(dtoAddressIU.getUserId())
+        User user = userRepository.findById(addressDtoIU.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Address address = modelMapper.map(dtoAddressIU, Address.class);
+        Address address = modelMapper.map(addressDtoIU, Address.class);
         address.setId(existingAddress.getId());
         address.setCreatedAt(existingAddress.getCreatedAt());
         address.setUser(user);
         Address savedAddress = addressRepository.save(address);
-        return modelMapper.map(savedAddress, DtoAddress.class);
+        return modelMapper.map(savedAddress, AddressDto.class);
     }
 
     @Transactional
     @Override
-    public DtoAddress deleteAddress(Long id) {
+    public AddressDto deleteAddress(Long id) {
         Address existingAddress = addressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
         Address address = modelMapper.map(existingAddress, Address.class);
         addressRepository.deleteById(id);
-        DtoAddress dtoAddress = modelMapper.map(address, DtoAddress.class);
-        return dtoAddress;
+        AddressDto addressDto = modelMapper.map(address, AddressDto.class);
+        return addressDto;
     }
 
     @Override
-    public List<DtoAddress> getUserAddresses(Long userId) {
+    public List<AddressDto> getUserAddresses(Long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<Address> addresses = addressRepository.findByUserId(userId);
-        List<DtoAddress> dtoAddresses = addresses.stream()
-                .map(address -> modelMapper.map(address, DtoAddress.class))
+        List<AddressDto> addressDtos = addresses.stream()
+                .map(address -> modelMapper.map(address, AddressDto.class))
                 .collect(Collectors.toList());
 
-        return dtoAddresses;
+        return addressDtos;
     }
 
 
     @Override
-    public RestPageableEntity<DtoAddress> getAllAddress(int pageNumber, int pageSize) {
+    public RestPageableEntity<AddressDto> getAllAddress(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Address> addressPage = addressRepository.findAll(pageable);
-        RestPageableEntity<DtoAddress> pageableResponse = PaginationUtils.toPageableResponse(addressPage, DtoAddress.class, modelMapper);
+        RestPageableEntity<AddressDto> pageableResponse = PaginationUtils.toPageableResponse(addressPage, AddressDto.class, modelMapper);
         pageableResponse.setDocs(addressPage.getContent().stream()
-                .map(product -> modelMapper.map(product, DtoAddress.class))
+                .map(product -> modelMapper.map(product, AddressDto.class))
                 .collect(Collectors.toList()));
         return pageableResponse;
     }

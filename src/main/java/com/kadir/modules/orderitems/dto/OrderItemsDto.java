@@ -1,8 +1,8 @@
 package com.kadir.modules.orderitems.dto;
 
 import com.kadir.common.dto.DtoBase;
-import com.kadir.modules.order.dto.DtoOrderIU;
-import com.kadir.modules.product.dto.DtoProductIU;
+import com.kadir.modules.order.dto.OrderDtoIU;
+import com.kadir.modules.product.dto.ProductDtoIU;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,11 +14,11 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DtoOrderItems extends DtoBase {
+public class OrderItemsDto extends DtoBase {
 
-    private DtoOrderIU order;
+    private OrderDtoIU order;
 
-    private DtoProductIU product;
+    private ProductDtoIU product;
 
     private int quantity;
 

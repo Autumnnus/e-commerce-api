@@ -10,12 +10,12 @@ import com.kadir.modules.authentication.model.User;
 import com.kadir.modules.authentication.repository.UserRepository;
 import com.kadir.modules.cartitems.model.CartItems;
 import com.kadir.modules.cartitems.repository.CartItemsRepository;
-import com.kadir.modules.order.dto.DtoOrder;
-import com.kadir.modules.order.dto.DtoOrderIU;
+import com.kadir.modules.order.dto.OrderDto;
+import com.kadir.modules.order.dto.OrderDtoIU;
 import com.kadir.modules.order.model.Order;
 import com.kadir.modules.order.repository.OrderRepository;
 import com.kadir.modules.order.service.IOrderService;
-import com.kadir.modules.orderitems.dto.DtoOrderItems;
+import com.kadir.modules.orderitems.dto.OrderItemsDto;
 import com.kadir.modules.orderitems.model.OrderItems;
 import com.kadir.modules.orderitems.repository.OrderItemsRepository;
 import jakarta.transaction.Transactional;
@@ -44,7 +44,7 @@ public class OrderService implements IOrderService {
 
     @Transactional
     @Override
-    public DtoOrder createOrder(DtoOrderIU dto) {
+    public OrderDto createOrder(OrderDtoIU dto) {
         User user = userRepository.findById(dto.getUserId()).orElseThrow(
                 () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
@@ -59,47 +59,47 @@ public class OrderService implements IOrderService {
             cartItemsRepository.deleteAll(cartItems);
         }
 
-        DtoOrder dtoOrder = modelMapper.map(order, DtoOrder.class);
-        dtoOrder.setOrderItems(savedOrderItems.stream()
-                .map(item -> modelMapper.map(item, DtoOrderItems.class))
+        OrderDto orderDto = modelMapper.map(order, OrderDto.class);
+        orderDto.setOrderItems(savedOrderItems.stream()
+                .map(item -> modelMapper.map(item, OrderItemsDto.class))
                 .collect(Collectors.toSet()));
-        return dtoOrder;
+        return orderDto;
     }
 
 
     @Override
-    public RestPageableEntity<DtoOrder> getAllOrders(int pageNumber, int pageSize) {
+    public RestPageableEntity<OrderDto> getAllOrders(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Order> productPage = orderRepository.findAll(pageable);
 
-        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(productPage, DtoOrder.class, modelMapper);
+        RestPageableEntity<OrderDto> pageableResponse = PaginationUtils.toPageableResponse(productPage, OrderDto.class, modelMapper);
 
         return pageableResponse;
     }
 
     @Override
-    public RestPageableEntity<DtoOrder> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
+    public RestPageableEntity<OrderDto> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);
-        RestPageableEntity<DtoOrder> pageableResponse = PaginationUtils.toPageableResponse(orderPage, DtoOrder.class, modelMapper);
+        RestPageableEntity<OrderDto> pageableResponse = PaginationUtils.toPageableResponse(orderPage, OrderDto.class, modelMapper);
         return pageableResponse;
     }
 
     @Override
-    public DtoOrder updateOrderStatus(Long orderId, OrderStatus paymentStatus) {
+    public OrderDto updateOrderStatus(Long orderId, OrderStatus paymentStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found."));
         order.setPaymentStatus(paymentStatus);
         Order savedOrder = orderRepository.save(order);
 
-        DtoOrder dtoOrder = modelMapper.map(savedOrder, DtoOrder.class);
-        dtoOrder.setOrderItems(savedOrder.getOrderItems().stream()
-                .map(orderItem -> modelMapper.map(orderItem, DtoOrderItems.class))
+        OrderDto orderDto = modelMapper.map(savedOrder, OrderDto.class);
+        orderDto.setOrderItems(savedOrder.getOrderItems().stream()
+                .map(orderItem -> modelMapper.map(orderItem, OrderItemsDto.class))
                 .collect(Collectors.toSet()));
 
-        return dtoOrder;
+        return orderDto;
     }
 
     private Order createAndSaveOrder(User user, List<CartItems> cartItems) {

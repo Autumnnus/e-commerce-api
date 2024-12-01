@@ -4,9 +4,9 @@ import com.kadir.modules.authentication.dto.*;
 
 public interface IAuthenticationService {
 
-    DtoCustomer registerCustomer(AuthCustomerRegisterRequest input);
+    CustomerDto registerCustomer(AuthCustomerRegisterRequest input);
 
-    DtoSeller registerSeller(AuthSellerRegisterRequest input);
+    SellerDto registerSeller(AuthSellerRegisterRequest input);
 
     AuthResponse authenticate(AuthRequest input);
 

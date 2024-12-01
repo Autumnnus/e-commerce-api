@@ -1,20 +1,20 @@
 package com.kadir.modules.cartitems.service;
 
-import com.kadir.modules.cartitems.dto.DtoCartItems;
-import com.kadir.modules.cartitems.dto.DtoCartItemsIU;
+import com.kadir.modules.cartitems.dto.CartItemsDto;
+import com.kadir.modules.cartitems.dto.CartItemsDtoIU;
 
 import java.util.List;
 
 public interface ICartItemsService {
 
-    DtoCartItems createCartItems(DtoCartItemsIU dtoCartItemsIU);
+    CartItemsDto createCartItems(CartItemsDtoIU cartItemsDtoIU);
 
-    DtoCartItems updateCartItems(Long id, DtoCartItemsIU dtoCartItemsIU);
+    CartItemsDto updateCartItems(Long id, CartItemsDtoIU cartItemsDtoIU);
 
-    DtoCartItems deleteCartItems(Long id);
+    CartItemsDto deleteCartItems(Long id);
 
-    DtoCartItems getCartItemsById(Long id);
+    CartItemsDto getCartItemsById(Long id);
 
-    List<DtoCartItems> getUserCartItems(Long userId);
+    List<CartItemsDto> getUserCartItems(Long userId);
 
 }

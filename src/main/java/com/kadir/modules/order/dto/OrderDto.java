@@ -2,8 +2,8 @@ package com.kadir.modules.order.dto;
 
 import com.kadir.common.dto.DtoBase;
 import com.kadir.common.enums.OrderStatus;
-import com.kadir.modules.authentication.dto.DtoUser;
-import com.kadir.modules.orderitems.dto.DtoOrderItems;
+import com.kadir.modules.authentication.dto.UserDto;
+import com.kadir.modules.orderitems.dto.OrderItemsDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +17,11 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DtoOrder extends DtoBase {
+public class OrderDto extends DtoBase {
 
-    private DtoUser user;
+    private UserDto user;
 
-    private Set<DtoOrderItems> orderItems;
+    private Set<OrderItemsDto> orderItems;
 
     private LocalDateTime orderDate = LocalDateTime.now();
 

@@ -3,11 +3,11 @@ package com.kadir.modules.authentication.controller;
 import com.kadir.common.controller.RootEntity;
 import com.kadir.modules.authentication.dto.*;
 
-public interface IRestAuthenticationController {
+public interface IAuthenticationController {
 
-    RootEntity<DtoCustomer> registerCustomer(AuthCustomerRegisterRequest input);
+    RootEntity<CustomerDto> registerCustomer(AuthCustomerRegisterRequest input);
 
-    RootEntity<DtoSeller> registerSeller(AuthSellerRegisterRequest input);
+    RootEntity<SellerDto> registerSeller(AuthSellerRegisterRequest input);
 
     RootEntity<AuthResponse> authenticate(AuthRequest input);
 

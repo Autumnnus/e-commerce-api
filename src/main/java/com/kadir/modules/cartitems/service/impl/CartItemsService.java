@@ -5,8 +5,8 @@ import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
 import com.kadir.modules.authentication.model.User;
 import com.kadir.modules.authentication.repository.UserRepository;
-import com.kadir.modules.cartitems.dto.DtoCartItems;
-import com.kadir.modules.cartitems.dto.DtoCartItemsIU;
+import com.kadir.modules.cartitems.dto.CartItemsDto;
+import com.kadir.modules.cartitems.dto.CartItemsDtoIU;
 import com.kadir.modules.cartitems.model.CartItems;
 import com.kadir.modules.cartitems.repository.CartItemsRepository;
 import com.kadir.modules.cartitems.service.ICartItemsService;
@@ -29,57 +29,57 @@ public class CartItemsService implements ICartItemsService {
     private final ModelMapper modelMapper;
 
     @Override
-    public DtoCartItems createCartItems(DtoCartItemsIU dtoCartItemsIU) {
-        User user = userRepository.findById(dtoCartItemsIU.getUserId())
+    public CartItemsDto createCartItems(CartItemsDtoIU cartItemsDtoIU) {
+        User user = userRepository.findById(cartItemsDtoIU.getUserId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
-        Product product = productRepository.findById(dtoCartItemsIU.getProductId())
+        Product product = productRepository.findById(cartItemsDtoIU.getProductId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
         CartItems cartItems = new CartItems();
         cartItems.setUser(user);
         cartItems.setProduct(product);
-        cartItems.setQuantity(dtoCartItemsIU.getQuantity());
+        cartItems.setQuantity(cartItemsDtoIU.getQuantity());
 
         CartItems savedCartItems = cartItemsRepository.save(cartItems);
-        return modelMapper.map(savedCartItems, DtoCartItems.class);
+        return modelMapper.map(savedCartItems, CartItemsDto.class);
     }
 
 
     @Override
-    public DtoCartItems updateCartItems(Long id, DtoCartItemsIU dtoCartItemsIU) {
+    public CartItemsDto updateCartItems(Long id, CartItemsDtoIU cartItemsDtoIU) {
         CartItems cartItems = cartItemsRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found")));
-        cartItems.getUser().setId(dtoCartItemsIU.getUserId());
-        cartItems.getProduct().setId(dtoCartItemsIU.getProductId());
-        cartItems.setQuantity(dtoCartItemsIU.getQuantity());
+        cartItems.getUser().setId(cartItemsDtoIU.getUserId());
+        cartItems.getProduct().setId(cartItemsDtoIU.getProductId());
+        cartItems.setQuantity(cartItemsDtoIU.getQuantity());
 
         CartItems savedCartItems = cartItemsRepository.save(cartItems);
-        return modelMapper.map(savedCartItems, DtoCartItems.class);
+        return modelMapper.map(savedCartItems, CartItemsDto.class);
     }
 
     @Override
-    public DtoCartItems deleteCartItems(Long id) {
+    public CartItemsDto deleteCartItems(Long id) {
         CartItems cartItems = cartItemsRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found")));
-        DtoCartItems dtoCartItems = modelMapper.map(cartItems, DtoCartItems.class);
+        CartItemsDto cartItemsDto = modelMapper.map(cartItems, CartItemsDto.class);
 
         cartItemsRepository.deleteById(id);
-        return dtoCartItems;
+        return cartItemsDto;
     }
 
 
     @Override
-    public DtoCartItems getCartItemsById(Long id) {
+    public CartItemsDto getCartItemsById(Long id) {
         CartItems cartItems = cartItemsRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found")));
-        return modelMapper.map(cartItems, DtoCartItems.class);
+        return modelMapper.map(cartItems, CartItemsDto.class);
     }
 
     @Override
-    public List<DtoCartItems> getUserCartItems(Long userId) {
+    public List<CartItemsDto> getUserCartItems(Long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         List<CartItems> cartItems = cartItemsRepository.findByUserId(userId);
-        return modelMapper.map(cartItems, new TypeToken<List<DtoCartItems>>() {
+        return modelMapper.map(cartItems, new TypeToken<List<CartItemsDto>>() {
         }.getType());
     }
 }

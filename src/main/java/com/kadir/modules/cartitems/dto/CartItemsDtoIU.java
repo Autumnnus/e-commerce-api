@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DtoCartItemsIU {
+public class CartItemsDtoIU {
 
     @NotNull(message = "User id is required")
     private Long userId;

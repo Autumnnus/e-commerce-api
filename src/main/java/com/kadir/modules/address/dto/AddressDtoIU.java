@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DtoAddressIU {
+public class AddressDtoIU {
 
     @NotNull(message = "User id is required")
     private Long userId;

@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class DtoOrderIU {
+public class OrderDtoIU {
 
     @NotNull(message = "User id is required")
     private Long userId;

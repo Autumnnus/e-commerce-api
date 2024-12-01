@@ -115,32 +115,32 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     @Override
-    public DtoCustomer registerCustomer(AuthCustomerRegisterRequest input) {
+    public CustomerDto registerCustomer(AuthCustomerRegisterRequest input) {
         validateUser(input, true);
         User savedUser = userRepository.save(createUser(input, UserRole.CUSTOMER));
         Customer customer = createCustomer(input, savedUser);
         customerRepository.save(customer);
 
-        DtoCustomer dtoCustomer = modelMapper.map(customer, DtoCustomer.class);
-        DtoUser dtoUser = modelMapper.map(savedUser, DtoUser.class);
+        CustomerDto customerDto = modelMapper.map(customer, CustomerDto.class);
+        UserDto userDto = modelMapper.map(savedUser, UserDto.class);
 
-        dtoCustomer.setUser(dtoUser);
-        return dtoCustomer;
+        customerDto.setUser(userDto);
+        return customerDto;
     }
 
 
     @Override
-    public DtoSeller registerSeller(AuthSellerRegisterRequest input) {
+    public SellerDto registerSeller(AuthSellerRegisterRequest input) {
         validateUser(input, false);
         User savedUser = userRepository.save(createUser(input, UserRole.SELLER));
         Seller seller = createSeller(input, savedUser);
         sellerRepository.save(seller);
 
-        DtoSeller dtoSeller = modelMapper.map(seller, DtoSeller.class);
-        DtoUser dtoUser = modelMapper.map(savedUser, DtoUser.class);
+        SellerDto sellerDto = modelMapper.map(seller, SellerDto.class);
+        UserDto userDto = modelMapper.map(savedUser, UserDto.class);
 
-        dtoSeller.setUser(dtoUser);
-        return dtoSeller;
+        sellerDto.setUser(userDto);
+        return sellerDto;
     }
 
 

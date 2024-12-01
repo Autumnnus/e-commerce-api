@@ -1,6 +1,6 @@
 package com.kadir.modules.authentication.dto;
 
-import com.kadir.common.enums.UserRole;
+import com.kadir.common.dto.DtoBase;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,18 +11,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DtoUserIU {
+public class CustomerDto extends DtoBase {
 
     @NotNull
-    private String username;
+    private UserDto user;
 
     @NotNull
-    private UserRole role;
+    private String firstName;
 
     @NotNull
-    private String email;
-
-    private String phoneNumber;
-
-    private String address;
+    private String lastName;
 }

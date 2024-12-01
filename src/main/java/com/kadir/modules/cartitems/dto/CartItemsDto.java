@@ -1,8 +1,8 @@
 package com.kadir.modules.cartitems.dto;
 
 import com.kadir.common.dto.DtoBase;
-import com.kadir.modules.authentication.dto.DtoUser;
-import com.kadir.modules.product.dto.DtoProductIU;
+import com.kadir.modules.authentication.dto.UserDto;
+import com.kadir.modules.product.dto.ProductDtoIU;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +12,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DtoCartItems extends DtoBase {
+public class CartItemsDto extends DtoBase {
 
-    private DtoUser user;
+    private UserDto user;
 
-    private DtoProductIU product;
+    private ProductDtoIU product;
 
     private int quantity;
 

@@ -1,7 +1,7 @@
 package com.kadir.modules.address.dto;
 
 import com.kadir.common.dto.DtoBase;
-import com.kadir.modules.authentication.dto.DtoUserIU;
+import com.kadir.modules.authentication.dto.UserDtoIU;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,9 +11,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DtoAddress extends DtoBase {
+public class AddressDto extends DtoBase {
 
-    private DtoUserIU user;
+    private UserDtoIU user;
 
     private String title;
 

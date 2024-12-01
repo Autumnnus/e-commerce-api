@@ -1,13 +1,13 @@
 package com.kadir.modules.orderitems.service;
 
 import com.kadir.common.utils.pagination.RestPageableEntity;
-import com.kadir.modules.orderitems.dto.DtoOrderItems;
+import com.kadir.modules.orderitems.dto.OrderItemsDto;
 
 import java.util.List;
 
 public interface IOrderItemsService {
 
-    List<DtoOrderItems> getOrderItemsByOrderId(Long orderId);
+    List<OrderItemsDto> getOrderItemsByOrderId(Long orderId);
 
-    RestPageableEntity<DtoOrderItems> getAllOrderItems(int pageNumber, int pageSize);
+    RestPageableEntity<OrderItemsDto> getAllOrderItems(int pageNumber, int pageSize);
 }

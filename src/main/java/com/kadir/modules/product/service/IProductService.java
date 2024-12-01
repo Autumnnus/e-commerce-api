@@ -1,18 +1,18 @@
 package com.kadir.modules.product.service;
 
 import com.kadir.common.utils.pagination.RestPageableEntity;
-import com.kadir.modules.product.dto.DtoProduct;
-import com.kadir.modules.product.dto.DtoProductIU;
+import com.kadir.modules.product.dto.ProductDto;
+import com.kadir.modules.product.dto.ProductDtoIU;
 
 public interface IProductService {
 
-    DtoProduct createProduct(DtoProductIU dtoProduct);
+    ProductDto createProduct(ProductDtoIU dtoProduct);
 
-    DtoProduct updateProduct(Long id, DtoProductIU dtoProduct);
+    ProductDto updateProduct(Long id, ProductDtoIU dtoProduct);
 
-    DtoProduct deleteProduct(Long id);
+    ProductDto deleteProduct(Long id);
 
-    RestPageableEntity<DtoProduct> getAllProducts(int pageNumber, int pageSize);
+    RestPageableEntity<ProductDto> getAllProducts(int pageNumber, int pageSize);
 
-    DtoProduct getProductById(Long id);
+    ProductDto getProductById(Long id);
 }

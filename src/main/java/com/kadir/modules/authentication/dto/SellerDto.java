@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DtoSeller extends DtoBase {
+public class SellerDto extends DtoBase {
 
     @NotNull
-    private DtoUser user;
+    private UserDto user;
 
     @NotNull
     private String companyName;
