@@ -25,7 +25,7 @@ public class JWTService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claimsMap = new HashMap<>();
         User user = (User) userDetails;
-        claimsMap.put("role", user.getRole());
+        claimsMap.put("role", "ROLE_" + user.getRole());
         claimsMap.put("email", user.getEmail());
         claimsMap.put("sub", userDetails.getUsername());
 
@@ -37,6 +37,17 @@ public class JWTService {
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    public String getRoleByToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("role", String.class);
+    }
+
 
     public <T> T exportToken(String token, Function<Claims, T> claimsFunc) {
         Claims claims = getClaims(token);

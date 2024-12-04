@@ -34,6 +34,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui.html",
     };
+    public static final String[] ADMIN_PATHS = {"/admin/**"};
 
     @Autowired
     private AuthenticationProvider authenticationProvider;
@@ -54,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(AUTHENTICATE, REGISTER_CUSTOMER, REGISTER_SELLER, REFRESH_TOKEN)
                         .permitAll()
                         .requestMatchers(SWAGGER_PATHS).permitAll()
+                        .requestMatchers(ADMIN_PATHS).hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
                 .sessionManagement(session -> session
