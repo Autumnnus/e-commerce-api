@@ -20,25 +20,25 @@ public class CategoryController extends RestBaseController implements ICategoryC
     @Autowired
     private ICategoryService categoryService;
 
-    @PostMapping("/create")
+    @PostMapping
     @Override
     public RootEntity<CategoryDto> createCategory(@RequestBody @Valid CategoryCreateDto categoryCreateDto) {
         return RootEntity.success(categoryService.createCategory(categoryCreateDto));
     }
 
-    @PutMapping(path = "/update/{id}")
+    @PutMapping("/{id}")
     @Override
     public RootEntity<CategoryDto> updateCategory(@PathVariable(name = "id") Long id, @RequestBody @Valid CategoryUpdateDto categoryUpdateDto) {
         return RootEntity.success(categoryService.updateCategory(id, categoryUpdateDto));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Override
     public RootEntity<CategoryDto> deleteCategory(@PathVariable(name = "id") Long id) {
         return RootEntity.success(categoryService.deleteCategory(id));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     @Override
     public RootEntity<List<CategoryDto>> getAllCategories() {
         return RootEntity.success(categoryService.getAllCategories());

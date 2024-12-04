@@ -22,19 +22,19 @@ public class AddressController extends RestBaseController implements IAddressCon
     @Autowired
     private IAddressService addressService;
 
-    @PostMapping("/create")
+    @PostMapping
     @Override
     public RootEntity<AddressDto> createAddress(@RequestBody @Valid AddressCreateDto addressCreateDto) {
         return ok(addressService.createAddress(addressCreateDto));
     }
 
-    @PutMapping(path = "/update/{id}")
+    @PutMapping(path = "/{id}")
     @Override
     public RootEntity<AddressDto> updateAddress(@PathVariable(name = "id") Long id, @RequestBody @Valid AddressUpdateDto addressUpdateDto) {
         return ok(addressService.updateAddress(id, addressUpdateDto));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Override
     public RootEntity<AddressDto> deleteAddress(@PathVariable(name = "id") Long id) {
         return ok(addressService.deleteAddress(id));
@@ -46,7 +46,7 @@ public class AddressController extends RestBaseController implements IAddressCon
         return ok(addressService.getUserAddresses(userId));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     @Override
     public RootEntity<RestPageableEntity<AddressDto>> getAllAddress(RestPageableRequest request) {
         return ok(addressService.getAllAddress(request.getPageNumber(), request.getPageSize()));

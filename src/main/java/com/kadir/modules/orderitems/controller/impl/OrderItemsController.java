@@ -22,13 +22,13 @@ public class OrderItemsController extends RestBaseController implements IOrderIt
     @Autowired
     private IOrderItemsService orderItemsService;
 
-    @GetMapping("/{orderId}")
+    @GetMapping("/{id}")
     @Override
-    public RootEntity<List<OrderItemsDto>> getOrderItemsByOrderId(@PathVariable(name = "orderId") Long orderId) {
+    public RootEntity<List<OrderItemsDto>> getOrderItemsByOrderId(@PathVariable(name = "id") Long orderId) {
         return ok(orderItemsService.getOrderItemsByOrderId(orderId));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     @Override
     public RootEntity<RestPageableEntity<OrderItemsDto>> getAllOrderItems(RestPageableRequest request) {
         return ok(orderItemsService.getAllOrderItems(request.getPageNumber(), request.getPageSize()));

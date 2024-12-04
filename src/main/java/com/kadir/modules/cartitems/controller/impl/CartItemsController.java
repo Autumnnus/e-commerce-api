@@ -20,19 +20,19 @@ public class CartItemsController extends RestBaseController implements ICartItem
     @Autowired
     private ICartItemsService cartItemsService;
 
-    @PostMapping("/create")
+    @PostMapping
     @Override
     public RootEntity<CartItemsDto> createCartItems(@RequestBody @Valid CartItemsCreateDto cartItemsCreateDto) {
         return ok(cartItemsService.createCartItems(cartItemsCreateDto));
     }
 
-    @PutMapping(path = "/update/{id}")
+    @PutMapping(path = "/{id}")
     @Override
     public RootEntity<CartItemsDto> updateCartItems(@PathVariable(name = "id") Long id, @RequestBody @Valid CartItemsUpdateDto cartItemsUpdateDto) {
         return ok(cartItemsService.updateCartItems(id, cartItemsUpdateDto));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Override
     public RootEntity<CartItemsDto> deleteCartItems(@PathVariable(name = "id") Long id) {
         return ok(cartItemsService.deleteCartItems(id));

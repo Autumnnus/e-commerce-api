@@ -20,13 +20,13 @@ public class OrderController extends RestBaseController implements IOrderControl
     @Autowired
     private IOrderService orderService;
 
-    @PostMapping("/create")
+    @PostMapping
     @Override
     public RootEntity<OrderDto> createOrder(@RequestBody @Valid OrderDtoIU orderDtoIU) {
         return ok(orderService.createOrder(orderDtoIU));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     @Override
     public RootEntity<RestPageableEntity<OrderDto>> getAllOrders(RestPageableRequest request) {
         return ok(orderService.getAllOrders(request.getPageNumber(), request.getPageSize()));
@@ -38,7 +38,7 @@ public class OrderController extends RestBaseController implements IOrderControl
         return ok(orderService.getOrdersByUser(userId, request.getPageNumber(), request.getPageSize()));
     }
 
-    @PutMapping("/update-status/{id}")
+    @PutMapping("/{id}")
     @Override
     public RootEntity<OrderDto> updateOrderStatus(
             @PathVariable(name = "id") Long orderId,
