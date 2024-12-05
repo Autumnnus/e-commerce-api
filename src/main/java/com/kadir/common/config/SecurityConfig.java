@@ -1,5 +1,6 @@
 package com.kadir.common.config;
 
+import com.kadir.common.enums.UserRole;
 import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,6 +25,7 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     public static final String REGISTER_CUSTOMER = "/registerCustomer";
     public static final String REGISTER_SELLER = "/registerSeller";
@@ -34,6 +37,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui.html",
     };
+    public static final String ADMIN_PATH = "/admin/**";
 
     @Autowired
     private AuthenticationProvider authenticationProvider;
@@ -54,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(AUTHENTICATE, REGISTER_CUSTOMER, REGISTER_SELLER, REFRESH_TOKEN)
                         .permitAll()
                         .requestMatchers(SWAGGER_PATHS).permitAll()
+                        .requestMatchers(ADMIN_PATH).hasRole(UserRole.ADMIN.name())
                         .anyRequest().authenticated())
                 .exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
                 .sessionManagement(session -> session

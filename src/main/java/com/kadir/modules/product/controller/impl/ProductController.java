@@ -11,6 +11,7 @@ import com.kadir.modules.product.dto.ProductUpdateDto;
 import com.kadir.modules.product.service.IProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,28 +21,32 @@ public class ProductController extends RestBaseController implements IProductCon
     @Autowired
     private IProductService productService;
 
-    @PostMapping("/create")
+    @PreAuthorize("hasRole('SELLER')")
+    @PostMapping
     @Override
     public RootEntity<ProductDto> createProduct(@RequestBody @Valid ProductCreateDto productCreateDto) {
         return RootEntity.success(productService.createProduct(productCreateDto));
     }
 
-    @PutMapping(path = "/update/{id}")
+    @PreAuthorize("hasRole('SELLER')")
+    @PutMapping("/{id}")
     @Override
     public RootEntity<ProductDto> updateProduct(@PathVariable(name = "id") Long id, @RequestBody @Valid ProductUpdateDto productUpdateDto) {
         return RootEntity.success(productService.updateProduct(id, productUpdateDto));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('SELLER')")
+    @DeleteMapping("/{id}")
     @Override
     public RootEntity<ProductDto> deleteProduct(@PathVariable(name = "id") Long id) {
         return RootEntity.success(productService.deleteProduct(id));
     }
 
-    @GetMapping("/all")
+
+    @GetMapping
     @Override
     public RootEntity<RestPageableEntity<ProductDto>> getAllProducts(RestPageableRequest request) {
-        return ok(productService.getAllProducts(request.getPageNumber(), request.getPageSize()));
+        return ok(productService.getAllProducts(request));
     }
 
     @GetMapping("/{id}")

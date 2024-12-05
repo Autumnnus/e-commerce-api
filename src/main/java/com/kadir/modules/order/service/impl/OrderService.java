@@ -4,8 +4,10 @@ import com.kadir.common.enums.OrderStatus;
 import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
+import com.kadir.common.utils.pagination.PageableHelper;
 import com.kadir.common.utils.pagination.PaginationUtils;
 import com.kadir.common.utils.pagination.RestPageableEntity;
+import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.authentication.model.User;
 import com.kadir.modules.authentication.repository.UserRepository;
 import com.kadir.modules.cartitems.model.CartItems;
@@ -22,9 +24,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -68,8 +68,9 @@ public class OrderService implements IOrderService {
 
 
     @Override
-    public RestPageableEntity<OrderDto> getAllOrders(int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+    public RestPageableEntity<OrderDto> getAllOrders(RestPageableRequest request) {
+        Pageable pageable = PageableHelper
+                .createPageable(request.getPageNumber(), request.getPageSize(), request.getSortBy(), request.isAsc());
         Page<Order> productPage = orderRepository.findAll(pageable);
 
         RestPageableEntity<OrderDto> pageableResponse = PaginationUtils.toPageableResponse(productPage, OrderDto.class, modelMapper);
@@ -78,8 +79,9 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public RestPageableEntity<OrderDto> getOrdersByUser(Long userId, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+    public RestPageableEntity<OrderDto> getOrdersByUser(Long userId, RestPageableRequest request) {
+        Pageable pageable = PageableHelper
+                .createPageable(request.getPageNumber(), request.getPageSize(), request.getSortBy(), request.isAsc());
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);

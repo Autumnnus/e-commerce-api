@@ -1,8 +1,10 @@
 package com.kadir.modules.address.service.impl;
 
 import com.kadir.common.utils.merge.MergeUtils;
+import com.kadir.common.utils.pagination.PageableHelper;
 import com.kadir.common.utils.pagination.PaginationUtils;
 import com.kadir.common.utils.pagination.RestPageableEntity;
+import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.address.dto.AddressCreateDto;
 import com.kadir.modules.address.dto.AddressDto;
 import com.kadir.modules.address.dto.AddressUpdateDto;
@@ -15,9 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -82,8 +82,9 @@ public class AddressService implements IAddressService {
 
 
     @Override
-    public RestPageableEntity<AddressDto> getAllAddress(int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+    public RestPageableEntity<AddressDto> getAllAddress(RestPageableRequest request) {
+        Pageable pageable = PageableHelper
+                .createPageable(request.getPageNumber(), request.getPageSize(), request.getSortBy(), request.isAsc());
         Page<Address> addressPage = addressRepository.findAll(pageable);
         RestPageableEntity<AddressDto> pageableResponse = PaginationUtils.toPageableResponse(addressPage, AddressDto.class, modelMapper);
         pageableResponse.setDocs(addressPage.getContent().stream()

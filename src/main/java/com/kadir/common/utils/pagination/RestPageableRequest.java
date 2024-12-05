@@ -11,7 +11,7 @@ public class RestPageableRequest {
 
     private int pageSize = 10;
 
-    private String sortBy = "createdAt";
+    private String sortBy = "updatedAt";
 
     private boolean asc = true;
 }

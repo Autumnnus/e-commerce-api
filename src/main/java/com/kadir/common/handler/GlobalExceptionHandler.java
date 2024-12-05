@@ -14,6 +14,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.nio.file.AccessDeniedException;
 import java.util.*;
 
 @ControllerAdvice
@@ -34,6 +35,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiError("JWT processing error: " + ex.getMessage(), request));
     }
 
+    @ExceptionHandler(value = {AccessDeniedException.class})
+    public ResponseEntity<ApiError<?>> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiError("JWT processing error: " + ex.getMessage(), request));
+    }
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<ApiError<Map<String, List<String>>>> handleMethodArgumentNotValidException(

@@ -4,8 +4,10 @@ import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
 import com.kadir.common.utils.merge.MergeUtils;
+import com.kadir.common.utils.pagination.PageableHelper;
 import com.kadir.common.utils.pagination.PaginationUtils;
 import com.kadir.common.utils.pagination.RestPageableEntity;
+import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.category.model.Category;
 import com.kadir.modules.category.repository.CategoryRepository;
 import com.kadir.modules.product.dto.ProductCreateDto;
@@ -18,9 +20,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -67,8 +67,9 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public RestPageableEntity<ProductDto> getAllProducts(int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+    public RestPageableEntity<ProductDto> getAllProducts(RestPageableRequest request) {
+        Pageable pageable = PageableHelper
+                .createPageable(request.getPageNumber(), request.getPageSize(), request.getSortBy(), request.isAsc());
         Page<Product> productPage = productRepository.findAll(pageable);
         RestPageableEntity<ProductDto> pageableResponse = PaginationUtils.toPageableResponse(productPage, ProductDto.class, modelMapper);
         pageableResponse.setDocs(productPage.getContent().stream()
