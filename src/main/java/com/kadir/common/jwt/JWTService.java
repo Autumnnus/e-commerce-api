@@ -38,17 +38,6 @@ public class JWTService {
                 .compact();
     }
 
-    public String getRoleByToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.get("role", String.class);
-    }
-
-
     public <T> T exportToken(String token, Function<Claims, T> claimsFunc) {
         Claims claims = getClaims(token);
         T apply = claimsFunc.apply(claims);

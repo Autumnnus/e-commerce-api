@@ -1,4 +1,4 @@
-package com.kadir.modules.admin.service;
+package com.kadir.admin.user.service;
 
 import com.kadir.modules.authentication.model.User;
 

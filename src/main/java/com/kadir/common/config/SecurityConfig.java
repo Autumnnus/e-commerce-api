@@ -1,5 +1,6 @@
 package com.kadir.common.config;
 
+import com.kadir.common.enums.UserRole;
 import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
@@ -34,7 +35,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui.html",
     };
-    public static final String[] ADMIN_PATHS = {"/admin/**"};
+    public static final String ADMIN_PATH = "/admin/**";
 
     @Autowired
     private AuthenticationProvider authenticationProvider;
@@ -55,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(AUTHENTICATE, REGISTER_CUSTOMER, REGISTER_SELLER, REFRESH_TOKEN)
                         .permitAll()
                         .requestMatchers(SWAGGER_PATHS).permitAll()
-                        .requestMatchers(ADMIN_PATHS).hasRole("ADMIN")
+                        .requestMatchers(ADMIN_PATH).hasRole(UserRole.ADMIN.name())
                         .anyRequest().authenticated())
                 .exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
                 .sessionManagement(session -> session

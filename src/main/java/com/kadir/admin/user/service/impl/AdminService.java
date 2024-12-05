@@ -1,6 +1,6 @@
-package com.kadir.modules.admin.service.impl;
+package com.kadir.admin.user.service.impl;
 
-import com.kadir.modules.admin.service.IAdminService;
+import com.kadir.admin.user.service.IAdminService;
 import com.kadir.modules.authentication.model.User;
 import com.kadir.modules.authentication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

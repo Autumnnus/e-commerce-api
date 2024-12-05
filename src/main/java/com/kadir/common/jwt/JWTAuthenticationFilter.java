@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -51,15 +50,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 if (userDetails != null && jwtService.isTokenValid(token)) {
 //                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 //                            userDetails, null, userDetails.getAuthorities());
-//                    if (!userDetails.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"))) {
-//                        throw new AccessDeniedException("Access Denied: Admin role required.");
-//                    }
-                    String role = jwtService.getRoleByToken(token);
-                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+//                    authenticationToken.setDetails(userDetails);
+//                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, authorities);
+                    String role = jwtService.exportToken(token, claims -> claims.get("role", String.class));
+                    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                     authenticationToken.setDetails(userDetails);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
