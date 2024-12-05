@@ -1,6 +1,7 @@
 package com.kadir.modules.address.service;
 
 import com.kadir.common.utils.pagination.RestPageableEntity;
+import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.address.dto.AddressCreateDto;
 import com.kadir.modules.address.dto.AddressDto;
 import com.kadir.modules.address.dto.AddressUpdateDto;
@@ -17,5 +18,5 @@ public interface IAddressService {
 
     List<AddressDto> getUserAddresses(Long userId);
 
-    RestPageableEntity<AddressDto> getAllAddress(int pageNumber, int pageSize);
+    RestPageableEntity<AddressDto> getAllAddress(RestPageableRequest request);
 }

@@ -49,6 +49,6 @@ public class AddressController extends RestBaseController implements IAddressCon
     @GetMapping
     @Override
     public RootEntity<RestPageableEntity<AddressDto>> getAllAddress(RestPageableRequest request) {
-        return ok(addressService.getAllAddress(request.getPageNumber(), request.getPageSize()));
+        return ok(addressService.getAllAddress(request));
     }
 }

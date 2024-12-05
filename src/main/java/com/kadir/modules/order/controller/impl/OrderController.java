@@ -29,13 +29,13 @@ public class OrderController extends RestBaseController implements IOrderControl
     @GetMapping
     @Override
     public RootEntity<RestPageableEntity<OrderDto>> getAllOrders(RestPageableRequest request) {
-        return ok(orderService.getAllOrders(request.getPageNumber(), request.getPageSize()));
+        return ok(orderService.getAllOrders(request));
     }
 
     @GetMapping("/user/{id}")
     @Override
     public RootEntity<RestPageableEntity<OrderDto>> getOrdersByUser(@PathVariable(name = "id") Long userId, RestPageableRequest request) {
-        return ok(orderService.getOrdersByUser(userId, request.getPageNumber(), request.getPageSize()));
+        return ok(orderService.getOrdersByUser(userId, request));
     }
 
     @PutMapping("/{id}")

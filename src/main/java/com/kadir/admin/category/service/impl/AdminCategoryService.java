@@ -58,16 +58,4 @@ public class AdminCategoryService implements IAdminCategoryService {
         return modelMapper.map(category, CategoryDto.class);
     }
 
-    @Override
-    public List<CategoryDto> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        return modelMapper.map(categories, List.class);
-    }
-
-    @Override
-    public CategoryDto getCategoryById(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
-        return modelMapper.map(category, CategoryDto.class);
-    }
 }

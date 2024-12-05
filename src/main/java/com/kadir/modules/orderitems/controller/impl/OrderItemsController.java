@@ -31,6 +31,6 @@ public class OrderItemsController extends RestBaseController implements IOrderIt
     @GetMapping
     @Override
     public RootEntity<RestPageableEntity<OrderItemsDto>> getAllOrderItems(RestPageableRequest request) {
-        return ok(orderItemsService.getAllOrderItems(request.getPageNumber(), request.getPageSize()));
+        return ok(orderItemsService.getAllOrderItems(request));
     }
 }

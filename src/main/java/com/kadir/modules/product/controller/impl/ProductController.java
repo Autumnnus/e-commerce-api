@@ -41,7 +41,7 @@ public class ProductController extends RestBaseController implements IProductCon
     @GetMapping
     @Override
     public RootEntity<RestPageableEntity<ProductDto>> getAllProducts(RestPageableRequest request) {
-        return ok(productService.getAllProducts(request.getPageNumber(), request.getPageSize()));
+        return ok(productService.getAllProducts(request));
     }
 
     @GetMapping("/{id}")
