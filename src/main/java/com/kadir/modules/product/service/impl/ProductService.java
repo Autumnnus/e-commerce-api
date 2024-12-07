@@ -35,9 +35,11 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductDto createProduct(ProductCreateDto productCreateDto) {
-        categoryRepository.findById(productCreateDto.getCategoryId())
+        Category category = categoryRepository.findById(productCreateDto.getCategoryId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
         Product product = modelMapper.map(productCreateDto, Product.class);
+//        product.setId(null);
+        product.setCategory(category);
         Product savedProduct = productRepository.save(product);
         return modelMapper.map(savedProduct, ProductDto.class);
     }
@@ -46,11 +48,12 @@ public class ProductService implements IProductService {
     public ProductDto updateProduct(Long id, ProductUpdateDto productUpdateDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
-        Category existingCategory = categoryRepository.findById(productUpdateDto.getCategoryId())
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
-
+        if (productUpdateDto.getCategoryId() != null) {
+            Category existingCategory = categoryRepository.findById(productUpdateDto.getCategoryId())
+                    .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+            existingProduct.setCategory(existingCategory);
+        }
         MergeUtils.copyNonNullProperties(productUpdateDto, existingProduct);
-        existingProduct.setCategory(existingCategory);
         Product savedProduct = productRepository.save(existingProduct);
         return modelMapper.map(savedProduct, ProductDto.class);
     }

@@ -1,7 +1,10 @@
 package com.kadir.common.config;
 
+import com.kadir.modules.product.dto.ProductCreateDto;
+import com.kadir.modules.product.model.Product;
 import org.hibernate.collection.spi.PersistentSet;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,6 +22,13 @@ public class ModelMapperConfig {
                 return null;
             }
             return new HashSet<>(context.getSource());
+        });
+
+        modelMapper.addMappings(new PropertyMap<ProductCreateDto, Product>() {
+            @Override
+            protected void configure() {
+                skip(destination.getId());
+            }
         });
 
         return modelMapper;
