@@ -11,7 +11,7 @@ public class ReviewDto {
 
     private ProductDto product;
 
-    private int rating;
+    private Integer rating;
 
     private String comment;
 }

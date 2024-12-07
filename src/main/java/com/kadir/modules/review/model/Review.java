@@ -26,7 +26,7 @@ public class Review extends BaseEntity {
     private Product product;
 
     @Column(name = "rating", nullable = false)
-    private int rating;
+    private Integer rating;
 
     @Column(name = "comment", nullable = false)
     private String comment;
