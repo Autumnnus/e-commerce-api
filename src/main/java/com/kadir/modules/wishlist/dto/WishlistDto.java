@@ -17,4 +17,6 @@ public class WishlistDto extends DtoBase {
     private UserDto user;
 
     private ProductDto product;
+
+    private boolean isActive;
 }
