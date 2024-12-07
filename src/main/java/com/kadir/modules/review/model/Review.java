@@ -1,6 +1,5 @@
 package com.kadir.modules.review.model;
 
-import com.kadir.common.enums.ReviewRate;
 import com.kadir.common.model.BaseEntity;
 import com.kadir.modules.authentication.model.User;
 import com.kadir.modules.product.model.Product;
@@ -18,14 +17,17 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Review extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column(name = "rating", nullable = false)
-    private ReviewRate rating;
+    private int rating;
+
+    @Column(name = "comment", nullable = false)
+    private String comment;
 }

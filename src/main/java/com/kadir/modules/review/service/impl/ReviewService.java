@@ -65,16 +65,16 @@ public class ReviewService implements IReviewService {
     }
 
     @Override
-    public ReviewDto updateReview(Long productId, ReviewUpdateDto reviewUpdateDto) {
+    public ReviewDto updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto) {
         Long userId = authenticationServiceImpl.getCurrentUserId();
-        Product product = productRepository.findById(productId)
+        Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
-        User user = userRepository.findById(userId)
+                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Review not found")));
+        userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
-        MergeUtils.copyNonNullProperties(reviewUpdateDto, product);
-        Review savedReview = reviewRepository.save(modelMapper.map(reviewUpdateDto, Review.class));
+        MergeUtils.copyNonNullProperties(reviewUpdateDto, existingReview);
+        Review savedReview = reviewRepository.save(existingReview);
         return modelMapper.map(savedReview, ReviewDto.class);
     }
 
@@ -84,7 +84,7 @@ public class ReviewService implements IReviewService {
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Review not found")));
         ReviewDto reviewDto = modelMapper.map(review, ReviewDto.class);
-        productRepository.deleteById(reviewId);
+        reviewRepository.deleteById(reviewId);
         return reviewDto;
     }
 

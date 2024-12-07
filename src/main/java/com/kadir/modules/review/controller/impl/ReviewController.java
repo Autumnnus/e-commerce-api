@@ -31,15 +31,15 @@ public class ReviewController extends RestBaseController implements IReviewContr
 
     @GetMapping("/{reviewId}")
     @Override
-    public RootEntity<ReviewDto> getReviewById(@PathVariable(name = "reviewId") Long reviewId, ReviewGetDto reviewGetDto) {
+    public RootEntity<ReviewDto> getReviewById(@PathVariable(name = "reviewId") Long reviewId, @RequestBody @Valid ReviewGetDto reviewGetDto) {
         return ok(reviewService.getReviewById(reviewId, reviewGetDto));
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
-    @PutMapping("/{productId}")
+    @PutMapping("/{reviewId}")
     @Override
-    public RootEntity<ReviewDto> updateReview(Long productId, @RequestBody @Valid ReviewUpdateDto reviewUpdateDto) {
-        return ok(reviewService.updateReview(productId, reviewUpdateDto));
+    public RootEntity<ReviewDto> updateReview(@PathVariable(name = "reviewId") Long reviewId, @RequestBody @Valid ReviewUpdateDto reviewUpdateDto) {
+        return ok(reviewService.updateReview(reviewId, reviewUpdateDto));
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
@@ -55,9 +55,9 @@ public class ReviewController extends RestBaseController implements IReviewContr
         return ok(reviewService.getReviewByProductId(productId, request));
     }
 
-    @GetMapping("/product/{productId}/average-rating")
+    @GetMapping("/product/{productId}/averageRating")
     @Override
-    public RootEntity<Double> getAverageRatingByProductId(Long productId) {
+    public RootEntity<Double> getAverageRatingByProductId(@PathVariable(name = "productId") Long productId) {
         return ok(reviewService.getAverageRatingByProductId(productId));
     }
 }

@@ -14,7 +14,7 @@ public interface IReviewController {
 
     RootEntity<ReviewDto> getReviewById(Long reviewId, ReviewGetDto reviewGetDto);
 
-    RootEntity<ReviewDto> updateReview(Long productId, ReviewUpdateDto reviewUpdateDto);
+    RootEntity<ReviewDto> updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto);
 
     RootEntity<ReviewDto> deleteReview(Long reviewId);
 

@@ -1,16 +1,17 @@
 package com.kadir.modules.review.dto;
 
-import com.kadir.common.enums.ReviewRate;
-import com.kadir.modules.authentication.model.User;
-import com.kadir.modules.product.model.Product;
+import com.kadir.modules.authentication.dto.UserDto;
+import com.kadir.modules.product.dto.ProductDto;
 import lombok.Data;
 
 @Data
 public class ReviewDto {
 
-    private User user;
+    private UserDto user;
 
-    private Product product;
+    private ProductDto product;
 
-    private ReviewRate rating;
+    private int rating;
+
+    private String comment;
 }

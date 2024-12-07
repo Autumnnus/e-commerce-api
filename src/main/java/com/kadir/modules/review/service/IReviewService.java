@@ -13,7 +13,7 @@ public interface IReviewService {
 
     ReviewDto getReviewById(Long reviewId, ReviewGetDto reviewGetDto);
 
-    ReviewDto updateReview(Long productId, ReviewUpdateDto reviewUpdateDto);
+    ReviewDto updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto);
 
     ReviewDto deleteReview(Long reviewId);
 

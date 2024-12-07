@@ -2,6 +2,8 @@ package com.kadir.common.config;
 
 import com.kadir.modules.product.dto.ProductCreateDto;
 import com.kadir.modules.product.model.Product;
+import com.kadir.modules.review.dto.ReviewCreateDto;
+import com.kadir.modules.review.model.Review;
 import org.hibernate.collection.spi.PersistentSet;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -25,6 +27,13 @@ public class ModelMapperConfig {
         });
 
         modelMapper.addMappings(new PropertyMap<ProductCreateDto, Product>() {
+            @Override
+            protected void configure() {
+                skip(destination.getId());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<ReviewCreateDto, Review>() {
             @Override
             protected void configure() {
                 skip(destination.getId());

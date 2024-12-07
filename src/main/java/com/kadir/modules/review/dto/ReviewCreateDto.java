@@ -1,6 +1,7 @@
 package com.kadir.modules.review.dto;
 
-import com.kadir.common.enums.ReviewRate;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -11,7 +12,9 @@ public class ReviewCreateDto {
     private Long productId;
 
     @NotNull(message = "Rating cannot be null")
-    private ReviewRate rating;
+    @Min(value = 1, message = "Rating must be between 1 and 5")
+    @Max(value = 5, message = "Rating must be between 1 and 5")
+    private int rating;
 
     @NotNull(message = "Comment cannot be null")
     private String comment;
