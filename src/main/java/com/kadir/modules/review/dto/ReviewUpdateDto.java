@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class ReviewUpdateDto {
 
-    @Min(0)
-    @Max(4)
+    @Min(value = 1, message = "Rating must be between 1 and 5")
+    @Max(value = 5, message = "Rating must be between 1 and 5")
     private int rating;
 
     private String comment;

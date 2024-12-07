@@ -26,12 +26,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewService implements IReviewService {
 
-    private final ReviewRepository reviewRepository;
     private final ModelMapper modelMapper;
+    private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final AuthenticationServiceImpl authenticationServiceImpl;
@@ -45,6 +47,12 @@ public class ReviewService implements IReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+
+        List<Review> existingReviews = reviewRepository.findByUserAndProduct(userId, reviewCreateDto.getProductId());
+        if (!existingReviews.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Review already exists"));
+        }
+
 
         Review review = modelMapper.map(reviewCreateDto, Review.class);
         review.setUser(user);
