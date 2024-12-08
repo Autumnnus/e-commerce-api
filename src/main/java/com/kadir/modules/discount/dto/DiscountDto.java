@@ -1,5 +1,6 @@
 package com.kadir.modules.discount.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kadir.common.dto.DtoBase;
 import com.kadir.common.enums.DiscountType;
 import com.kadir.modules.authentication.dto.UserDto;
@@ -15,10 +16,12 @@ public class DiscountDto extends DtoBase {
 
     private DiscountType discountType;
 
-    private BigDecimal discountValue;
+    private BigDecimal discount;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private ProductDto product;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private CategoryDto category;
 
     private UserDto user;

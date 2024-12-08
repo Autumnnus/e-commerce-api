@@ -2,6 +2,8 @@ package com.kadir.modules.coupon.controller.impl;
 
 import com.kadir.common.controller.RootEntity;
 import com.kadir.common.controller.impl.RestBaseController;
+import com.kadir.common.utils.pagination.RestPageableEntity;
+import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.coupon.controller.ICouponController;
 import com.kadir.modules.coupon.dto.CouponCreateDto;
 import com.kadir.modules.coupon.dto.CouponDto;
@@ -11,8 +13,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/rest/api/coupon")
@@ -59,7 +59,7 @@ public class CouponController extends RestBaseController implements ICouponContr
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @GetMapping
     @Override
-    public RootEntity<List<CouponDto>> getAllUserCoupons() {
-        return ok(couponService.getAllUserCoupons());
+    public RootEntity<RestPageableEntity<CouponDto>> getAllUserCoupons(RestPageableRequest request) {
+        return ok(couponService.getAllUserCoupons(request));
     }
 }

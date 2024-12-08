@@ -1,10 +1,10 @@
 package com.kadir.modules.coupon.service;
 
+import com.kadir.common.utils.pagination.RestPageableEntity;
+import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.coupon.dto.CouponCreateDto;
 import com.kadir.modules.coupon.dto.CouponDto;
 import com.kadir.modules.coupon.dto.CouponUpdateDto;
-
-import java.util.List;
 
 public interface ICouponService {
 
@@ -18,5 +18,5 @@ public interface ICouponService {
 
     Boolean isCouponValid(String code);
 
-    List<CouponDto> getAllUserCoupons();
+    RestPageableEntity<CouponDto> getAllUserCoupons(RestPageableRequest request);
 }

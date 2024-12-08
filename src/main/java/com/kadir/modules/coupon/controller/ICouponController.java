@@ -1,11 +1,11 @@
 package com.kadir.modules.coupon.controller;
 
 import com.kadir.common.controller.RootEntity;
+import com.kadir.common.utils.pagination.RestPageableEntity;
+import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.coupon.dto.CouponCreateDto;
 import com.kadir.modules.coupon.dto.CouponDto;
 import com.kadir.modules.coupon.dto.CouponUpdateDto;
-
-import java.util.List;
 
 public interface ICouponController {
 
@@ -19,5 +19,5 @@ public interface ICouponController {
 
     RootEntity<Boolean> isCouponValid(String code);
 
-    RootEntity<List<CouponDto>> getAllUserCoupons();
+    RootEntity<RestPageableEntity<CouponDto>> getAllUserCoupons(RestPageableRequest request);
 }

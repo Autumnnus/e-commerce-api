@@ -26,15 +26,15 @@ public class Discount extends BaseEntity {
     @Column(name = "discount_type", nullable = false)
     private DiscountType discountType;
 
-    @Column(name = "discount_value", nullable = true)
-    private BigDecimal discountValue;
+    @Column(name = "discount", nullable = false)
+    private BigDecimal discount;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
