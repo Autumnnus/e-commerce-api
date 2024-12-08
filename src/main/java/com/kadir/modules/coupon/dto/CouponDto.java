@@ -1,10 +1,10 @@
 package com.kadir.modules.coupon.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kadir.common.dto.DtoBase;
 import com.kadir.common.enums.DiscountType;
 import com.kadir.modules.authentication.dto.UserDto;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.kadir.modules.product.dto.ProductDto;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -14,22 +14,22 @@ import java.time.LocalDateTime;
 public class CouponDto extends DtoBase {
     private String code;
 
-    private double discount;
+    private BigDecimal discount;
 
-    @Enumerated(EnumType.STRING)
     private DiscountType discountType;
 
     private BigDecimal discountValue;
 
     private BigDecimal minOrderAmount;
 
-    private BigDecimal maxDiscountValue;
-
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
 
     private UserDto user;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private ProductDto product;
 
     private boolean isActive = true;
 }

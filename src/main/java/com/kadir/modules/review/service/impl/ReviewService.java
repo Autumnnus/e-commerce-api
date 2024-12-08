@@ -63,7 +63,7 @@ public class ReviewService implements IReviewService {
 
     @Override
     public ReviewDto getReviewById(Long reviewId, ReviewGetDto reviewGetDto) {
-        Product product = productRepository.findById(reviewGetDto.getProductId())
+        productRepository.findById(reviewGetDto.getProductId())
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
         Review review = reviewRepository.findById(reviewId)
