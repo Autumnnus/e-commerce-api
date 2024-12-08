@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IProductImageService {
 
-    ProductImageDto createProductImage(MultipartFile file, ProductImageCreateDto productImageCreateDto);
+    List<ProductImageDto> createProductImages(List<MultipartFile> files, ProductImageCreateDto productImageCreateDto);
 
     ProductImageDto updateProductImage(MultipartFile file, ProductImageUpdateDto productImageUpdateDto);
 

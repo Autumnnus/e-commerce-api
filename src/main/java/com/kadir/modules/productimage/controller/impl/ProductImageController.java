@@ -23,10 +23,10 @@ public class ProductImageController extends RestBaseController implements IProdu
 
     @PostMapping(consumes = "multipart/form-data")
     @Override
-    public ApiResponse<ProductImageDto> createProductImage(
-            @RequestParam(value = "file") MultipartFile file,
+    public ApiResponse<List<ProductImageDto>> createProductImages(
+            @RequestParam(value = "file") List<MultipartFile> files,
             @ModelAttribute @Valid ProductImageCreateDto productImageCreateDto) {
-        return ok(productImageService.createProductImage(file, productImageCreateDto));
+        return ok(productImageService.createProductImages(files, productImageCreateDto));
     }
 
     @PutMapping(consumes = "multipart/form-data")

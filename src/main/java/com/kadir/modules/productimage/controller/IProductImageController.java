@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IProductImageController {
 
-    ApiResponse<ProductImageDto> createProductImage(MultipartFile file, ProductImageCreateDto productImageCreateDto);
+    ApiResponse<List<ProductImageDto>> createProductImages(List<MultipartFile> files, ProductImageCreateDto productImageCreateDto);
 
     ApiResponse<ProductImageDto> updateProductImage(MultipartFile file, ProductImageUpdateDto productImageUpdateDto);
 
