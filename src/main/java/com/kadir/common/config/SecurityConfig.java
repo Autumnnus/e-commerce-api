@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .requestMatchers(SWAGGER_PATHS).permitAll()
                         .requestMatchers(ADMIN_PATH).hasRole(UserRole.ADMIN.name())
                         .anyRequest().authenticated())
-                .exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
+//                .exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import com.kadir.common.service.IBucketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,9 @@ public class BucketService implements IBucketService {
 
     @Autowired
     AmazonS3 s3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     @Override
     public List<Bucket> getBucketList() {
@@ -37,7 +41,7 @@ public class BucketService implements IBucketService {
 
     @Override
     public byte[] downloadFile(String fileName) {
-        S3Object s3Object = s3Client.getObject("e-commerce-api", fileName);
+        S3Object s3Object = s3Client.getObject(bucket, fileName);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         try {
             byte[] content = IOUtils.toByteArray(inputStream);
@@ -54,7 +58,7 @@ public class BucketService implements IBucketService {
         try {
             File fileObj = convertMultiPartFileToFile(file);
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            s3Client.putObject(new PutObjectRequest("e-commerce-api", fileName, fileObj));
+            s3Client.putObject(new PutObjectRequest(bucket, fileName, fileObj));
             fileObj.delete();
             return "File uploaded : " + fileName;
         } catch (AmazonServiceException e) {
