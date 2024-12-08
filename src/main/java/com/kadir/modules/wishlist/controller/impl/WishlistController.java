@@ -1,6 +1,6 @@
 package com.kadir.modules.wishlist.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
@@ -19,13 +19,13 @@ public class WishlistController extends RestBaseController implements IWishlistC
 
     @PatchMapping("/{productId}")
     @Override
-    public RootEntity<WishlistDto> toggleProductToWishlist(@PathVariable(name = "productId") Long productId) {
+    public ApiResponse<WishlistDto> toggleProductToWishlist(@PathVariable(name = "productId") Long productId) {
         return ok(wishlistService.toggleProductToWishlist(productId));
     }
 
     @GetMapping
     @Override
-    public RootEntity<RestPageableEntity<WishlistDto>> getAllWishlist(RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<WishlistDto>> getAllWishlist(RestPageableRequest request) {
         return ok(wishlistService.getAllWishlist(request));
     }
 }

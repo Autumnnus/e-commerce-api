@@ -1,6 +1,6 @@
 package com.kadir.modules.coupon.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
@@ -24,42 +24,42 @@ public class CouponController extends RestBaseController implements ICouponContr
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @PostMapping
     @Override
-    public RootEntity<CouponDto> createCoupon(@RequestBody @Valid CouponCreateDto couponCreateDto) {
+    public ApiResponse<CouponDto> createCoupon(@RequestBody @Valid CouponCreateDto couponCreateDto) {
         return ok(couponService.createCoupon(couponCreateDto));
     }
 
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @PutMapping(path = "/{couponId}")
     @Override
-    public RootEntity<CouponDto> updateCoupon(@PathVariable(name = "couponId") Long couponId, @RequestBody @Valid CouponUpdateDto couponUpdateDto) {
+    public ApiResponse<CouponDto> updateCoupon(@PathVariable(name = "couponId") Long couponId, @RequestBody @Valid CouponUpdateDto couponUpdateDto) {
         return ok(couponService.updateCoupon(couponId, couponUpdateDto));
     }
 
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @DeleteMapping("/{couponId}")
     @Override
-    public RootEntity<CouponDto> deleteCoupon(@PathVariable(name = "couponId") Long couponId) {
+    public ApiResponse<CouponDto> deleteCoupon(@PathVariable(name = "couponId") Long couponId) {
         return ok(couponService.deleteCoupon(couponId));
     }
 
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @GetMapping("/{code}")
     @Override
-    public RootEntity<CouponDto> getCouponByCode(@PathVariable(name = "code") String code) {
+    public ApiResponse<CouponDto> getCouponByCode(@PathVariable(name = "code") String code) {
         return ok(couponService.getCouponByCode(code));
     }
 
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @GetMapping("/valid/{code}")
     @Override
-    public RootEntity<Boolean> isCouponValid(@PathVariable(name = "code") String code) {
+    public ApiResponse<Boolean> isCouponValid(@PathVariable(name = "code") String code) {
         return ok(couponService.isCouponValid(code));
     }
 
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @GetMapping
     @Override
-    public RootEntity<RestPageableEntity<CouponDto>> getAllUserCoupons(RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<CouponDto>> getAllUserCoupons(RestPageableRequest request) {
         return ok(couponService.getAllUserCoupons(request));
     }
 }

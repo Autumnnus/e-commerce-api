@@ -1,6 +1,6 @@
 package com.kadir.modules.review.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
@@ -25,39 +25,39 @@ public class ReviewController extends RestBaseController implements IReviewContr
     @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
     @Override
-    public RootEntity<ReviewDto> createReview(@RequestBody @Valid ReviewCreateDto reviewCreateDto) {
+    public ApiResponse<ReviewDto> createReview(@RequestBody @Valid ReviewCreateDto reviewCreateDto) {
         return ok(reviewService.createReview(reviewCreateDto));
     }
 
     @GetMapping("/{reviewId}")
     @Override
-    public RootEntity<ReviewDto> getReviewById(@PathVariable(name = "reviewId") Long reviewId, @RequestBody @Valid ReviewGetDto reviewGetDto) {
+    public ApiResponse<ReviewDto> getReviewById(@PathVariable(name = "reviewId") Long reviewId, @RequestBody @Valid ReviewGetDto reviewGetDto) {
         return ok(reviewService.getReviewById(reviewId, reviewGetDto));
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @PutMapping("/{reviewId}")
     @Override
-    public RootEntity<ReviewDto> updateReview(@PathVariable(name = "reviewId") Long reviewId, @RequestBody @Valid ReviewUpdateDto reviewUpdateDto) {
+    public ApiResponse<ReviewDto> updateReview(@PathVariable(name = "reviewId") Long reviewId, @RequestBody @Valid ReviewUpdateDto reviewUpdateDto) {
         return ok(reviewService.updateReview(reviewId, reviewUpdateDto));
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @DeleteMapping("/{reviewId}")
     @Override
-    public RootEntity<ReviewDto> deleteReview(@PathVariable(name = "reviewId") Long reviewId) {
+    public ApiResponse<ReviewDto> deleteReview(@PathVariable(name = "reviewId") Long reviewId) {
         return ok(reviewService.deleteReview(reviewId));
     }
 
     @GetMapping("/product/{productId}")
     @Override
-    public RootEntity<RestPageableEntity<ReviewDto>> getReviewByProductId(@PathVariable(name = "productId") Long productId, RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<ReviewDto>> getReviewByProductId(@PathVariable(name = "productId") Long productId, RestPageableRequest request) {
         return ok(reviewService.getReviewByProductId(productId, request));
     }
 
     @GetMapping("/product/{productId}/averageRating")
     @Override
-    public RootEntity<Double> getAverageRatingByProductId(@PathVariable(name = "productId") Long productId) {
+    public ApiResponse<Double> getAverageRatingByProductId(@PathVariable(name = "productId") Long productId) {
         return ok(reviewService.getAverageRatingByProductId(productId));
     }
 }

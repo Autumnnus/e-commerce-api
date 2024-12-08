@@ -1,6 +1,6 @@
 package com.kadir.modules.order.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
@@ -22,25 +22,25 @@ public class OrderController extends RestBaseController implements IOrderControl
 
     @PostMapping
     @Override
-    public RootEntity<OrderDto> createOrder(@RequestBody @Valid OrderDtoIU orderDtoIU) {
+    public ApiResponse<OrderDto> createOrder(@RequestBody @Valid OrderDtoIU orderDtoIU) {
         return ok(orderService.createOrder(orderDtoIU));
     }
 
     @GetMapping
     @Override
-    public RootEntity<RestPageableEntity<OrderDto>> getAllOrders(RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<OrderDto>> getAllOrders(RestPageableRequest request) {
         return ok(orderService.getAllOrders(request));
     }
 
     @GetMapping("/user/{id}")
     @Override
-    public RootEntity<RestPageableEntity<OrderDto>> getOrdersByUser(@PathVariable(name = "id") Long userId, RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<OrderDto>> getOrdersByUser(@PathVariable(name = "id") Long userId, RestPageableRequest request) {
         return ok(orderService.getOrdersByUser(userId, request));
     }
 
     @PutMapping("/{id}")
     @Override
-    public RootEntity<OrderDto> updateOrderStatus(
+    public ApiResponse<OrderDto> updateOrderStatus(
             @PathVariable(name = "id") Long orderId,
             @RequestBody OrderStatusUpdateRequest request) {
         return ok(orderService.updateOrderStatus(orderId, request.getPaymentStatus()));

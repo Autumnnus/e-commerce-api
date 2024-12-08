@@ -1,6 +1,6 @@
 package com.kadir.modules.wishlist.dto;
 
-import com.kadir.common.dto.DtoBase;
+import com.kadir.common.dto.BaseDto;
 import com.kadir.modules.authentication.dto.UserDto;
 import com.kadir.modules.product.dto.ProductDto;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WishlistDto extends DtoBase {
+public class WishlistDto extends BaseDto {
 
     private UserDto user;
 

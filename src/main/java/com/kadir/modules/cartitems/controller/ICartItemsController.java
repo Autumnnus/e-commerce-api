@@ -1,6 +1,6 @@
 package com.kadir.modules.cartitems.controller;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.modules.cartitems.dto.CartItemsCreateDto;
 import com.kadir.modules.cartitems.dto.CartItemsDto;
 import com.kadir.modules.cartitems.dto.CartItemsUpdateDto;
@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface ICartItemsController {
 
-    RootEntity<CartItemsDto> createCartItems(CartItemsCreateDto cartItemsCreateDto);
+    ApiResponse<CartItemsDto> createCartItems(CartItemsCreateDto cartItemsCreateDto);
 
-    RootEntity<CartItemsDto> updateCartItems(Long id, CartItemsUpdateDto cartItemsUpdateDto);
+    ApiResponse<CartItemsDto> updateCartItems(Long id, CartItemsUpdateDto cartItemsUpdateDto);
 
-    RootEntity<CartItemsDto> deleteCartItems(Long id);
+    ApiResponse<CartItemsDto> deleteCartItems(Long id);
 
-    RootEntity<CartItemsDto> getCartItemsById(Long id);
+    ApiResponse<CartItemsDto> getCartItemsById(Long id);
 
-    RootEntity<List<CartItemsDto>> getUserCartItems(Long userId);
+    ApiResponse<List<CartItemsDto>> getUserCartItems(Long userId);
 }

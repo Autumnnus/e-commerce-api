@@ -1,6 +1,6 @@
 package com.kadir.modules.favoriteproduct.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
@@ -19,13 +19,13 @@ public class FavoriteProductController extends RestBaseController implements IFa
 
     @PatchMapping("/{productId}")
     @Override
-    public RootEntity<FavoriteProductDto> toggleProductToFavorite(@PathVariable(name = "productId") Long productId) {
+    public ApiResponse<FavoriteProductDto> toggleProductToFavorite(@PathVariable(name = "productId") Long productId) {
         return ok(favoriteProductService.toggleProductToFavorite(productId));
     }
 
     @GetMapping
     @Override
-    public RootEntity<RestPageableEntity<FavoriteProductDto>> getAllFavoriteProducts(RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<FavoriteProductDto>> getAllFavoriteProducts(RestPageableRequest request) {
         return ok(favoriteProductService.getAllFavoriteProducts(request));
     }
 }

@@ -1,6 +1,6 @@
 package com.kadir.modules.orderitems.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
@@ -24,13 +24,13 @@ public class OrderItemsController extends RestBaseController implements IOrderIt
 
     @GetMapping("/{id}")
     @Override
-    public RootEntity<List<OrderItemsDto>> getOrderItemsByOrderId(@PathVariable(name = "id") Long orderId) {
+    public ApiResponse<List<OrderItemsDto>> getOrderItemsByOrderId(@PathVariable(name = "id") Long orderId) {
         return ok(orderItemsService.getOrderItemsByOrderId(orderId));
     }
 
     @GetMapping
     @Override
-    public RootEntity<RestPageableEntity<OrderItemsDto>> getAllOrderItems(RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<OrderItemsDto>> getAllOrderItems(RestPageableRequest request) {
         return ok(orderItemsService.getAllOrderItems(request));
     }
 }

@@ -1,6 +1,6 @@
 package com.kadir.modules.review.controller;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.review.dto.ReviewCreateDto;
@@ -10,15 +10,15 @@ import com.kadir.modules.review.dto.ReviewUpdateDto;
 
 public interface IReviewController {
 
-    RootEntity<ReviewDto> createReview(ReviewCreateDto reviewCreateDto);
+    ApiResponse<ReviewDto> createReview(ReviewCreateDto reviewCreateDto);
 
-    RootEntity<ReviewDto> getReviewById(Long reviewId, ReviewGetDto reviewGetDto);
+    ApiResponse<ReviewDto> getReviewById(Long reviewId, ReviewGetDto reviewGetDto);
 
-    RootEntity<ReviewDto> updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto);
+    ApiResponse<ReviewDto> updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto);
 
-    RootEntity<ReviewDto> deleteReview(Long reviewId);
+    ApiResponse<ReviewDto> deleteReview(Long reviewId);
 
-    RootEntity<RestPageableEntity<ReviewDto>> getReviewByProductId(Long productId, RestPageableRequest request);
+    ApiResponse<RestPageableEntity<ReviewDto>> getReviewByProductId(Long productId, RestPageableRequest request);
 
-    RootEntity<Double> getAverageRatingByProductId(Long productId);
+    ApiResponse<Double> getAverageRatingByProductId(Long productId);
 }

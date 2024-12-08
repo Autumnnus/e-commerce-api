@@ -1,6 +1,6 @@
 package com.kadir.modules.discount.dto;
 
-import com.kadir.common.dto.DtoBase;
+import com.kadir.common.dto.BaseDto;
 import com.kadir.common.enums.DiscountType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class DiscountCreateDto extends DtoBase {
+public class DiscountCreateDto extends BaseDto {
 
     @NotNull(message = "Discount type cannot be null")
     private DiscountType discountType;

@@ -1,7 +1,7 @@
 package com.kadir.modules.coupon.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.kadir.common.dto.DtoBase;
+import com.kadir.common.dto.BaseDto;
 import com.kadir.common.enums.DiscountType;
 import com.kadir.modules.authentication.dto.UserDto;
 import com.kadir.modules.product.dto.ProductDto;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class CouponDto extends DtoBase {
+public class CouponDto extends BaseDto {
     private String code;
 
     private BigDecimal discount;

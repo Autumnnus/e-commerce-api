@@ -1,6 +1,6 @@
 package com.kadir.modules.discount.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
@@ -21,31 +21,31 @@ public class DiscountController extends RestBaseController implements IDiscountC
 
     @PostMapping
     @Override
-    public RootEntity<DiscountDto> createDiscount(@RequestBody @Valid DiscountCreateDto discountCreateDto) {
+    public ApiResponse<DiscountDto> createDiscount(@RequestBody @Valid DiscountCreateDto discountCreateDto) {
         return ok(discountService.createDiscount(discountCreateDto));
     }
 
     @DeleteMapping("/{discountId}")
     @Override
-    public RootEntity<DiscountDto> deleteDiscount(@PathVariable(name = "discountId") Long discountId) {
+    public ApiResponse<DiscountDto> deleteDiscount(@PathVariable(name = "discountId") Long discountId) {
         return ok(discountService.deleteDiscount(discountId));
     }
 
     @GetMapping
     @Override
-    public RootEntity<RestPageableEntity<DiscountDto>> getAllDiscounts(RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<DiscountDto>> getAllDiscounts(RestPageableRequest request) {
         return ok(discountService.getAllDiscounts(request));
     }
 
     @GetMapping("/product/{productId}")
     @Override
-    public RootEntity<DiscountDto> getDiscountByProductId(@PathVariable(name = "productId") Long productId) {
+    public ApiResponse<DiscountDto> getDiscountByProductId(@PathVariable(name = "productId") Long productId) {
         return ok(discountService.getDiscountByProductId(productId));
     }
 
     @GetMapping("/category/{categoryId}")
     @Override
-    public RootEntity<DiscountDto> getDiscountByCategoryId(@PathVariable(name = "categoryId") Long categoryId) {
+    public ApiResponse<DiscountDto> getDiscountByCategoryId(@PathVariable(name = "categoryId") Long categoryId) {
         return ok(discountService.getDiscountByCategoryId(categoryId));
     }
 }
