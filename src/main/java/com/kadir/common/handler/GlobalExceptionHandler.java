@@ -87,8 +87,7 @@ public class GlobalExceptionHandler {
 
     public <E> ApiError<E> createApiError(E message, WebRequest request) {
         ApiError<E> apiError = new ApiError<>();
-        apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-
+        apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.name());
         Exception<E> exception = new Exception<>();
         exception.setPath(request.getDescription(false));
         exception.setMessage(message);
