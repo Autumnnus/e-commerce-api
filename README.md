@@ -27,7 +27,7 @@ functionalities such as product categorization, reviews, order management, and u
 - **Admin Dashboard**:
     - Admin users can view reports and manage users, products, and orders.
 
-### **Version 2 Features** (In Progress🚧)
+### **Version 2 Features** (Done✅)
 
 - **Favorites and Wishlist**:
     - Customers can add products to their favorites and wishlist.
@@ -37,18 +37,11 @@ functionalities such as product categorization, reviews, order management, and u
     - Sellers can create discounts and coupons for products.
 - **Product Recommendations**:
     - Customers can receive personalized product recommendations.
-- **Payment Integration**:
-    - Customers can choose from various payment methods.
-- **Currency Conversion**:
-    - Supports multiple currencies for products and orders.
-- **Sales Reports**:
-    - Sellers can view sales reports and analytics.
-- **Product Views and Analytics**:
-    - Sellers can view product views and analytics.
 - **Product Images**:
     - Supports multiple images for products.
+    - AWS S3 Support
 
-### **Version 3 Features** (Future Plans🔮)
+### **Version 3 Features** (In Progress🚧)
 
 - **Activity Logs**:
     - Logs all user activities for auditing and tracking.
@@ -56,6 +49,14 @@ functionalities such as product categorization, reviews, order management, and u
     - Sends notifications for order updates, promotions, etc.
 - **AI-Powered Recommendations**:
     - Uses AI to provide personalized product recommendations.
+- **Product Views and Analytics**:
+    - Sellers can view product views and analytics.
+- **Payment Integration**:
+    - Customers can choose from various payment methods.
+- **Currency Conversion**:
+    - Supports multiple currencies for products and orders.
+- **Sales Reports**:
+    - Sellers can view sales reports and analytics.
 
 ## Technologies
 
