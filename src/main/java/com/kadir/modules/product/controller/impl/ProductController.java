@@ -21,21 +21,21 @@ public class ProductController extends RestBaseController implements IProductCon
     @Autowired
     private IProductService productService;
 
-    @PreAuthorize("hasRole('SELLER')")
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @PostMapping
     @Override
     public ApiResponse<ProductDto> createProduct(@RequestBody @Valid ProductCreateDto productCreateDto) {
         return ApiResponse.success(productService.createProduct(productCreateDto));
     }
 
-    @PreAuthorize("hasRole('SELLER')")
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     @Override
     public ApiResponse<ProductDto> updateProduct(@PathVariable(name = "id") Long id, @RequestBody @Valid ProductUpdateDto productUpdateDto) {
         return ApiResponse.success(productService.updateProduct(id, productUpdateDto));
     }
 
-    @PreAuthorize("hasRole('SELLER')")
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @Override
     public ApiResponse<ProductDto> deleteProduct(@PathVariable(name = "id") Long id) {

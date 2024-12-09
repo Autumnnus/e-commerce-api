@@ -87,15 +87,16 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductDto getProductById(Long id) {
-        Product product = productRepository.findById(id)
+        Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
-        Category category = product.getCategory() != null
-                ? categoryRepository.findById(product.getCategory().getId())
+
+        Category category = existingProduct.getCategory() != null
+                ? categoryRepository.findById(existingProduct.getCategory().getId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(
                         MessageType.GENERAL_EXCEPTION, "Category not found")))
                 : null;
-        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        ProductDto productDto = modelMapper.map(existingProduct, ProductDto.class);
         productDto.setCategory(category);
         return productDto;
     }
