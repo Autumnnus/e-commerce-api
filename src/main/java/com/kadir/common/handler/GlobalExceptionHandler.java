@@ -25,6 +25,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(), request));
     }
 
+    @ExceptionHandler(value = {java.lang.Exception.class})
+    public ResponseEntity<ApiError<?>> handleException(java.lang.Exception ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(), request));
+    }
+    
+
     @ExceptionHandler(value = {ExpiredJwtException.class})
     public ResponseEntity<ApiError<?>> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiError("Token has expired.", request));
@@ -81,8 +87,7 @@ public class GlobalExceptionHandler {
 
     public <E> ApiError<E> createApiError(E message, WebRequest request) {
         ApiError<E> apiError = new ApiError<>();
-        apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-
+        apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.name());
         Exception<E> exception = new Exception<>();
         exception.setPath(request.getDescription(false));
         exception.setMessage(message);

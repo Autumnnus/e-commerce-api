@@ -1,6 +1,6 @@
 package com.kadir.modules.order.dto;
 
-import com.kadir.common.dto.DtoBase;
+import com.kadir.common.dto.BaseDto;
 import com.kadir.common.enums.OrderStatus;
 import com.kadir.modules.authentication.dto.UserDto;
 import com.kadir.modules.orderitems.dto.OrderItemsDto;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDto extends DtoBase {
+public class OrderDto extends BaseDto {
 
     private UserDto user;
 

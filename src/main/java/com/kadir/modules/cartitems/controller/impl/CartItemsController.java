@@ -1,6 +1,6 @@
 package com.kadir.modules.cartitems.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.cartitems.controller.ICartItemsController;
 import com.kadir.modules.cartitems.dto.CartItemsCreateDto;
@@ -22,31 +22,31 @@ public class CartItemsController extends RestBaseController implements ICartItem
 
     @PostMapping
     @Override
-    public RootEntity<CartItemsDto> createCartItems(@RequestBody @Valid CartItemsCreateDto cartItemsCreateDto) {
+    public ApiResponse<CartItemsDto> createCartItems(@RequestBody @Valid CartItemsCreateDto cartItemsCreateDto) {
         return ok(cartItemsService.createCartItems(cartItemsCreateDto));
     }
 
     @PutMapping(path = "/{id}")
     @Override
-    public RootEntity<CartItemsDto> updateCartItems(@PathVariable(name = "id") Long id, @RequestBody @Valid CartItemsUpdateDto cartItemsUpdateDto) {
+    public ApiResponse<CartItemsDto> updateCartItems(@PathVariable(name = "id") Long id, @RequestBody @Valid CartItemsUpdateDto cartItemsUpdateDto) {
         return ok(cartItemsService.updateCartItems(id, cartItemsUpdateDto));
     }
 
     @DeleteMapping("/{id}")
     @Override
-    public RootEntity<CartItemsDto> deleteCartItems(@PathVariable(name = "id") Long id) {
+    public ApiResponse<CartItemsDto> deleteCartItems(@PathVariable(name = "id") Long id) {
         return ok(cartItemsService.deleteCartItems(id));
     }
 
     @GetMapping("/{id}")
     @Override
-    public RootEntity<CartItemsDto> getCartItemsById(@PathVariable(name = "id") Long id) {
+    public ApiResponse<CartItemsDto> getCartItemsById(@PathVariable(name = "id") Long id) {
         return ok(cartItemsService.getCartItemsById(id));
     }
 
     @GetMapping("/user/{id}")
     @Override
-    public RootEntity<List<CartItemsDto>> getUserCartItems(@PathVariable(name = "id") Long userId) {
+    public ApiResponse<List<CartItemsDto>> getUserCartItems(@PathVariable(name = "id") Long userId) {
         return ok(cartItemsService.getUserCartItems(userId));
     }
 

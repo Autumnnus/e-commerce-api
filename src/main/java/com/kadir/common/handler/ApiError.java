@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ApiError<E> {
 
-    private Integer status;
+    private String status;
 
     private Exception<E> exception;
 }

@@ -1,14 +1,14 @@
 package com.kadir.common.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 
 public class RestBaseController {
 
-    public <T> RootEntity<T> ok(T payload) {
-        return RootEntity.success(payload);
+    public <T> ApiResponse<T> ok(T payload) {
+        return ApiResponse.success(payload);
     }
 
-    public <T> RootEntity<T> error(String errorMessage) {
-        return RootEntity.error(errorMessage);
+    public <T> ApiResponse<T> error(String errorMessage) {
+        return ApiResponse.error(errorMessage);
     }
 }

@@ -1,6 +1,6 @@
 package com.kadir.modules.address.controller;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.address.dto.AddressCreateDto;
@@ -11,13 +11,13 @@ import java.util.List;
 
 public interface IAddressController {
 
-    RootEntity<AddressDto> createAddress(AddressCreateDto addressCreateDto);
+    ApiResponse<AddressDto> createAddress(AddressCreateDto addressCreateDto);
 
-    RootEntity<AddressDto> updateAddress(Long id, AddressUpdateDto addressUpdateDto);
+    ApiResponse<AddressDto> updateAddress(Long id, AddressUpdateDto addressUpdateDto);
 
-    RootEntity<AddressDto> deleteAddress(Long id);
+    ApiResponse<AddressDto> deleteAddress(Long id);
 
-    RootEntity<List<AddressDto>> getUserAddresses(Long userId);
+    ApiResponse<List<AddressDto>> getUserAddresses(Long userId);
 
-    RootEntity<RestPageableEntity<AddressDto>> getAllAddress(RestPageableRequest request);
+    ApiResponse<RestPageableEntity<AddressDto>> getAllAddress(RestPageableRequest request);
 }

@@ -1,6 +1,6 @@
 package com.kadir.modules.product.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
@@ -21,37 +21,37 @@ public class ProductController extends RestBaseController implements IProductCon
     @Autowired
     private IProductService productService;
 
-    @PreAuthorize("hasRole('SELLER')")
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @PostMapping
     @Override
-    public RootEntity<ProductDto> createProduct(@RequestBody @Valid ProductCreateDto productCreateDto) {
-        return RootEntity.success(productService.createProduct(productCreateDto));
+    public ApiResponse<ProductDto> createProduct(@RequestBody @Valid ProductCreateDto productCreateDto) {
+        return ApiResponse.success(productService.createProduct(productCreateDto));
     }
 
-    @PreAuthorize("hasRole('SELLER')")
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     @Override
-    public RootEntity<ProductDto> updateProduct(@PathVariable(name = "id") Long id, @RequestBody @Valid ProductUpdateDto productUpdateDto) {
-        return RootEntity.success(productService.updateProduct(id, productUpdateDto));
+    public ApiResponse<ProductDto> updateProduct(@PathVariable(name = "id") Long id, @RequestBody @Valid ProductUpdateDto productUpdateDto) {
+        return ApiResponse.success(productService.updateProduct(id, productUpdateDto));
     }
 
-    @PreAuthorize("hasRole('SELLER')")
+    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @Override
-    public RootEntity<ProductDto> deleteProduct(@PathVariable(name = "id") Long id) {
-        return RootEntity.success(productService.deleteProduct(id));
+    public ApiResponse<ProductDto> deleteProduct(@PathVariable(name = "id") Long id) {
+        return ApiResponse.success(productService.deleteProduct(id));
     }
 
 
     @GetMapping
     @Override
-    public RootEntity<RestPageableEntity<ProductDto>> getAllProducts(RestPageableRequest request) {
+    public ApiResponse<RestPageableEntity<ProductDto>> getAllProducts(RestPageableRequest request) {
         return ok(productService.getAllProducts(request));
     }
 
     @GetMapping("/{id}")
     @Override
-    public RootEntity<ProductDto> getProductById(@PathVariable(name = "id") Long id) {
-        return RootEntity.success(productService.getProductById(id));
+    public ApiResponse<ProductDto> getProductById(@PathVariable(name = "id") Long id) {
+        return ApiResponse.success(productService.getProductById(id));
     }
 }

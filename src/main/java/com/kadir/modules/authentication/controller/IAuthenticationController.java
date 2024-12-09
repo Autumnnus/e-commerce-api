@@ -1,15 +1,15 @@
 package com.kadir.modules.authentication.controller;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.modules.authentication.dto.*;
 
 public interface IAuthenticationController {
 
-    RootEntity<CustomerDto> registerCustomer(AuthCustomerRegisterRequest input);
+    ApiResponse<CustomerDto> registerCustomer(AuthCustomerRegisterRequest input);
 
-    RootEntity<SellerDto> registerSeller(AuthSellerRegisterRequest input);
+    ApiResponse<SellerDto> registerSeller(AuthSellerRegisterRequest input);
 
-    RootEntity<AuthResponse> authenticate(AuthRequest input);
+    ApiResponse<AuthResponse> authenticate(AuthRequest input);
 
-    RootEntity<AuthResponse> refreshToken(RefreshTokenRequest refreshToken);
+    ApiResponse<AuthResponse> refreshToken(RefreshTokenRequest refreshToken);
 }

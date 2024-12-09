@@ -1,7 +1,7 @@
 package com.kadir.modules.authentication.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kadir.common.dto.DtoBase;
+import com.kadir.common.dto.BaseDto;
 import com.kadir.common.enums.UserRole;
 import com.kadir.modules.address.dto.AddressCreateDto;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto extends DtoBase {
+public class UserDto extends BaseDto {
 
     @NotNull
     private String username;

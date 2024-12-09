@@ -1,6 +1,6 @@
 package com.kadir.modules.category.controller.impl;
 
-import com.kadir.common.controller.RootEntity;
+import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.category.controller.ICategoryController;
 import com.kadir.modules.category.dto.CategoryDto;
@@ -22,13 +22,13 @@ public class CategoryController extends RestBaseController implements ICategoryC
 
     @GetMapping
     @Override
-    public RootEntity<List<CategoryDto>> getAllCategories() {
-        return RootEntity.success(categoryService.getAllCategories());
+    public ApiResponse<List<CategoryDto>> getAllCategories() {
+        return ApiResponse.success(categoryService.getAllCategories());
     }
 
     @GetMapping("/{id}")
     @Override
-    public RootEntity<CategoryDto> getCategoryById(@PathVariable(name = "id") Long id) {
-        return RootEntity.success(categoryService.getCategoryById(id));
+    public ApiResponse<CategoryDto> getCategoryById(@PathVariable(name = "id") Long id) {
+        return ApiResponse.success(categoryService.getCategoryById(id));
     }
 }

@@ -1,6 +1,6 @@
 package com.kadir.modules.product.dto;
 
-import com.kadir.common.dto.DtoBase;
+import com.kadir.common.dto.BaseDto;
 import com.kadir.modules.category.model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductDto extends DtoBase {
+public class ProductDto extends BaseDto {
 
     private String name;
 

@@ -32,7 +32,7 @@ public class Product extends BaseEntity {
     private BigDecimal price = BigDecimal.ZERO;
 
     @Column(name = "stock_quantity")
-    private int stockQuantity;
+    private int stockQuantity = 0;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = true)
