@@ -8,7 +8,7 @@ import lombok.Data;
 public class CurrencyRequest {
 
     @NotNull(message = "CurrencyCode code is required")
-    private String currencyCode;
+    private CurrencyCode currencyCode;
 
     private String targetCurrencyCode = CurrencyCode.USD.name();
 }

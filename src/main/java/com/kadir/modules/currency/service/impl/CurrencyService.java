@@ -47,7 +47,7 @@ public class CurrencyService implements ICurrencyService {
 
     @Override
     public CurrencyDto getCurrency(CurrencyRequest request) {
-        Currency currency = currencyRepository.findByCurrencyCode(request.getCurrencyCode())
+        Currency currency = currencyRepository.findByCurrencyCode(request.getCurrencyCode().name())
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CurrencyCode not found")));
         Currency sourceCurrency = currencyRepository.findByCurrencyCode(request.getTargetCurrencyCode())
@@ -81,12 +81,12 @@ public class CurrencyService implements ICurrencyService {
                         conversionRatesNode.fields().forEachRemaining(entry -> {
                             String currencyCode = entry.getKey();
                             Currency currencyUtil = CurrencyUtils.getCurrency(currencyCode);
-//                            Currency currencyUtil = CurrencyUtils.getCurrency(CurrencyCode.valueOf(currencyCode));
+                            // Currency currencyUtil = CurrencyUtils.getCurrency(CurrencyCode.valueOf(currencyCode));
                             double exchangeRate = entry.getValue().asDouble();
 
                             Currency currency = new Currency();
                             currency.setCurrencyCode(currencyCode);
-//                            currency.setCurrencyCode(CurrencyCode.valueOf(currencyCode));
+                            //  currency.setCurrencyCode(CurrencyCode.valueOf(currencyCode));
                             currency.setExchangeRate(exchangeRate);
                             currency.setSymbol(currencyUtil.getSymbol());
                             currency.setCurrencyName(currencyUtil.getCurrencyName());
