@@ -10,5 +10,5 @@ public class CurrencyRequest {
     @NotNull(message = "CurrencyCode code is required")
     private CurrencyCode currencyCode;
 
-    private String targetCurrencyCode = CurrencyCode.USD.name();
+    private CurrencyCode targetCurrencyCode = CurrencyCode.USD;
 }

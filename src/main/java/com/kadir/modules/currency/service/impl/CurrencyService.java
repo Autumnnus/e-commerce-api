@@ -47,7 +47,7 @@ public class CurrencyService implements ICurrencyService {
 
     @Override
     public CurrencyDto getCurrency(CurrencyRequest request) {
-        Currency currency = currencyRepository.findByCurrencyCode(request.getCurrencyCode().name())
+        Currency currency = currencyRepository.findByCurrencyCode(request.getCurrencyCode())
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CurrencyCode not found")));
         Currency sourceCurrency = currencyRepository.findByCurrencyCode(request.getTargetCurrencyCode())
@@ -80,20 +80,19 @@ public class CurrencyService implements ICurrencyService {
                     if (conversionRatesNode != null) {
                         conversionRatesNode.fields().forEachRemaining(entry -> {
                             String currencyCode = entry.getKey();
-                            Currency currencyUtil = CurrencyUtils.getCurrency(currencyCode);
-                            // Currency currencyUtil = CurrencyUtils.getCurrency(CurrencyCode.valueOf(currencyCode));
+                            Currency currencyUtil = CurrencyUtils.getCurrency(CurrencyCode.valueOf(currencyCode));
                             double exchangeRate = entry.getValue().asDouble();
 
-                            Currency currency = new Currency();
-                            currency.setCurrencyCode(currencyCode);
-                            //  currency.setCurrencyCode(CurrencyCode.valueOf(currencyCode));
-                            currency.setExchangeRate(exchangeRate);
-                            currency.setSymbol(currencyUtil.getSymbol());
-                            currency.setCurrencyName(currencyUtil.getCurrencyName());
-                            if (currencyCode.equals(CurrencyCode.USD.name())) {
-                                currency.setIsDefault(true);
-                            }
-                            currencyList.add(currency);
+                            Currency existingCurrency = currencyRepository.findByCurrencyCode(CurrencyCode.valueOf(currencyCode))
+                                    .orElse(new Currency());
+
+                            existingCurrency.setCurrencyCode(CurrencyCode.valueOf(currencyCode));
+                            existingCurrency.setExchangeRate(exchangeRate);
+                            existingCurrency.setSymbol(currencyUtil.getSymbol());
+                            existingCurrency.setCurrencyName(currencyUtil.getCurrencyName());
+                            existingCurrency.setIsDefault(currencyCode.equals(CurrencyCode.USD.name()));
+
+                            currencyList.add(existingCurrency);
                         });
                     }
                 }
@@ -103,7 +102,9 @@ public class CurrencyService implements ICurrencyService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         List<Currency> savedCurrencies = currencyRepository.saveAll(currencyList);
         return modelMapper.map(savedCurrencies, List.class);
     }
+
 }

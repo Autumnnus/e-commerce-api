@@ -1,9 +1,8 @@
 package com.kadir.modules.currency.model;
 
+import com.kadir.common.enums.CurrencyCode;
 import com.kadir.common.model.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +16,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Currency extends BaseEntity {
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency_code", unique = true, nullable = false)
-    private String currencyCode;
+    private CurrencyCode currencyCode;
 
     @Column(name = "currency_name")
     private String currencyName;
