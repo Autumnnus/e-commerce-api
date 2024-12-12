@@ -38,6 +38,26 @@ public class JWTService {
                 .compact();
     }
 
+    public String tokenizeCardNumber(String cardNumber) {
+        return Jwts.builder()
+                .setSubject("CreditCard")
+                .claim("cardNumber", cardNumber)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String decodeCardNumber(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("cardNumber", String.class);
+    }
+
+
     public <T> T exportToken(String token, Function<Claims, T> claimsFunc) {
         Claims claims = getClaims(token);
         T apply = claimsFunc.apply(claims);
