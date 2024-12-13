@@ -15,6 +15,8 @@ import com.kadir.modules.authentication.repository.RefreshTokenRepository;
 import com.kadir.modules.authentication.repository.SellerRepository;
 import com.kadir.modules.authentication.repository.UserRepository;
 import com.kadir.modules.authentication.service.IAuthenticationService;
+import com.kadir.modules.paymentmethods.wallet.model.Wallet;
+import com.kadir.modules.paymentmethods.wallet.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -22,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,6 +41,7 @@ public class AuthenticationService implements IAuthenticationService {
     private final JWTService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ModelMapper modelMapper;
+    private final WalletRepository walletRepository;
 
     private User createUser(AuthRegisterRequest input, UserRole role) {
         User user = new User();
@@ -59,6 +63,15 @@ public class AuthenticationService implements IAuthenticationService {
         customer.setCreatedAt(LocalDateTime.now());
         customer.setUpdatedAt(LocalDateTime.now());
         return customer;
+    }
+
+    private Wallet createWallet(User user) {
+        Wallet wallet = new Wallet();
+        wallet.setUser(user);
+        wallet.setBalance(BigDecimal.ZERO);
+        wallet.setCreatedAt(LocalDateTime.now());
+        wallet.setUpdatedAt(LocalDateTime.now());
+        return wallet;
     }
 
     private Seller createSeller(AuthSellerRegisterRequest input, User user) {
@@ -118,6 +131,7 @@ public class AuthenticationService implements IAuthenticationService {
     public CustomerDto registerCustomer(AuthCustomerRegisterRequest input) {
         validateUser(input, true);
         User savedUser = userRepository.save(createUser(input, UserRole.CUSTOMER));
+        walletRepository.save(createWallet(savedUser));
         Customer customer = createCustomer(input, savedUser);
         customerRepository.save(customer);
 
@@ -133,6 +147,11 @@ public class AuthenticationService implements IAuthenticationService {
     public SellerDto registerSeller(AuthSellerRegisterRequest input) {
         validateUser(input, false);
         User savedUser = userRepository.save(createUser(input, UserRole.SELLER));
+        Optional<Wallet> existingWallet = walletRepository.findByUserId(savedUser.getId());
+        if (existingWallet.isPresent()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, savedUser.getUsername()));
+        }
+        walletRepository.save(createWallet(savedUser));
         Seller seller = createSeller(input, savedUser);
         sellerRepository.save(seller);
 
