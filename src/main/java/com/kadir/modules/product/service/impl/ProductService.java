@@ -1,5 +1,6 @@
 package com.kadir.modules.product.service.impl;
 
+import com.google.gson.Gson;
 import com.kadir.common.dto.openai.OpenAiResponseDto;
 import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
@@ -11,10 +12,7 @@ import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.category.model.Category;
 import com.kadir.modules.category.repository.CategoryRepository;
-import com.kadir.modules.product.dto.ProductAIRequestDto;
-import com.kadir.modules.product.dto.ProductCreateDto;
-import com.kadir.modules.product.dto.ProductDto;
-import com.kadir.modules.product.dto.ProductUpdateDto;
+import com.kadir.modules.product.dto.*;
 import com.kadir.modules.product.model.Product;
 import com.kadir.modules.product.repository.ProductRepository;
 import com.kadir.modules.product.service.IProductService;
@@ -25,9 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +39,11 @@ public class ProductService implements IProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
+    private final WebClient webClient;
 
     @Value("${openai.api.key}")
     private String OPENAI_API_KEY;
+
 
     @Override
     public ProductDto createProduct(ProductCreateDto productCreateDto) {
@@ -115,39 +115,101 @@ public class ProductService implements IProductService {
 
     @Override
     public List<String> getProductRecommendationByAI(ProductAIRequestDto productAIRequestDto) {
-        if (productAIRequestDto.getContent() == null || productAIRequestDto.getContent().isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Content is required."));
-        }
+        String url = "/chat/completions";
+        String userRequestContent = productAIRequestDto.getContent();
+        String promptCategory =
+                "Aşağıdaki yazdığım ürün için göre yukarıda listelediğin kategorilerden hangisi en uygun ise o verinin sadece id'sini yaz.Örnek format: id: 150, name: 'Bilgisayar'. ";
+        Map<String, Object> requestBody = Map.of(
+                "model", "gpt-3.5-turbo",
+                "messages", List.of(
+                        Map.of("role", "system", "content", "Ne tür bir ürün arıyorsunuz?"),
+                        Map.of("role", "system", "content", "Kategori Listemiz: " + fetchCategories()),
+                        Map.of("role", "user", "content", promptCategory + userRequestContent)
+                )
+        );
 
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            String url = "https://api.openai.com/v1/chat/completions";
+            OpenAiResponseDto response = webClient.post()
+                    .uri(url)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + OPENAI_API_KEY)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .bodyToMono(OpenAiResponseDto.class)
+                    .block();
 
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "gpt-3.5-turbo");
-            requestBody.put("messages", new Object[]{
-                    Map.of("role", "user", "content", productAIRequestDto.getContent())
-            });
-
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set("Authorization", "Bearer " + OPENAI_API_KEY);
-            httpHeaders.set("Content-Type", "application/json");
-
-            var requestEntity = new org.springframework.http.HttpEntity<>(requestBody, httpHeaders);
-            ResponseEntity<OpenAiResponseDto> responseEntity =
-                    restTemplate.postForEntity(url, requestEntity, OpenAiResponseDto.class);
-
-            OpenAiResponseDto responseBody = responseEntity.getBody();
-            if (responseBody == null || responseBody.getChoices().isEmpty()) {
+            if (response == null || response.getChoices().isEmpty()) {
                 throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "No response generated."));
             }
+            String categoryId = response.getChoices().get(0).getMessage().getContent()
+                    .replace("id: ", "").split(",")[0].trim();
 
-            return responseBody.getChoices().stream()
-                    .map(choice -> choice.getMessage().getContent())
+            Long categoryIdLong;
+            try {
+                categoryIdLong = Long.parseLong(categoryId);
+            } catch (NumberFormatException e) {
+                throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Invalid category ID format."));
+            }
+
+            List<Product> products = productRepository.findByCategoryId(categoryIdLong);
+
+            List<Map<String, String>> productData = products.stream()
+                    .map(product -> {
+                        Map<String, String> productDetails = new HashMap<>();
+                        productDetails.put("name", product.getName());
+                        productDetails.put("price", product.getPrice().toString());
+                        return productDetails;
+                    })
                     .collect(Collectors.toList());
+
+            return List.of(new Gson().toJson(productData));
+
+//            return response.getChoices().stream()
+//                    .map(choice -> choice.getMessage().getContent())
+//                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, e.getMessage()));
         }
+    }
+
+    private String fetchProductByCategoryId(Long categoryId) {
+        List<Product> products = productRepository.findByCategoryId(categoryId);
+        List<Map<String, String>> productData = products.stream()
+                .map(product -> {
+                    Map<String, String> productDetails = new HashMap<>();
+                    productDetails.put("name", product.getName());
+                    productDetails.put("price", product.getPrice().toString());
+                    return productDetails;
+                })
+                .collect(Collectors.toList());
+
+        return new Gson().toJson(productData);
+    }
+
+    private String fetchCategories() {
+        List<Category> categories = categoryRepository.findAll();
+        List<Map<String, String>> categoryData = categories.stream()
+                .map(category -> {
+                    Map<String, String> categoryDetails = new HashMap<>();
+                    categoryDetails.put("name", category.getName());
+                    categoryDetails.put("description", category.getDescription());
+                    return categoryDetails;
+                })
+                .collect(Collectors.toList());
+
+        return new Gson().toJson(categoryData);
+    }
+
+
+    private ProductRecommendationDto mapProductToRecommendation(Product product, String aiGeneratedText) {
+        ProductRecommendationDto recommendation = new ProductRecommendationDto();
+        recommendation.setId(product.getId());
+        recommendation.setName(product.getName());
+        recommendation.setPrice(product.getPrice());
+        recommendation.setReasonsToBuy("Uygun fiyat, kaliteli malzeme");
+        recommendation.setReasonsToAvoid("Alternatif ürünler mevcut");
+        recommendation.setComparison("Bu ürün benzerlerine göre %10 daha ucuz.");
+        return recommendation;
     }
 
 }
