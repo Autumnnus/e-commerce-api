@@ -5,6 +5,7 @@ import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.product.controller.IProductController;
+import com.kadir.modules.product.dto.ProductAIRequestDto;
 import com.kadir.modules.product.dto.ProductCreateDto;
 import com.kadir.modules.product.dto.ProductDto;
 import com.kadir.modules.product.dto.ProductUpdateDto;
@@ -13,6 +14,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/rest/api/product")
@@ -53,5 +56,11 @@ public class ProductController extends RestBaseController implements IProductCon
     @Override
     public ApiResponse<ProductDto> getProductById(@PathVariable(name = "id") Long id) {
         return ApiResponse.success(productService.getProductById(id));
+    }
+
+    @PostMapping("/ai-recommendation")
+    @Override
+    public ApiResponse<List<String>> getProductRecommendationByAI(@RequestBody @Valid ProductAIRequestDto productAIRequestDto) {
+        return ok(productService.getProductRecommendationByAI(productAIRequestDto));
     }
 }

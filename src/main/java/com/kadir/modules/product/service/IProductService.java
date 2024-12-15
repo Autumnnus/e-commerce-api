@@ -2,9 +2,12 @@ package com.kadir.modules.product.service;
 
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
+import com.kadir.modules.product.dto.ProductAIRequestDto;
 import com.kadir.modules.product.dto.ProductCreateDto;
 import com.kadir.modules.product.dto.ProductDto;
 import com.kadir.modules.product.dto.ProductUpdateDto;
+
+import java.util.List;
 
 public interface IProductService {
 
@@ -17,4 +20,6 @@ public interface IProductService {
     RestPageableEntity<ProductDto> getAllProducts(RestPageableRequest request);
 
     ProductDto getProductById(Long id);
+
+    List<String> getProductRecommendationByAI(ProductAIRequestDto productAIRequestDto);
 }
