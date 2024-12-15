@@ -6,24 +6,25 @@ import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
 import com.kadir.common.utils.merge.MergeUtils;
+import com.kadir.common.utils.openai.OpenAiUtil;
 import com.kadir.common.utils.pagination.PageableHelper;
 import com.kadir.common.utils.pagination.PaginationUtils;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
 import com.kadir.modules.category.model.Category;
 import com.kadir.modules.category.repository.CategoryRepository;
-import com.kadir.modules.product.dto.*;
+import com.kadir.modules.product.dto.ProductAIRequestDto;
+import com.kadir.modules.product.dto.ProductCreateDto;
+import com.kadir.modules.product.dto.ProductDto;
+import com.kadir.modules.product.dto.ProductUpdateDto;
 import com.kadir.modules.product.model.Product;
 import com.kadir.modules.product.repository.ProductRepository;
 import com.kadir.modules.product.service.IProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -40,9 +41,7 @@ public class ProductService implements IProductService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
     private final WebClient webClient;
-
-    @Value("${openai.api.key}")
-    private String OPENAI_API_KEY;
+    private final OpenAiUtil openAiUtil;
 
 
     @Override
@@ -117,58 +116,50 @@ public class ProductService implements IProductService {
     public List<String> getProductRecommendationByAI(ProductAIRequestDto productAIRequestDto) {
         String url = "/chat/completions";
         String userRequestContent = productAIRequestDto.getContent();
-        String promptCategory =
-                "Aşağıdaki yazdığım ürün için göre yukarıda listelediğin kategorilerden hangisi en uygun ise o verinin sadece id'sini yaz.Örnek format: id: 150, name: 'Bilgisayar'. ";
-        Map<String, Object> requestBody = Map.of(
-                "model", "gpt-3.5-turbo",
-                "messages", List.of(
-                        Map.of("role", "system", "content", "Ne tür bir ürün arıyorsunuz?"),
-                        Map.of("role", "system", "content", "Kategori Listemiz: " + fetchCategories()),
-                        Map.of("role", "user", "content", promptCategory + userRequestContent)
-                )
-        );
 
         try {
-            OpenAiResponseDto response = webClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + OPENAI_API_KEY)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .bodyValue(requestBody)
-                    .retrieve()
-                    .bodyToMono(OpenAiResponseDto.class)
-                    .block();
+            String categoryPrompt = "Aşağıdaki yazdığım ürün için göre yukarıda listelediğin kategorilerden hangisi en uygun ise şu formatta geriye yaz: Örnek format: id: 150, name: 'Bilgisayar'. " + userRequestContent;
 
-            if (response == null || response.getChoices().isEmpty()) {
-                throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "No response generated."));
-            }
-            String categoryId = response.getChoices().get(0).getMessage().getContent()
-                    .replace("id: ", "").split(",")[0].trim();
+            Map<String, Object> categoryRequestBody = openAiUtil.createRequestBody(List.of(
+                    Map.of("role", "system", "content", "Ne tür bir ürün arıyorsunuz?"),
+                    Map.of("role", "system", "content", "Kategori Listemiz: " + fetchCategories()),
+                    Map.of("role", "user", "content", categoryPrompt)
+            ));
 
-            Long categoryIdLong;
-            try {
-                categoryIdLong = Long.parseLong(categoryId);
-            } catch (NumberFormatException e) {
-                throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Invalid category ID format."));
-            }
+            OpenAiResponseDto categoryResponse = openAiUtil.makeApiCall(url, categoryRequestBody, webClient);
 
-            List<Product> products = productRepository.findByCategoryId(categoryIdLong);
+            Long categoryIdLong = extractCategoryId(categoryResponse);
+            String fetchedProducts = fetchProductByCategoryId(categoryIdLong);
 
-            List<Map<String, String>> productData = products.stream()
-                    .map(product -> {
-                        Map<String, String> productDetails = new HashMap<>();
-                        productDetails.put("name", product.getName());
-                        productDetails.put("price", product.getPrice().toString());
-                        return productDetails;
-                    })
+            String productPrompt = "Şimdi ise yukarıda" + userRequestContent + "sorum için, sizin yukarıda paylaştığınız Ürünlerden hangi ürünü öneririsiniz? Neden almalıyım, neden almamalıyım, fiyat avantajları vs bunun bilgilerini ver. Her tavsiye edilecek üründen bahsederken id'sini de mutlaka bulundur.";
+
+            Map<String, Object> productRequestBody = openAiUtil.createRequestBody(List.of(
+                    Map.of("role", "system", "content", "Ürünlerimiz: " + fetchedProducts),
+                    Map.of("role", "user", "content", productPrompt)
+            ));
+
+            OpenAiResponseDto productResponse = openAiUtil.makeApiCall(url, productRequestBody, webClient);
+
+            return productResponse.getChoices().stream()
+                    .map(choice -> choice.getMessage().getContent())
                     .collect(Collectors.toList());
 
-            return List.of(new Gson().toJson(productData));
-
-//            return response.getChoices().stream()
-//                    .map(choice -> choice.getMessage().getContent())
-//                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, e.getMessage()));
+        }
+    }
+
+
+    private Long extractCategoryId(OpenAiResponseDto response) {
+        if (response == null || response.getChoices().isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "No response generated."));
+        }
+        String categoryId = response.getChoices().get(0).getMessage().getContent()
+                .replace("id: ", "").split(",")[0].trim();
+        try {
+            return Long.parseLong(categoryId);
+        } catch (NumberFormatException e) {
+            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Invalid category ID format."));
         }
     }
 
@@ -191,6 +182,7 @@ public class ProductService implements IProductService {
         List<Map<String, String>> categoryData = categories.stream()
                 .map(category -> {
                     Map<String, String> categoryDetails = new HashMap<>();
+                    categoryDetails.put("id", category.getId().toString());
                     categoryDetails.put("name", category.getName());
                     categoryDetails.put("description", category.getDescription());
                     return categoryDetails;
@@ -198,18 +190,6 @@ public class ProductService implements IProductService {
                 .collect(Collectors.toList());
 
         return new Gson().toJson(categoryData);
-    }
-
-
-    private ProductRecommendationDto mapProductToRecommendation(Product product, String aiGeneratedText) {
-        ProductRecommendationDto recommendation = new ProductRecommendationDto();
-        recommendation.setId(product.getId());
-        recommendation.setName(product.getName());
-        recommendation.setPrice(product.getPrice());
-        recommendation.setReasonsToBuy("Uygun fiyat, kaliteli malzeme");
-        recommendation.setReasonsToAvoid("Alternatif ürünler mevcut");
-        recommendation.setComparison("Bu ürün benzerlerine göre %10 daha ucuz.");
-        return recommendation;
     }
 
 }
