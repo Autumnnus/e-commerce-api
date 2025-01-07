@@ -23,6 +23,11 @@ import com.kadir.modules.product.service.IProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.embedding.EmbeddingRequest;
+import org.springframework.ai.embedding.EmbeddingResponse;
+import org.springframework.ai.openai.OpenAiEmbeddingOptions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,7 +47,6 @@ public class ProductService implements IProductService {
     private final ModelMapper modelMapper;
     private final WebClient webClient;
     private final OpenAiUtil openAiUtil;
-
 
     @Override
     public ProductDto createProduct(ProductCreateDto productCreateDto) {
@@ -112,10 +116,24 @@ public class ProductService implements IProductService {
         return productDto;
     }
 
+    private final ChatClient.Builder chatClientBuilder;
+    private final EmbeddingModel embeddingModel;
+
     @Override
     public List<String> getProductRecommendationByAI(ProductAIRequestDto productAIRequestDto) {
         String url = "/chat/completions";
         String userRequestContent = productAIRequestDto.getContent();
+//        ChatClient chatClient = chatClientBuilder.build();
+//        String response = chatClient.prompt("Tell me a joke").call().content();
+        EmbeddingResponse response = embeddingModel.call(
+                new EmbeddingRequest(List.of("Hello World", "World is big and salvation is near"),
+                        OpenAiEmbeddingOptions.builder()
+                                .withModel("text-embedding-3-small")
+                                .build()));
+        System.out.println(response);
+        if (response != null) {
+            return null;
+        }
 
         try {
             String categoryPrompt = "Aşağıdaki yazdığım ürün için göre yukarıda listelediğin kategorilerden hangisi en uygun ise şu formatta geriye yaz: Örnek format: id: 150, name: 'Bilgisayar'. " + userRequestContent;

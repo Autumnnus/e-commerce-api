@@ -72,8 +72,13 @@ public class OrderService implements IOrderService {
         if (!payment.getErrorCode().isEmpty() || !payment.getErrorMessage().isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Payment failed"));
         }
-        Order order = createAndSaveOrder(user, cartItems);
 
+        /* //TODO will use later
+        String paymentId = payment.getPaymentId();
+        List<PaymentItem> paymentItems = payment.getPaymentItems();
+        */
+
+        Order order = createAndSaveOrder(user, cartItems);
         List<OrderItems> savedOrderItems = createAndSaveOrderItems(order, cartItems);
 
         if (!cartItems.isEmpty()) {
