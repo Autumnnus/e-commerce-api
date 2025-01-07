@@ -44,8 +44,6 @@ functionalities such as product categorization, reviews, order management, and u
 
 - **Activity Logs**: (In Progress🚧)
     - Logs all user activities for auditing and tracking.
-- **Notifications**: (In Progress🚧)
-    - Sends notifications for order updates, promotions, etc.
 - **AI-Powered Recommendations**: (Done✅)
     - Uses AI to provide personalized product recommendations.
 - **Payment Integration**: (Done✅)
@@ -54,8 +52,19 @@ functionalities such as product categorization, reviews, order management, and u
     - Supports multiple currencies for products and orders.
 - **Sales Reports**: (In Progress🚧)
     - Sellers can view sales reports and analytics.
-- **Product Views and Analytics**: (In Progress🚧)
+- **Product Views and Analytics**: (Done✅)
     - Sellers can view product views and analytics.
+
+### **Version 4 Features** (Future Plans🔮)
+
+- **Sockets**:
+    - Real-time updates for order status and product availability.
+- **Caching**:
+    - Improves performance by caching frequently accessed data.
+- **Notifications**:
+    - Sends notifications for order updates, promotions, etc.
+- **Full-Stack Development**:
+    - Develop a front-end application to interact with the API.
 
 ## Technologies
 
