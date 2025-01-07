@@ -15,6 +15,9 @@ public enum MessageType {
     USERNAME_OR_PASSWORD_INVALID("1007", "Username or password invalid"),
     FIRST_NAME_AND_LAST_NAME_REQUIRED("1010", "First name and last name required"),
     COMPANY_NAME_REQUIRED("1011", "Company name required"),
+    CARD_IS_EMPTY("1012", "Card is empty"),
+    PAYMENT_FAILED("1013", "Payment failed"),
+    INVALID_EXPIRATION_DATE("1014", "Invalid expiration date"),
     GENERAL_EXCEPTION("9999", "General exception");
 
 

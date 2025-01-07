@@ -36,9 +36,9 @@ public class CartItemsService implements ICartItemsService {
     public CartItemsDto createCartItems(CartItemsCreateDto cartItemsCreateDto) {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         Product product = productRepository.findById(cartItemsCreateDto.getProductId())
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
         CartItems cartItems = new CartItems();
         cartItems.setUser(user);
         cartItems.setProduct(product);
@@ -51,7 +51,7 @@ public class CartItemsService implements ICartItemsService {
     @Override
     public CartItemsDto updateCartItems(Long id, CartItemsUpdateDto cartItemsUpdateDto) {
         CartItems cartItems = cartItemsRepository.findById(id)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "CartItems not found")));
 
         MergeUtils.copyNonNullProperties(cartItemsUpdateDto, cartItems);
         CartItems savedCartItems = cartItemsRepository.save(cartItems);
@@ -61,7 +61,7 @@ public class CartItemsService implements ICartItemsService {
     @Override
     public CartItemsDto deleteCartItems(Long id) {
         CartItems cartItems = cartItemsRepository.findById(id)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "CartItems not found")));
         CartItemsDto cartItemsDto = modelMapper.map(cartItems, CartItemsDto.class);
 
         cartItemsRepository.deleteById(id);
@@ -72,14 +72,14 @@ public class CartItemsService implements ICartItemsService {
     @Override
     public CartItemsDto getCartItemsById(Long id) {
         CartItems cartItems = cartItemsRepository.findById(id)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CartItems not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "CartItems not found")));
         return modelMapper.map(cartItems, CartItemsDto.class);
     }
 
     @Override
     public List<CartItemsDto> getUserCartItems(Long userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         List<CartItems> cartItems = cartItemsRepository.findByUserId(userId);
         return modelMapper.map(cartItems, new TypeToken<List<CartItemsDto>>() {
         }.getType());

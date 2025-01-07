@@ -38,7 +38,7 @@ public class AdminCategoryService implements IAdminCategoryService {
     @Override
     public CategoryDto updateCategory(Long id, CategoryUpdateDto categoryUpdateDto) {
         Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Category not found")));
 
         MergeUtils.copyNonNullProperties(categoryUpdateDto, existingCategory);
         Category savedCategory = categoryRepository.save(existingCategory);
@@ -50,7 +50,7 @@ public class AdminCategoryService implements IAdminCategoryService {
     @Override
     public CategoryDto deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Category not found")));
         List<Product> products = productRepository.findByCategoryId(id);
         products.forEach(product -> product.setCategory(null));
         productRepository.saveAll(products);

@@ -52,7 +52,7 @@ public class ProductService implements IProductService {
     public ProductDto createProduct(ProductCreateDto productCreateDto) {
         Category category = categoryRepository.findById(productCreateDto.getCategoryId())
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Category not found")));
         Product product = modelMapper.map(productCreateDto, Product.class);
         product.setCategory(category);
         Product savedProduct = productRepository.save(product);
@@ -63,11 +63,11 @@ public class ProductService implements IProductService {
     public ProductDto updateProduct(Long id, ProductUpdateDto productUpdateDto) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
         if (productUpdateDto.getCategoryId() != null) {
             Category existingCategory = categoryRepository.findById(productUpdateDto.getCategoryId())
                     .orElseThrow(() -> new BaseException(new ErrorMessage(
-                            MessageType.GENERAL_EXCEPTION, "Category not found")));
+                            MessageType.NO_RECORD_EXIST, "Category not found")));
             existingProduct.setCategory(existingCategory);
         }
         MergeUtils.copyNonNullProperties(productUpdateDto, existingProduct);
@@ -80,7 +80,7 @@ public class ProductService implements IProductService {
     public ProductDto deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
         ProductDto productDto = modelMapper.map(product, ProductDto.class);
         productRepository.deleteById(id);
         return productDto;
@@ -104,12 +104,12 @@ public class ProductService implements IProductService {
     public ProductDto getProductById(Long id) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
 
         Category category = existingProduct.getCategory() != null
                 ? categoryRepository.findById(existingProduct.getCategory().getId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(
-                        MessageType.GENERAL_EXCEPTION, "Category not found")))
+                        MessageType.NO_RECORD_EXIST, "Category not found")))
                 : null;
         ProductDto productDto = modelMapper.map(existingProduct, ProductDto.class);
         productDto.setCategory(category);

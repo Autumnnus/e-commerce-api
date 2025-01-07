@@ -45,10 +45,10 @@ public class FavoriteProductService implements IFavoriteProductService {
                 .orElseGet(() -> {
                     Product product = productRepository.findById(productId)
                             .orElseThrow(() -> new BaseException(
-                                    new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                                    new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
                     User user = userRepository.findById(userId)
                             .orElseThrow(() -> new BaseException(
-                                    new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                                    new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
 
                     FavoriteProduct favoriteProduct = new FavoriteProduct();
                     favoriteProduct.setUser(user);

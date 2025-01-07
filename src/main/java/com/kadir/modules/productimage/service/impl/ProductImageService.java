@@ -64,7 +64,7 @@ public class ProductImageService implements IProductImageService {
     public List<ProductImageDto> createProductImages(List<MultipartFile> files, ProductImageCreateDto productImageCreateDto) {
         Product product = productRepository.findById(productImageCreateDto.getProductId())
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
 
         long existingImagesCount = productImageRepository.countByProductId(product.getId());
         if (existingImagesCount + files.size() > MAX_IMAGE_COUNT) {
@@ -105,7 +105,7 @@ public class ProductImageService implements IProductImageService {
     public ProductImageDto updateProductImage(MultipartFile file, ProductImageUpdateDto productImageUpdateDto) {
         ProductImage existingImage = productImageRepository.findById(productImageUpdateDto.getId())
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product Image not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product Image not found")));
 
         if (file != null) {
             if (file.getSize() > 2 * 1024 * 1024) {
@@ -132,7 +132,7 @@ public class ProductImageService implements IProductImageService {
     public ProductImageDto deleteProductImage(Long productImageId) {
         ProductImage existingImage = productImageRepository.findById(productImageId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product Image not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product Image not found")));
 
         String fileName = existingImage.getImageUrl().substring(existingImage.getImageUrl().lastIndexOf("/") + 1);
         s3Client.deleteObject(bucket, fileName);
@@ -147,7 +147,7 @@ public class ProductImageService implements IProductImageService {
     public List<ProductImageDto> getProductImages(Long productId) {
         productRepository.findById(productId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
         List<ProductImage> productImages = productImageRepository.findByProductId(productId);
         return modelMapper.map(productImages, List.class);
     }

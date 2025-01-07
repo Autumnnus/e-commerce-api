@@ -64,14 +64,14 @@ public class OrderService implements IOrderService {
     public OrderDto createOrder(OrderDtoIU dto) {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                () -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
         if (cartItems.isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Cart is empty"));
+            throw new BaseException(new ErrorMessage(MessageType.CARD_IS_EMPTY, cartItems.size() + " item(s)"));
         }
         Payment payment = createPayment(new CreatePaymentRequest(), user);
         if (!payment.getErrorCode().isEmpty() || !payment.getErrorMessage().isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Payment failed"));
+            throw new BaseException(new ErrorMessage(MessageType.PAYMENT_FAILED, payment.getErrorMessage()));
         }
 
         /* //TODO will use later
@@ -109,7 +109,7 @@ public class OrderService implements IOrderService {
         Pageable pageable = PageableHelper
                 .createPageable(request.getPageNumber(), request.getPageSize(), request.getSortBy(), request.isAsc());
         userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);
         RestPageableEntity<OrderDto> pageableResponse = PaginationUtils.toPageableResponse(orderPage, OrderDto.class, modelMapper);
         return pageableResponse;
@@ -166,7 +166,7 @@ public class OrderService implements IOrderService {
     private Payment createPayment(CreatePaymentRequest request, User user) {
         List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
         Customer customer = customerRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Customer not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Customer not found")));
         List<com.kadir.modules.address.model.Address> addresses = addressRepository.findByUserId(user.getId());
         com.kadir.modules.address.model.Address firstAddress = addresses.get(0);
         String fullName = customer.getFirstName() + " " + customer.getLastName();

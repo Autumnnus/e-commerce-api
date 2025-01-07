@@ -40,12 +40,12 @@ public class CouponService implements ICouponService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         Coupon coupon = modelMapper.map(couponCreateDto, Coupon.class);
         if (couponCreateDto.getProductId() != null) {
             Product product = productRepository.findById(couponCreateDto.getProductId())
                     .orElseThrow(() -> new BaseException(
-                            new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                            new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
             coupon.setProduct(product);
         }
 
@@ -59,10 +59,10 @@ public class CouponService implements ICouponService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         Coupon existingCoupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Coupon not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
         MergeUtils.copyNonNullProperties(couponUpdateDto, existingCoupon);
         Coupon updatedCoupon = couponRepository.save(existingCoupon);
         return modelMapper.map(updatedCoupon, CouponDto.class);
@@ -72,7 +72,7 @@ public class CouponService implements ICouponService {
     public CouponDto deleteCoupon(Long couponId) {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Coupon not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
         CouponDto couponDto = modelMapper.map(coupon, CouponDto.class);
         couponRepository.delete(coupon);
         return couponDto;
@@ -82,7 +82,7 @@ public class CouponService implements ICouponService {
     public CouponDto getCouponByCode(String code) {
         Coupon coupon = couponRepository.findByCode(code)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Coupon not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
         return modelMapper.map(coupon, CouponDto.class);
     }
 
@@ -90,7 +90,7 @@ public class CouponService implements ICouponService {
     public Boolean isCouponValid(String code) {
         Coupon coupon = couponRepository.findByCode(code)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Coupon not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
         return coupon.isActive();
     }
 

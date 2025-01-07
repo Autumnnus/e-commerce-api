@@ -28,10 +28,10 @@ public class WalletService implements IWalletService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
 
         Wallet wallet = walletRepository.findByUserId(userId)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Wallet not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Wallet not found")));
         wallet.setBalance(wallet.getBalance().add(walletIUDto.getBalance()));
         Wallet savedWallet = walletRepository.save(wallet);
         return modelMapper.map(savedWallet, WalletDto.class);
@@ -42,10 +42,10 @@ public class WalletService implements IWalletService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
 
         Wallet wallet = walletRepository.findByUserId(userId)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Wallet not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Wallet not found")));
         if (wallet.getBalance().compareTo(walletIUDto.getBalance()) < 0) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Insufficient balance"));
         }
@@ -58,7 +58,7 @@ public class WalletService implements IWalletService {
     public WalletDto getWallet() {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         Wallet wallet = walletRepository.findByUserId(userId)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Wallet not found")));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Wallet not found")));
         if (!wallet.getUser().getId().equals(userId)) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "You are not authorized to see this credit card"));
         }

@@ -38,11 +38,11 @@ public class ProductViewsService implements IProductViewsService {
         if (productViewsSaveDto.getUserId() != null) {
 
             user = userRepository.findById(productViewsSaveDto.getUserId()).orElseThrow(
-                    () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                    () -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         }
 
         Product product = productRepository.findById(productViewsSaveDto.getProductId()).orElseThrow(
-                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                () -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
 
         ProductViews existingView = productViewsRepository.findByProductIdAndCustomerIdOrIpAddress(
                 productViewsSaveDto.getProductId(),
@@ -71,7 +71,7 @@ public class ProductViewsService implements IProductViewsService {
     @Override
     public ProductViewsDto getProductView(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                () -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
 
         Optional<ProductViews> productViews = productViewsRepository.findById(productId);
         if (productViews.isPresent()) {

@@ -35,9 +35,9 @@ public class CreditCardService implements ICreditCardService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         if (!creditCardCreateDto.isExpirationDateValid(creditCardCreateDto.getExpirationDate())) {
-            throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Invalid expiration date"));
+            throw new BaseException(new ErrorMessage(MessageType.INVALID_EXPIRATION_DATE, creditCardCreateDto.getExpirationDate()));
         }
         creditCardRepository.findByCardNumber(creditCardCreateDto.getCardNumber())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Credit card already exists")));
@@ -54,7 +54,7 @@ public class CreditCardService implements ICreditCardService {
     @Override
     public CreditCardDto updateCreditCard(Long creditCardId, CreditCardUpdateDto creditCardUpdateDto) {
         CreditCard existingCard = creditCardRepository.findById(creditCardId).orElseThrow(() -> new BaseException(
-                new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Credit Card not found")));
+                new ErrorMessage(MessageType.NO_RECORD_EXIST, "Credit Card not found")));
         MergeUtils.copyNonNullProperties(creditCardUpdateDto, existingCard);
         CreditCard savedCreditCard = creditCardRepository.save(existingCard);
         return modelMapper.map(savedCreditCard, CreditCardDto.class);
@@ -63,7 +63,7 @@ public class CreditCardService implements ICreditCardService {
     @Override
     public CreditCardDto deleteCreditCard(Long creditCardId) {
         CreditCard existingCard = creditCardRepository.findById(creditCardId).orElseThrow(() -> new BaseException(
-                new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Credit Card not found")));
+                new ErrorMessage(MessageType.NO_RECORD_EXIST, "Credit Card not found")));
         creditCardRepository.delete(existingCard);
         return modelMapper.map(existingCard, CreditCardDto.class);
     }
@@ -72,7 +72,7 @@ public class CreditCardService implements ICreditCardService {
     public CreditCardDto getCreditCard(Long creditCardId) {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         CreditCard creditCard = creditCardRepository.findById(creditCardId).orElseThrow(() -> new BaseException(
-                new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Credit Card not found")));
+                new ErrorMessage(MessageType.NO_RECORD_EXIST, "Credit Card not found")));
         if (!creditCard.getUser().getId().equals(userId)) {
             throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "You are not authorized to see this credit card"));
         }
@@ -86,7 +86,7 @@ public class CreditCardService implements ICreditCardService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         List<CreditCard> creditCards = creditCardRepository.findByUserId(userId);
         return creditCards.stream()
                 .peek(creditCard -> creditCard.setCardNumber(jwtService.decodeCardNumber(creditCard.getCardNumber())))

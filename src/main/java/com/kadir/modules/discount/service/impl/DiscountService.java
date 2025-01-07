@@ -41,18 +41,18 @@ public class DiscountService implements IDiscountService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         Discount discount = modelMapper.map(discountCreateDto, Discount.class);
         if (discountCreateDto.getProductId() != null) {
             Product product = productRepository.findById(discountCreateDto.getProductId())
                     .orElseThrow(() -> new BaseException(
-                            new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                            new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
             discount.setProduct(product);
         }
         if (discountCreateDto.getCategoryId() != null) {
             Category category = categoryRepository.findById(discountCreateDto.getCategoryId())
                     .orElseThrow(() -> new BaseException(
-                            new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Category not found")));
+                            new ErrorMessage(MessageType.NO_RECORD_EXIST, "Category not found")));
             discount.setCategory(category);
         }
         discount.setUser(user);
@@ -64,7 +64,7 @@ public class DiscountService implements IDiscountService {
     public DiscountDto deleteDiscount(Long discountId) {
         Discount discount = discountRepository.findById(discountId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Discount not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Discount not found")));
         DiscountDto discountDto = modelMapper.map(discount, DiscountDto.class);
         discountRepository.delete(discount);
         return discountDto;
@@ -85,7 +85,7 @@ public class DiscountService implements IDiscountService {
     public DiscountDto getDiscountByProductId(Long productId) {
         Discount discount = discountRepository.findByProductId(productId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Discount not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Discount not found")));
         return modelMapper.map(discount, DiscountDto.class);
     }
 
@@ -93,7 +93,7 @@ public class DiscountService implements IDiscountService {
     public DiscountDto getDiscountByCategoryId(Long categoryId) {
         Discount discount = discountRepository.findByCategoryId(categoryId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Discount not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Discount not found")));
         return modelMapper.map(discount, DiscountDto.class);
     }
 }

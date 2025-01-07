@@ -49,10 +49,10 @@ public class CurrencyService implements ICurrencyService {
     public CurrencyDto getCurrency(CurrencyRequest request) {
         Currency currency = currencyRepository.findByCurrencyCode(request.getCurrencyCode())
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CurrencyCode not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "CurrencyCode not found")));
         Currency sourceCurrency = currencyRepository.findByCurrencyCode(request.getTargetCurrencyCode())
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "CurrencyCode not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "CurrencyCode not found")));
         currency.setExchangeRate(currency.getExchangeRate() / sourceCurrency.getExchangeRate());
 
         return modelMapper.map(currency, CurrencyDto.class);
