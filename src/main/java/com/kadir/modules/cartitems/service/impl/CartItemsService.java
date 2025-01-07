@@ -3,6 +3,7 @@ package com.kadir.modules.cartitems.service.impl;
 import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
+import com.kadir.common.service.impl.AuthenticationServiceImpl;
 import com.kadir.common.utils.merge.MergeUtils;
 import com.kadir.modules.authentication.model.User;
 import com.kadir.modules.authentication.repository.UserRepository;
@@ -29,10 +30,12 @@ public class CartItemsService implements ICartItemsService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final AuthenticationServiceImpl authenticationServiceImpl;
 
     @Override
     public CartItemsDto createCartItems(CartItemsCreateDto cartItemsCreateDto) {
-        User user = userRepository.findById(cartItemsCreateDto.getUserId())
+        Long userId = authenticationServiceImpl.getCurrentUserId();
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         Product product = productRepository.findById(cartItemsCreateDto.getProductId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));

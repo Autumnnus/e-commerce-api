@@ -62,7 +62,8 @@ public class OrderService implements IOrderService {
     @Transactional
     @Override
     public OrderDto createOrder(OrderDtoIU dto) {
-        User user = userRepository.findById(dto.getUserId()).orElseThrow(
+        Long userId = authenticationServiceImpl.getCurrentUserId();
+        User user = userRepository.findById(userId).orElseThrow(
                 () -> new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
         List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
         if (cartItems.isEmpty()) {

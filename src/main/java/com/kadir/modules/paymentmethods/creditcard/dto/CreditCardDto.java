@@ -14,6 +14,4 @@ public class CreditCardDto extends BaseDto {
     private String expirationDate;
 
     private AddressDto address;
-
-    private Long userId;
 }

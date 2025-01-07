@@ -12,9 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AddressCreateDto {
 
-    @NotNull(message = "User id is required")
-    private Long userId;
-
     @NotNull(message = "Title is required")
     private String title;
 

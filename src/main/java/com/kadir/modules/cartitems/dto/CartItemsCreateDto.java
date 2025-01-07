@@ -8,9 +8,6 @@ import lombok.Setter;
 @Setter
 public class CartItemsCreateDto {
 
-    @NotNull(message = "User id is required")
-    private Long userId;
-
     @NotNull(message = "Product id is required")
     private Long productId;
 
