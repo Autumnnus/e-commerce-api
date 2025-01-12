@@ -1,5 +1,6 @@
 package com.kadir.modules.authentication.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.authentication.controller.IAuthenticationController;
@@ -9,9 +10,11 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(Paths.PUBLIC_BASE_PATH)
 public class AuthenticationController extends RestBaseController implements IAuthenticationController {
 
     @Autowired

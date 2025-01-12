@@ -28,4 +28,6 @@ public class ActivityLog extends BaseEntity {
 
     private String entityType;
 
+    private String description;
+
 }

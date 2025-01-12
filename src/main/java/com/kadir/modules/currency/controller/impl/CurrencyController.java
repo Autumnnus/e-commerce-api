@@ -1,5 +1,6 @@
 package com.kadir.modules.currency.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.currency.controller.ICurrencyController;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/currency")
+@RequestMapping(Paths.BASE_PATH + "/currency")
 public class CurrencyController extends RestBaseController implements ICurrencyController {
 
     @Autowired

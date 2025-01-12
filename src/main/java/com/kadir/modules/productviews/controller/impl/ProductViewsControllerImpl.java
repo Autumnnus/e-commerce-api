@@ -1,5 +1,6 @@
 package com.kadir.modules.productviews.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.productviews.controller.IProductViewsController;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rest/api/product-views")
+@RequestMapping(Paths.PUBLIC_BASE_PATH + "/product-views")
 public class ProductViewsControllerImpl extends RestBaseController implements IProductViewsController {
 
     @Autowired

@@ -26,7 +26,8 @@ public class LoggingAspect {
         activityLogService.logActivity(
                 camelToUpperSnake(methodName),
                 LogStatus.SUCCESS,
-                cleanEntityName(entityName)
+                cleanEntityName(entityName),
+                null
         );
     }
 
@@ -37,7 +38,8 @@ public class LoggingAspect {
         activityLogService.logActivity(
                 camelToUpperSnake(methodName),
                 LogStatus.FAILED,
-                cleanEntityName(entityName)
+                cleanEntityName(entityName),
+                exception.getMessage()
         );
     }
 

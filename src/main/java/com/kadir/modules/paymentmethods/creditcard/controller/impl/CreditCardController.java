@@ -1,5 +1,6 @@
 package com.kadir.modules.paymentmethods.creditcard.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.paymentmethods.creditcard.controller.ICreditCardController;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/credit-card")
+@RequestMapping(Paths.BASE_PATH + "/credit-card")
 public class CreditCardController extends RestBaseController implements ICreditCardController {
 
     @Autowired

@@ -35,7 +35,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String header = request.getHeader("Authorization");
 
-        if (header == null) {
+        if (header == null || request.getRequestURI().contains("/public/")) {
             filterChain.doFilter(request, response);
             return;
         }

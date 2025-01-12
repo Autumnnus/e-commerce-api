@@ -1,5 +1,6 @@
 package com.kadir.modules.product.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
@@ -18,47 +19,46 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/product")
 public class ProductController extends RestBaseController implements IProductController {
 
     @Autowired
     private IProductService productService;
 
-    @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
-    @PostMapping
+    @PreAuthorize("hasRole('SELLER')")
+    @PostMapping(Paths.BASE_PATH + "/product")
     @Override
     public ApiResponse<ProductDto> createProduct(@RequestBody @Valid ProductCreateDto productCreateDto) {
         return ApiResponse.success(productService.createProduct(productCreateDto));
     }
 
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
-    @PutMapping("/{id}")
+    @PutMapping(Paths.BASE_PATH + "/product/{id}")
     @Override
     public ApiResponse<ProductDto> updateProduct(@PathVariable(name = "id") Long id, @RequestBody @Valid ProductUpdateDto productUpdateDto) {
         return ApiResponse.success(productService.updateProduct(id, productUpdateDto));
     }
 
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping(Paths.BASE_PATH + "/product/{id}")
     @Override
     public ApiResponse<ProductDto> deleteProduct(@PathVariable(name = "id") Long id) {
         return ApiResponse.success(productService.deleteProduct(id));
     }
 
 
-    @GetMapping
+    @GetMapping(Paths.PUBLIC_BASE_PATH + "/product")
     @Override
     public ApiResponse<RestPageableEntity<ProductDto>> getAllProducts(RestPageableRequest request) {
         return ok(productService.getAllProducts(request));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(Paths.PUBLIC_BASE_PATH + "/product/{id}")
     @Override
     public ApiResponse<ProductDto> getProductById(@PathVariable(name = "id") Long id) {
         return ApiResponse.success(productService.getProductById(id));
     }
 
-    @PostMapping("/ai-recommendation")
+    @PostMapping(Paths.PUBLIC_BASE_PATH + "/public/product/ai-recommendation")
     @Override
     public ApiResponse<List<String>> getProductRecommendationByAI(@RequestBody @Valid ProductAIRequestDto productAIRequestDto) {
         return ok(productService.getProductRecommendationByAI(productAIRequestDto));

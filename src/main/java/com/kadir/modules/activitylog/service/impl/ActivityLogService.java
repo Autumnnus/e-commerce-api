@@ -10,6 +10,8 @@ import com.kadir.modules.authentication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ActivityLogService implements IActivityLogService {
@@ -19,16 +21,21 @@ public class ActivityLogService implements IActivityLogService {
     private final UserRepository userRepository;
 
     @Override
-    public void logActivity(String action, LogStatus status, String entityType) {
+    public void logActivity(String action, LogStatus status, String entityType, String description) {
         Long userId = authenticationService.getCurrentUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
+        Optional<User> user;
+        if (userId == null) {
+            user = Optional.empty();
+        } else {
+            user = userRepository.findById(userId);
+        }
+
         ActivityLog log = new ActivityLog();
-        log.setUser(user);
+        log.setUser(user.orElse(null));
         log.setAction(action);
         log.setStatus(status);
         log.setEntityType(entityType);
+        log.setDescription(description);
         activityLogRepository.save(log);
     }
 }

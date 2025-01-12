@@ -1,5 +1,6 @@
 package com.kadir.modules.favoriteproduct.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rest/api/favoriteProduct")
+@RequestMapping(Paths.BASE_PATH + "/favoriteProduct")
 public class FavoriteProductController extends RestBaseController implements IFavoriteProductController {
 
     @Autowired

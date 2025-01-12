@@ -1,5 +1,6 @@
 package com.kadir.modules.paymentmethods.wallet.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.paymentmethods.wallet.controller.IWalletController;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rest/api/wallet")
+@RequestMapping(Paths.BASE_PATH + "/wallet")
 public class WalletController extends RestBaseController implements IWalletController {
 
     @Autowired

@@ -4,7 +4,6 @@ import com.kadir.common.enums.UserRole;
 import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
-import com.kadir.common.handler.AuthEntryPoint;
 import com.kadir.common.jwt.JWTAuthenticationFilter;
 import com.kadir.modules.authentication.model.RefreshToken;
 import com.kadir.modules.authentication.repository.RefreshTokenRepository;
@@ -27,17 +26,13 @@ import java.io.IOException;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    public static final String REGISTER_CUSTOMER = "/registerCustomer";
-    public static final String REGISTER_SELLER = "/registerSeller";
-    public static final String AUTHENTICATE = "/authenticate";
-    public static final String REFRESH_TOKEN = "/refreshToken";
-    public static final String LOGOUT = "/logout";
-    public static final String[] SWAGGER_PATHS = {
+    private static final String[] SWAGGER_PATHS = {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
     };
-    public static final String ADMIN_PATH = "/admin/**";
+    private static final String ADMIN_PATH = "/admin/**";
+    private static final String PUBLIC_PATHS = "/public/**";
 
     @Autowired
     private AuthenticationProvider authenticationProvider;
@@ -45,8 +40,8 @@ public class SecurityConfig {
     @Autowired
     private JWTAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    private AuthEntryPoint authEntryPoint;
+//    @Autowired
+//    private AuthEntryPoint authEntryPoint;
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
@@ -55,9 +50,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(AUTHENTICATE, REGISTER_CUSTOMER, REGISTER_SELLER, REFRESH_TOKEN)
-                        .permitAll()
                         .requestMatchers(SWAGGER_PATHS).permitAll()
+                        .requestMatchers(PUBLIC_PATHS).permitAll()
                         .requestMatchers(ADMIN_PATH).hasRole(UserRole.ADMIN.name())
                         .anyRequest().authenticated())
 //                .exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
@@ -66,7 +60,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
-                        .logoutUrl(LOGOUT)
+                        .logoutUrl("/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
                             try {
                                 handleLogout(request, response);

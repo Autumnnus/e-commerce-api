@@ -1,5 +1,6 @@
 package com.kadir.modules.address.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/address")
+@RequestMapping(Paths.BASE_PATH + "/address")
 public class AddressController extends RestBaseController implements IAddressController {
 
     @Autowired

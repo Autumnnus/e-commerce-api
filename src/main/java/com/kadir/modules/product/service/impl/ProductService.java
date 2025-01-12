@@ -5,6 +5,7 @@ import com.kadir.common.dto.openai.OpenAiResponseDto;
 import com.kadir.common.exception.BaseException;
 import com.kadir.common.exception.ErrorMessage;
 import com.kadir.common.exception.MessageType;
+import com.kadir.common.service.impl.AuthenticationServiceImpl;
 import com.kadir.common.utils.merge.MergeUtils;
 import com.kadir.common.utils.openai.OpenAiUtil;
 import com.kadir.common.utils.pagination.PageableHelper;
@@ -47,9 +48,11 @@ public class ProductService implements IProductService {
     private final ModelMapper modelMapper;
     private final WebClient webClient;
     private final OpenAiUtil openAiUtil;
+    private final AuthenticationServiceImpl authenticationServiceImpl;
 
     @Override
     public ProductDto createProduct(ProductCreateDto productCreateDto) {
+        Long userId = authenticationServiceImpl.getCurrentUserId();
         Category category = categoryRepository.findById(productCreateDto.getCategoryId())
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "Category not found")));
@@ -88,6 +91,7 @@ public class ProductService implements IProductService {
 
     @Override
     public RestPageableEntity<ProductDto> getAllProducts(RestPageableRequest request) {
+        Long userId = authenticationServiceImpl.getCurrentUserId();
         Pageable pageable = PageableHelper
                 .createPageable(request.getPageNumber(), request.getPageSize(), request.getSortBy(),
                         request.isAsc());

@@ -1,5 +1,6 @@
 package com.kadir.modules.discount.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rest/api/discount")
+@RequestMapping(Paths.BASE_PATH + "/discount")
 public class DiscountController extends RestBaseController implements IDiscountController {
 
     @Autowired
