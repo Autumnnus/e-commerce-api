@@ -79,7 +79,7 @@ public class AddressService implements IAddressService {
             throw new BaseException(new ErrorMessage(
                     MessageType.UNAUTHORIZED, "You are not authorized to delete this address"));
         }
-        
+
         Address address = modelMapper.map(existingAddress, Address.class);
         addressRepository.deleteById(id);
         AddressDto addressDto = modelMapper.map(address, AddressDto.class);
@@ -91,7 +91,8 @@ public class AddressService implements IAddressService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Address> addresses = addressRepository.findByUserId(userId);
+        List<Address> addresses = addressRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Addresses not found"));
         List<AddressDto> addressDtos = addresses.stream()
                 .map(address -> modelMapper.map(address, AddressDto.class))
                 .collect(Collectors.toList());

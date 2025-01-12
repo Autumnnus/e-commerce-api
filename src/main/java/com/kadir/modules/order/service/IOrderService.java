@@ -12,7 +12,7 @@ public interface IOrderService {
 
     RestPageableEntity<OrderDto> getAllOrders(RestPageableRequest request);
 
-    RestPageableEntity<OrderDto> getOrdersByUser(Long userId, RestPageableRequest request);
+    RestPageableEntity<OrderDto> getOrdersByUser(Long customerId, RestPageableRequest request);
 
     OrderDto updateOrderStatus(Long orderId, OrderStatus paymentStatus);
 }

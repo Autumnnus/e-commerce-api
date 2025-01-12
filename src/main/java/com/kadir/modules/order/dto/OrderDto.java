@@ -2,7 +2,7 @@ package com.kadir.modules.order.dto;
 
 import com.kadir.common.dto.BaseDto;
 import com.kadir.common.enums.OrderStatus;
-import com.kadir.modules.authentication.dto.UserDto;
+import com.kadir.modules.authentication.dto.CustomerDto;
 import com.kadir.modules.orderitems.dto.OrderItemsDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class OrderDto extends BaseDto {
 
-    private UserDto user;
+    private CustomerDto customer;
 
     private Set<OrderItemsDto> orderItems;
 

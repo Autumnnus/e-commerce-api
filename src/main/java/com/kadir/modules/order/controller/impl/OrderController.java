@@ -35,8 +35,8 @@ public class OrderController extends RestBaseController implements IOrderControl
 
     @GetMapping("/user/{id}")
     @Override
-    public ApiResponse<RestPageableEntity<OrderDto>> getOrdersByUser(@PathVariable(name = "id") Long userId, RestPageableRequest request) {
-        return ok(orderService.getOrdersByUser(userId, request));
+    public ApiResponse<RestPageableEntity<OrderDto>> getOrdersByUser(@PathVariable(name = "id") Long customerId, RestPageableRequest request) {
+        return ok(orderService.getOrdersByUser(customerId, request));
     }
 
     @PutMapping("/{id}")

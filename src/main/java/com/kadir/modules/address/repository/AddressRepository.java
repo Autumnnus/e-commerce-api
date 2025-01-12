@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
     @Query("SELECT c FROM Address c WHERE c.user.id = ?1")
-    List<Address> findByUserId(Long userId);
+    Optional<List<Address>> findByUserId(Long userId);
 }

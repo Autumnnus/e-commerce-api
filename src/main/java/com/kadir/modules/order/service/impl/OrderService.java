@@ -63,23 +63,26 @@ public class OrderService implements IOrderService {
     @Override
     public OrderDto createOrder(OrderDtoIU dto) {
         Long userId = authenticationServiceImpl.getCurrentUserId();
+        Customer customer = customerRepository.findByUserId(userId).orElseThrow(
+                () -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Customer not found")));
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
-        List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
+        List<CartItems> cartItems = cartItemsRepository.findByUserId(customer.getId());
         if (cartItems.isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.CARD_IS_EMPTY, cartItems.size() + " item(s)"));
         }
         Payment payment = createPayment(new CreatePaymentRequest(), user);
-        if (!payment.getErrorCode().isEmpty() || !payment.getErrorMessage().isEmpty()) {
-            throw new BaseException(new ErrorMessage(MessageType.PAYMENT_FAILED, payment.getErrorMessage()));
-        }
+        //TODO will use later
+//        if (!payment.getErrorCode().isEmpty() || !payment.getErrorMessage().isEmpty()) {
+//            throw new BaseException(new ErrorMessage(MessageType.PAYMENT_FAILED, payment.getErrorMessage()));
+//        }
 
         /* //TODO will use later
         String paymentId = payment.getPaymentId();
         List<PaymentItem> paymentItems = payment.getPaymentItems();
         */
 
-        Order order = createAndSaveOrder(user, cartItems);
+        Order order = createAndSaveOrder(customer, cartItems);
         List<OrderItems> savedOrderItems = createAndSaveOrderItems(order, cartItems);
 
         if (!cartItems.isEmpty()) {
@@ -105,12 +108,12 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public RestPageableEntity<OrderDto> getOrdersByUser(Long userId, RestPageableRequest request) {
+    public RestPageableEntity<OrderDto> getOrdersByUser(Long customerId, RestPageableRequest request) {
         Pageable pageable = PageableHelper
                 .createPageable(request.getPageNumber(), request.getPageSize(), request.getSortBy(), request.isAsc());
-        userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
-        Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);
+        customerRepository.findById(customerId)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Customer not found")));
+        Page<Order> orderPage = orderRepository.findByCustomerId(customerId, pageable);
         RestPageableEntity<OrderDto> pageableResponse = PaginationUtils.toPageableResponse(orderPage, OrderDto.class, modelMapper);
         return pageableResponse;
     }
@@ -130,9 +133,9 @@ public class OrderService implements IOrderService {
         return orderDto;
     }
 
-    private Order createAndSaveOrder(User user, List<CartItems> cartItems) {
+    private Order createAndSaveOrder(Customer customer, List<CartItems> cartItems) {
         Order order = new Order();
-        order.setUser(user);
+        order.setCustomer(customer);
         order.setOrderDate(LocalDateTime.now());
         order.setPaymentMethod("CREDIT CARD");
         order.setPaymentStatus(OrderStatus.PENDING);
@@ -167,7 +170,11 @@ public class OrderService implements IOrderService {
         List<CartItems> cartItems = cartItemsRepository.findByUserId(user.getId());
         Customer customer = customerRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Customer not found")));
-        List<com.kadir.modules.address.model.Address> addresses = addressRepository.findByUserId(user.getId());
+        List<com.kadir.modules.address.model.Address> addresses = addressRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Address not found")));
+        if (addresses == null || addresses.isEmpty() || addresses.size() == 0) {
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Address not found"));
+        }
         com.kadir.modules.address.model.Address firstAddress = addresses.get(0);
         String fullName = customer.getFirstName() + " " + customer.getLastName();
 
