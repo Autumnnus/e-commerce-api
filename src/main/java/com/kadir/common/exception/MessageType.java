@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum MessageType {
+    UNAUTHORIZED("401", "Unauthorized"),
     USERNAME_ALREADY_EXISTS("1001", "Username already exists"),
     EMAIL_ALREADY_EXISTS("1002", "Email already exists"),
     PHONE_NUMBER_ALREADY_EXISTS("1003", "Phone number already exists"),

@@ -221,6 +221,17 @@ public class OrderService implements IOrderService {
         billingAddress.setZipCode(firstAddress.getZipCode());
         request.setBillingAddress(billingAddress);
 
+        List<BasketItem> basketItems = getBasketItems(cartItems);
+
+        request.setBasketItems(basketItems);
+        request.setPrice(basketItems.stream().map(BasketItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add));
+        request.setPaidPrice(request.getPrice());
+
+        Payment payment = Payment.create(request, options);
+        return payment;
+    }
+
+    private static List<BasketItem> getBasketItems(List<CartItems> cartItems) {
         List<BasketItem> basketItems = new ArrayList<>();
 
         for (CartItems cartItem : cartItems) {
@@ -232,13 +243,7 @@ public class OrderService implements IOrderService {
             basketItem.setPrice(cartItem.getProduct().getPrice());
             basketItems.add(basketItem);
         }
-
-        request.setBasketItems(basketItems);
-        request.setPrice(basketItems.stream().map(BasketItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add));
-        request.setPaidPrice(request.getPrice());
-
-        Payment payment = Payment.create(request, options);
-        return payment;
+        return basketItems;
     }
 
 }

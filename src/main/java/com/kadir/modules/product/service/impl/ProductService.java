@@ -12,6 +12,8 @@ import com.kadir.common.utils.pagination.PageableHelper;
 import com.kadir.common.utils.pagination.PaginationUtils;
 import com.kadir.common.utils.pagination.RestPageableEntity;
 import com.kadir.common.utils.pagination.RestPageableRequest;
+import com.kadir.modules.authentication.model.Seller;
+import com.kadir.modules.authentication.repository.SellerRepository;
 import com.kadir.modules.category.model.Category;
 import com.kadir.modules.category.repository.CategoryRepository;
 import com.kadir.modules.product.dto.ProductAIRequestDto;
@@ -45,6 +47,7 @@ public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final SellerRepository sellerRepository;
     private final ModelMapper modelMapper;
     private final WebClient webClient;
     private final OpenAiUtil openAiUtil;
@@ -53,10 +56,14 @@ public class ProductService implements IProductService {
     @Override
     public ProductDto createProduct(ProductCreateDto productCreateDto) {
         Long userId = authenticationServiceImpl.getCurrentUserId();
+        Seller seller = sellerRepository.findByUserId(userId)
+                .orElseThrow(() -> new BaseException(
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Seller not found")));
         Category category = categoryRepository.findById(productCreateDto.getCategoryId())
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "Category not found")));
         Product product = modelMapper.map(productCreateDto, Product.class);
+        product.setSeller(seller);
         product.setCategory(category);
         Product savedProduct = productRepository.save(product);
         return modelMapper.map(savedProduct, ProductDto.class);
@@ -64,9 +71,15 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductDto updateProduct(Long id, ProductUpdateDto productUpdateDto) {
+        Long userId = authenticationServiceImpl.getCurrentUserId();
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
+        if (!existingProduct.getSeller().getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this product"));
+        }
+
         if (productUpdateDto.getCategoryId() != null) {
             Category existingCategory = categoryRepository.findById(productUpdateDto.getCategoryId())
                     .orElseThrow(() -> new BaseException(new ErrorMessage(
@@ -81,17 +94,23 @@ public class ProductService implements IProductService {
     @Transactional
     @Override
     public ProductDto deleteProduct(Long id) {
-        Product product = productRepository.findById(id)
+        Long userId = authenticationServiceImpl.getCurrentUserId();
+        Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
-        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+
+        if (!existingProduct.getSeller().getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to delete this product"));
+        }
+
+        ProductDto productDto = modelMapper.map(existingProduct, ProductDto.class);
         productRepository.deleteById(id);
         return productDto;
     }
 
     @Override
     public RestPageableEntity<ProductDto> getAllProducts(RestPageableRequest request) {
-        Long userId = authenticationServiceImpl.getCurrentUserId();
         Pageable pageable = PageableHelper
                 .createPageable(request.getPageNumber(), request.getPageSize(), request.getSortBy(),
                         request.isAsc());

@@ -50,9 +50,13 @@ public class CartItemsService implements ICartItemsService {
 
     @Override
     public CartItemsDto updateCartItems(Long id, CartItemsUpdateDto cartItemsUpdateDto) {
+        Long userId = authenticationServiceImpl.getCurrentUserId();
         CartItems cartItems = cartItemsRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "CartItems not found")));
-
+        if (!cartItems.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this cart items"));
+        }
         MergeUtils.copyNonNullProperties(cartItemsUpdateDto, cartItems);
         CartItems savedCartItems = cartItemsRepository.save(cartItems);
         return modelMapper.map(savedCartItems, CartItemsDto.class);
@@ -60,8 +64,13 @@ public class CartItemsService implements ICartItemsService {
 
     @Override
     public CartItemsDto deleteCartItems(Long id) {
+        Long userId = authenticationServiceImpl.getCurrentUserId();
         CartItems cartItems = cartItemsRepository.findById(id)
                 .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "CartItems not found")));
+        if (!cartItems.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to delete this cart items"));
+        }
         CartItemsDto cartItemsDto = modelMapper.map(cartItems, CartItemsDto.class);
 
         cartItemsRepository.deleteById(id);

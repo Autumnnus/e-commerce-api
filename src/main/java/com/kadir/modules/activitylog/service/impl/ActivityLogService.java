@@ -22,6 +22,16 @@ public class ActivityLogService implements IActivityLogService {
 
     @Override
     public void logActivity(String action, LogStatus status, String entityType, String description) {
+        if (action != null && action.length() > 255) {
+            action = action.substring(0, 255);
+        }
+        if (entityType != null && entityType.length() > 255) {
+            entityType = entityType.substring(0, 255);
+        }
+        if (description != null && description.length() > 255) {
+            description = description.substring(0, 255);
+        }
+
         Long userId = authenticationService.getCurrentUserId();
         Optional<User> user;
         if (userId == null) {

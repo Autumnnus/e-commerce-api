@@ -81,6 +81,11 @@ public class ReviewService implements IReviewService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
+
+        if (!existingReview.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this review"));
+        }
         MergeUtils.copyNonNullProperties(reviewUpdateDto, existingReview);
         Review savedReview = reviewRepository.save(existingReview);
         return modelMapper.map(savedReview, ReviewDto.class);
@@ -88,10 +93,15 @@ public class ReviewService implements IReviewService {
 
     @Override
     public ReviewDto deleteReview(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
+        Long userId = authenticationServiceImpl.getCurrentUserId();
+        Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "Review not found")));
-        ReviewDto reviewDto = modelMapper.map(review, ReviewDto.class);
+        if (!existingReview.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this review"));
+        }
+        ReviewDto reviewDto = modelMapper.map(existingReview, ReviewDto.class);
         reviewRepository.deleteById(reviewId);
         return reviewDto;
     }

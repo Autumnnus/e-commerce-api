@@ -62,11 +62,16 @@ public class DiscountService implements IDiscountService {
 
     @Override
     public DiscountDto deleteDiscount(Long discountId) {
-        Discount discount = discountRepository.findById(discountId)
+        Long userId = authenticationServiceImpl.getCurrentUserId();
+        Discount existingDiscount = discountRepository.findById(discountId)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "Discount not found")));
-        DiscountDto discountDto = modelMapper.map(discount, DiscountDto.class);
-        discountRepository.delete(discount);
+        if (!existingDiscount.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to delete this discount"));
+        }
+        DiscountDto discountDto = modelMapper.map(existingDiscount, DiscountDto.class);
+        discountRepository.delete(existingDiscount);
         return discountDto;
     }
 

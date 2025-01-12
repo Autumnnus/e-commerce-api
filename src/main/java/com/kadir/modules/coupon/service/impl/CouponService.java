@@ -63,6 +63,10 @@ public class CouponService implements ICouponService {
         Coupon existingCoupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
+        if (!existingCoupon.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this coupon"));
+        }
         MergeUtils.copyNonNullProperties(couponUpdateDto, existingCoupon);
         Coupon updatedCoupon = couponRepository.save(existingCoupon);
         return modelMapper.map(updatedCoupon, CouponDto.class);
@@ -70,11 +74,16 @@ public class CouponService implements ICouponService {
 
     @Override
     public CouponDto deleteCoupon(Long couponId) {
-        Coupon coupon = couponRepository.findById(couponId)
+        Long userId = authenticationServiceImpl.getCurrentUserId();
+        Coupon existingCoupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new BaseException(
                         new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
-        CouponDto couponDto = modelMapper.map(coupon, CouponDto.class);
-        couponRepository.delete(coupon);
+        if (!existingCoupon.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to delete this coupon"));
+        }
+        CouponDto couponDto = modelMapper.map(existingCoupon, CouponDto.class);
+        couponRepository.delete(existingCoupon);
         return couponDto;
     }
 

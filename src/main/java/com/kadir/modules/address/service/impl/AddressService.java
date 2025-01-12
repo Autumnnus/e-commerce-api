@@ -1,5 +1,8 @@
 package com.kadir.modules.address.service.impl;
 
+import com.kadir.common.exception.BaseException;
+import com.kadir.common.exception.ErrorMessage;
+import com.kadir.common.exception.MessageType;
 import com.kadir.common.service.impl.AuthenticationServiceImpl;
 import com.kadir.common.utils.merge.MergeUtils;
 import com.kadir.common.utils.pagination.PageableHelper;
@@ -50,6 +53,11 @@ public class AddressService implements IAddressService {
         Address existingAddress = addressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
 
+        if (!existingAddress.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this address"));
+        }
+
         if (userId != null) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -63,8 +71,15 @@ public class AddressService implements IAddressService {
     @Transactional
     @Override
     public AddressDto deleteAddress(Long id) {
+        Long userId = authenticationServiceImpl.getCurrentUserId();
         Address existingAddress = addressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        if (!existingAddress.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to delete this address"));
+        }
+        
         Address address = modelMapper.map(existingAddress, Address.class);
         addressRepository.deleteById(id);
         AddressDto addressDto = modelMapper.map(address, AddressDto.class);
