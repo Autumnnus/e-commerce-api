@@ -23,4 +23,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     BigDecimal sumTotalSalesByDate(LocalDateTime startDate, LocalDateTime endDate);
 
     Integer countByOrderDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT o.customer) FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    Integer countByCustomerDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+
 }
