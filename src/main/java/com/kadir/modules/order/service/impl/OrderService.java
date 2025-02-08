@@ -56,6 +56,7 @@ public class OrderService implements IOrderService {
 
     @Value("${iyzico.api.key}")
     private String apiKey;
+
     @Value("${iyzico.secret.key}")
     private String secretKey;
 
