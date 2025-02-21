@@ -72,16 +72,12 @@ public class OrderService implements IOrderService {
         if (cartItems.isEmpty()) {
             throw new BaseException(new ErrorMessage(MessageType.CARD_IS_EMPTY, cartItems.size() + " item(s)"));
         }
+
+        //? Iyzipay payment response
         Payment payment = createPayment(new CreatePaymentRequest(), user);
-        //TODO will use later
 //        if (!payment.getErrorCode().isEmpty() || !payment.getErrorMessage().isEmpty()) {
 //            throw new BaseException(new ErrorMessage(MessageType.PAYMENT_FAILED, payment.getErrorMessage()));
 //        }
-
-        /* //TODO will use later
-        String paymentId = payment.getPaymentId();
-        List<PaymentItem> paymentItems = payment.getPaymentItems();
-        */
 
         Order order = createAndSaveOrder(customer, cartItems);
         List<OrderItems> savedOrderItems = createAndSaveOrderItems(order, cartItems);
@@ -231,9 +227,13 @@ public class OrderService implements IOrderService {
 
         List<BasketItem> basketItems = getBasketItems(cartItems);
 
+        BigDecimal totalAmount = cartItems.stream()
+                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         request.setBasketItems(basketItems);
-        request.setPrice(basketItems.stream().map(BasketItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add));
+//        request.setPrice(basketItems.stream().map(BasketItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add));
         request.setPaidPrice(request.getPrice());
+        request.setPrice(totalAmount);
 
         Payment payment = Payment.create(request, options);
         return payment;
