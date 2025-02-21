@@ -1,5 +1,6 @@
 package com.kadir.modules.productimage.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.productimage.controller.IProductImageController;
@@ -15,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/productImage")
+@RequestMapping(Paths.BASE_PATH + "/productImage")
 public class ProductImageController extends RestBaseController implements IProductImageController {
 
     @Autowired

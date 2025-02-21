@@ -15,6 +15,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         if (authentication == null || authentication.getDetails() == null) {
             throw new RuntimeException("User not authenticated");
         }
+        
+        if (authentication.getPrincipal() == "anonymousUser") {
+            return null;
+        }
+
         User details = (User) authentication.getDetails();
         return details.getId();
     }

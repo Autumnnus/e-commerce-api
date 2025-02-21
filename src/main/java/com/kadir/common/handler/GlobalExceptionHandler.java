@@ -29,11 +29,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError<?>> handleException(java.lang.Exception ex, WebRequest request) {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(), request));
     }
-    
+
 
     @ExceptionHandler(value = {ExpiredJwtException.class})
     public ResponseEntity<ApiError<?>> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiError("Token has expired.", request));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiError(ex.getMessage(), request));
     }
 
     @ExceptionHandler(value = {RuntimeException.class})

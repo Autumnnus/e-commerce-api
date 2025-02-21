@@ -1,5 +1,6 @@
 package com.kadir.modules.wishlist.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rest/api/wishlist")
+@RequestMapping(Paths.BASE_PATH + "/wishlist")
 public class WishlistController extends RestBaseController implements IWishlistController {
 
     @Autowired

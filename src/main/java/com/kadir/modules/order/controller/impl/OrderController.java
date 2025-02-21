@@ -1,5 +1,6 @@
 package com.kadir.modules.order.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rest/api/order")
+@RequestMapping(Paths.BASE_PATH + "/order")
 public class OrderController extends RestBaseController implements IOrderController {
 
     @Autowired
@@ -34,8 +35,8 @@ public class OrderController extends RestBaseController implements IOrderControl
 
     @GetMapping("/user/{id}")
     @Override
-    public ApiResponse<RestPageableEntity<OrderDto>> getOrdersByUser(@PathVariable(name = "id") Long userId, RestPageableRequest request) {
-        return ok(orderService.getOrdersByUser(userId, request));
+    public ApiResponse<RestPageableEntity<OrderDto>> getOrdersByUser(@PathVariable(name = "id") Long customerId, RestPageableRequest request) {
+        return ok(orderService.getOrdersByUser(customerId, request));
     }
 
     @PutMapping("/{id}")

@@ -1,5 +1,6 @@
 package com.kadir.modules.review.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
@@ -16,7 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rest/api/review")
+@RequestMapping(Paths.BASE_PATH + "/review")
 public class ReviewController extends RestBaseController implements IReviewController {
 
     @Autowired

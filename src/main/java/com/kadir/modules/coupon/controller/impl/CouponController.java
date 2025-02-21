@@ -1,5 +1,6 @@
 package com.kadir.modules.coupon.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.common.utils.pagination.RestPageableEntity;
@@ -15,7 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/rest/api/coupon")
+@RequestMapping(Paths.BASE_PATH + "/coupon")
 public class CouponController extends RestBaseController implements ICouponController {
 
     @Autowired

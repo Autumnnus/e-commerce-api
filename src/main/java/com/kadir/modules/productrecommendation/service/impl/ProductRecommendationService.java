@@ -51,6 +51,7 @@ public class ProductRecommendationService implements IProductRecommendationServi
 
     }
 
+    //    @Scheduled(fixedRate = 86400000)
     @Override
     public List<ProductDto> generateDailyRecommendations() {
         List<Product> allProducts = productRepository.findAll();

@@ -45,10 +45,10 @@ public class WishlistService implements IWishlistService {
                 .orElseGet(() -> {
                     Product product = productRepository.findById(productId)
                             .orElseThrow(() -> new BaseException(
-                                    new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                                    new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
                     User user = userRepository.findById(userId)
                             .orElseThrow(() -> new BaseException(
-                                    new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                                    new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
 
                     Wishlist wishlist = new Wishlist();
                     wishlist.setUser(user);

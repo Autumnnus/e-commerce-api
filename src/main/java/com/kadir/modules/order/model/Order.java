@@ -3,7 +3,7 @@ package com.kadir.modules.order.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kadir.common.enums.OrderStatus;
 import com.kadir.common.model.BaseEntity;
-import com.kadir.modules.authentication.model.User;
+import com.kadir.modules.authentication.model.Customer;
 import com.kadir.modules.orderitems.model.OrderItems;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,8 +24,8 @@ import java.util.Set;
 public class Order extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore

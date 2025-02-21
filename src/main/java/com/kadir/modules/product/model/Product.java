@@ -1,6 +1,7 @@
 package com.kadir.modules.product.model;
 
 import com.kadir.common.model.BaseEntity;
+import com.kadir.modules.authentication.model.Seller;
 import com.kadir.modules.cartitems.model.CartItems;
 import com.kadir.modules.category.model.Category;
 import com.kadir.modules.orderitems.model.OrderItems;
@@ -37,6 +38,10 @@ public class Product extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = true)
     private Category category;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private Seller seller;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItems> cartItems = new ArrayList<>();

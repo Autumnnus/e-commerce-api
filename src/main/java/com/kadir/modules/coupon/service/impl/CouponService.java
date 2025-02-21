@@ -40,12 +40,12 @@ public class CouponService implements ICouponService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         Coupon coupon = modelMapper.map(couponCreateDto, Coupon.class);
         if (couponCreateDto.getProductId() != null) {
             Product product = productRepository.findById(couponCreateDto.getProductId())
                     .orElseThrow(() -> new BaseException(
-                            new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                            new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
             coupon.setProduct(product);
         }
 
@@ -59,10 +59,14 @@ public class CouponService implements ICouponService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
         Coupon existingCoupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Coupon not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
+        if (!existingCoupon.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this coupon"));
+        }
         MergeUtils.copyNonNullProperties(couponUpdateDto, existingCoupon);
         Coupon updatedCoupon = couponRepository.save(existingCoupon);
         return modelMapper.map(updatedCoupon, CouponDto.class);
@@ -70,11 +74,16 @@ public class CouponService implements ICouponService {
 
     @Override
     public CouponDto deleteCoupon(Long couponId) {
-        Coupon coupon = couponRepository.findById(couponId)
+        Long userId = authenticationServiceImpl.getCurrentUserId();
+        Coupon existingCoupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Coupon not found")));
-        CouponDto couponDto = modelMapper.map(coupon, CouponDto.class);
-        couponRepository.delete(coupon);
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
+        if (!existingCoupon.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to delete this coupon"));
+        }
+        CouponDto couponDto = modelMapper.map(existingCoupon, CouponDto.class);
+        couponRepository.delete(existingCoupon);
         return couponDto;
     }
 
@@ -82,7 +91,7 @@ public class CouponService implements ICouponService {
     public CouponDto getCouponByCode(String code) {
         Coupon coupon = couponRepository.findByCode(code)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Coupon not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
         return modelMapper.map(coupon, CouponDto.class);
     }
 
@@ -90,7 +99,7 @@ public class CouponService implements ICouponService {
     public Boolean isCouponValid(String code) {
         Coupon coupon = couponRepository.findByCode(code)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Coupon not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Coupon not found")));
         return coupon.isActive();
     }
 

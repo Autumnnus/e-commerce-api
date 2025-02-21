@@ -43,10 +43,10 @@ public class ReviewService implements IReviewService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         Product product = productRepository.findById(reviewCreateDto.getProductId())
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
 
         List<Review> existingReviews = reviewRepository.findByUserAndProduct(userId, reviewCreateDto.getProductId());
         if (!existingReviews.isEmpty()) {
@@ -65,10 +65,10 @@ public class ReviewService implements IReviewService {
     public ReviewDto getReviewById(Long reviewId, ReviewGetDto reviewGetDto) {
         productRepository.findById(reviewGetDto.getProductId())
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Product not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Product not found")));
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Review not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Review not found")));
         return modelMapper.map(review, ReviewDto.class);
     }
 
@@ -77,10 +77,15 @@ public class ReviewService implements IReviewService {
         Long userId = authenticationServiceImpl.getCurrentUserId();
         Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Review not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Review not found")));
         userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "User not found")));
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "User not found")));
+
+        if (!existingReview.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this review"));
+        }
         MergeUtils.copyNonNullProperties(reviewUpdateDto, existingReview);
         Review savedReview = reviewRepository.save(existingReview);
         return modelMapper.map(savedReview, ReviewDto.class);
@@ -88,10 +93,15 @@ public class ReviewService implements IReviewService {
 
     @Override
     public ReviewDto deleteReview(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
+        Long userId = authenticationServiceImpl.getCurrentUserId();
+        Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(
-                        new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Review not found")));
-        ReviewDto reviewDto = modelMapper.map(review, ReviewDto.class);
+                        new ErrorMessage(MessageType.NO_RECORD_EXIST, "Review not found")));
+        if (!existingReview.getUser().getId().equals(userId)) {
+            throw new BaseException(new ErrorMessage(
+                    MessageType.UNAUTHORIZED, "You are not authorized to update this review"));
+        }
+        ReviewDto reviewDto = modelMapper.map(existingReview, ReviewDto.class);
         reviewRepository.deleteById(reviewId);
         return reviewDto;
     }

@@ -1,5 +1,6 @@
 package com.kadir.modules.productrecommendation.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.product.dto.ProductDto;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/product-recommendation")
+@RequestMapping(Paths.BASE_PATH + "/product-recommendation")
 public class ProductRecommendationController extends RestBaseController implements IProductRecommendationController {
 
     @Autowired

@@ -13,7 +13,7 @@ public interface IOrderController {
 
     ApiResponse<RestPageableEntity<OrderDto>> getAllOrders(RestPageableRequest request);
 
-    ApiResponse<RestPageableEntity<OrderDto>> getOrdersByUser(Long userId, RestPageableRequest request);
+    ApiResponse<RestPageableEntity<OrderDto>> getOrdersByUser(Long customerId, RestPageableRequest request);
 
     ApiResponse<OrderDto> updateOrderStatus(Long orderId, OrderStatusUpdateRequest request);
 }

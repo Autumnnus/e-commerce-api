@@ -1,5 +1,6 @@
 package com.kadir.modules.cartitems.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.cartitems.controller.ICartItemsController;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/cart-items")
+@RequestMapping(Paths.BASE_PATH + "/cart-items")
 public class CartItemsController extends RestBaseController implements ICartItemsController {
 
     @Autowired

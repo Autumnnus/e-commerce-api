@@ -1,5 +1,6 @@
 package com.kadir.modules.category.controller.impl;
 
+import com.kadir.common.constants.Paths;
 import com.kadir.common.controller.ApiResponse;
 import com.kadir.common.controller.impl.RestBaseController;
 import com.kadir.modules.category.controller.ICategoryController;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/category")
+@RequestMapping(Paths.PUBLIC_BASE_PATH + "/category")
 public class CategoryController extends RestBaseController implements ICategoryController {
 
     @Autowired

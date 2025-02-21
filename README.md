@@ -1,4 +1,4 @@
-# E-Commerce API (Version 2)
+# E-Commerce API (Version 3)
 
 This is a Restful API for an e-commerce platform built using Java Spring Boot. The project allows users to browse
 products, place orders, manage inventory, and handle customer and seller data. It supports essential e-commerce
@@ -28,6 +28,7 @@ functionalities such as product categorization, reviews, order management, and u
     - Admin users can view reports and manage users, products, and orders.
 
 ### **Version 2 Features** (Done✅)
+### **Version 2 Features** (Done✅)
 
 - **Favorites and Wishlist**:
     - Customers can add products to their favorites and wishlist.
@@ -41,22 +42,20 @@ functionalities such as product categorization, reviews, order management, and u
     - Supports multiple images for products.
     - AWS S3 Support
 
-### **Version 3 Features** (In Progress🚧)
+### **Version 3 Features** (Done✅)
 
-- **Activity Logs**:
+- **Activity Logs**: (Done✅)
     - Logs all user activities for auditing and tracking.
-- **Notifications**:
-    - Sends notifications for order updates, promotions, etc.
-- **AI-Powered Recommendations**:
+- **AI-Powered Recommendations**: (Done✅)
     - Uses AI to provide personalized product recommendations.
-- **Product Views and Analytics**:
-    - Sellers can view product views and analytics.
-- **Payment Integration**:
+- **Payment Integration**: (Done✅)
     - Customers can choose from various payment methods.
-- **Currency Conversion**:
+- **Currency Conversion**: (Done✅)
     - Supports multiple currencies for products and orders.
-- **Sales Reports**:
+- **Sales Reports**: (Done✅)
     - Sellers can view sales reports and analytics.
+- **Product Views and Analytics**: (Done✅)
+    - Sellers can view product views and analytics.
 
 ## Technologies
 
