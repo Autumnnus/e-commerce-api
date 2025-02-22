@@ -28,7 +28,6 @@ functionalities such as product categorization, reviews, order management, and u
     - Admin users can view reports and manage users, products, and orders.
 
 ### **Version 2 Features** (Done✅)
-### **Version 2 Features** (Done✅)
 
 - **Favorites and Wishlist**:
     - Customers can add products to their favorites and wishlist.
